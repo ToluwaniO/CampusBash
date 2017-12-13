@@ -1,5 +1,7 @@
 package toluog.campusbash.data
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.*
 import io.reactivex.Flowable
 import toluog.campusbash.model.Event
@@ -24,5 +26,8 @@ public interface EventDao{
     fun updateEvent(event: Event)
 
     @Query("Select * from Events")
-    fun getEvents():Flowable<List<Event>>
+    fun getEvents():LiveData<List<Event>>
+
+    @Delete
+    fun deleteEvent(event: Event)
 }
