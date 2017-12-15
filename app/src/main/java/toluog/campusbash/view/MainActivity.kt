@@ -7,18 +7,19 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import kotlinx.android.synthetic.main.activity_main.*
 import toluog.campusbash.R
-import toluog.campusbash.data.AppContract
 
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.data.EventDao
 import android.R.array
 import android.content.Intent
+import android.util.Log
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.create_event_layout.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CreateEventFragment.SaveComplete {
 
+    private val TAG = MainActivity::class.java.simpleName
     var db: AppDatabase? = null
     var eventDao: EventDao? = null
     val fragManager = supportFragmentManager
@@ -53,13 +54,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-
         fab.setOnClickListener {
             fragManager.popBackStack()
             fragManager.beginTransaction().replace(R.id.fragment_frame, CreateEventFragment(), null).commit()
             fab.visibility = GONE
         }
         fab.visibility = GONE
+
+        fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null).commit()
+
         updateUi()
     }
 
@@ -72,6 +75,18 @@ class MainActivity : AppCompatActivity() {
                 i.onActivityResult(requestCode, resultCode, data)
             }
         }
+    }
+
+    override fun eventSaved() {
+        Log.d(TAG, "Event saved, delete fragment now")
+        fab.visibility = VISIBLE
+        val bundle = Bundle()
+        bundle.putBoolean("myevent", true)
+        val fragment = EventsFragment()
+        fragment.arguments = bundle
+        fragManager.popBackStack()
+        fragManager.beginTransaction().replace(R.id.fragment_frame, fragment, null)
+                .commit()
     }
 
     fun updateUi(){

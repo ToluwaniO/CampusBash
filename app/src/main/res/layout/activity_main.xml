@@ -32,6 +32,7 @@
             android:layout_margin="6dp"
             android:clickable="true"
             app:srcCompat="@android:drawable/ic_input_add" />
+
     </FrameLayout>
 
     <android.support.design.widget.BottomNavigationView

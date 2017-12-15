@@ -9,6 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.DocumentChange
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
+import toluog.campusbash.Utils.AppContract
 
 
 /**
@@ -23,34 +24,35 @@ class EventDataSource()  {
         val TAG = EventDataSource::class.java.simpleName
 
         fun initListener(context: Context){
+            Log.d(TAG, "initListener")
             db = AppDatabase.getDbInstance(context)
             query.addSnapshotListener(object : EventListener<QuerySnapshot> {
                 override fun onEvent(value: QuerySnapshot,
                                      e: FirebaseFirestoreException?) {
                     if (e != null) {
-                        Log.w(TAG, "onEvent:error", e)
+                        Log.d(TAG, "onEvent:error", e)
                         return
                     }
 
                     // Dispatch the event
-                    if (value != null) {
-                        for (change in value.getDocumentChanges()) {
-                            // Snapshot of the changed document
-                            val snapshot = change.getDocument().toObject(Event::class.java)
+                    for (change in value.getDocumentChanges()) {
+                        // Snapshot of the changed document
+                        Log.d(TAG, change.document.toString())
+                        val snapshot = change.document.toObject(Event::class.java)
 
-                            when (change.getType()) {
-                                DocumentChange.Type.ADDED -> {
-                                    launch { db?.eventDao()?.insertEvent(snapshot) }
-                                }
-                                DocumentChange.Type.MODIFIED -> {
-                                    launch { db?.eventDao()?.updateEvent(snapshot) }
-                                }
-                                DocumentChange.Type.REMOVED -> {
-                                    launch { db?.eventDao()?.deleteEvent(snapshot) }
-                                }
-                            }// TODO: handle document added
-                            // TODO: handle document modified
-                            // TODO: handle document removed
+                        when (change.getType()) {
+                            DocumentChange.Type.ADDED -> {
+                                Log.d(TAG, "ChildAdded")
+                                launch { db?.eventDao()?.insertEvent(snapshot) }
+                            }
+                            DocumentChange.Type.MODIFIED -> {
+                                Log.d(TAG, "ChildModified")
+                                launch { db?.eventDao()?.updateEvent(snapshot) }
+                            }
+                            DocumentChange.Type.REMOVED -> {
+                                Log.d(TAG, "ChildRemoved")
+                                launch { db?.eventDao()?.deleteEvent(snapshot) }
+                            }
                         }
                     }
 

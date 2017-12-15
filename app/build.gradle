@@ -36,6 +36,7 @@ dependencies {
     implementation "com.google.firebase:firebase-auth:$fbase_version"
     compile "com.google.firebase:firebase-firestore:$fbase_version"
     compile "com.google.firebase:firebase-perf:$fbase_version"
+    compile "com.google.firebase:firebase-storage:$fbase_version"
 
     //Arch components
     implementation "android.arch.lifecycle:runtime:$arch_life_runtime_version"
@@ -62,6 +63,8 @@ dependencies {
     //Coroutines
     compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.20'
     compile "org.jetbrains.anko:anko:$anko_version"
+    compile "org.jetbrains.anko:anko-commons:$anko_version"
+    compile "org.jetbrains.anko:anko-design:$anko_version" // For SnackBars
 
     //Others
     implementation "com.github.bumptech.glide:glide:$glide_version"
@@ -73,7 +76,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation 'com.android.support:cardview-v7:26.1.0'
 }
 
 
 apply plugin: 'com.google.gms.google-services'
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
