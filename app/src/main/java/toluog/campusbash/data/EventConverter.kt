@@ -1,7 +1,9 @@
 package toluog.campusbash.data
 
 import android.arch.persistence.room.TypeConverter
+import java.lang.reflect.Type;
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import toluog.campusbash.model.Ticket
 
 /**
@@ -10,14 +12,15 @@ import toluog.campusbash.model.Ticket
 class EventConverter{
 
     @TypeConverter
-    fun getTicketsString(tickets: Array<Ticket>): String{
+    fun getTicketsString(tickets: ArrayList<Ticket>): String{
         val gson = Gson()
         return gson.toJson(tickets)
     }
 
     @TypeConverter
-    fun getTicketsList(tickets: String):Array<Ticket>{
+    fun getTicketsList(tickets: String):ArrayList<Ticket>{
+        val listType = object : TypeToken<ArrayList<Ticket>>() {}.type
         val gson = Gson()
-        return gson.fromJson(tickets, Array<Ticket>::class.java)
+        return gson.fromJson(tickets, listType)
     }
 }

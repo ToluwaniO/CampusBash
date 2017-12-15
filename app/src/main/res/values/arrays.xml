@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="party_types">
+        <item>House Party</item>
+        <item>Pool Party</item>
+        <item>Kegger</item>
+        <item>Sports Party</item>
+    </string-array>
+</resources>

@@ -5,4 +5,10 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_events">Events</string>
     <string name="title_host">Host</string>
+    <string name="event_name">Enter event name</string>
+    <string name="date_text">12/12/2017</string>
+    <string name="event_time">15:00</string>
+    <string name="event_starts">Event starts</string>
+    <string name="event_ends_text">Event ends</string>
+    <string name="save_event">SAVE EVENT</string>
 </resources>
