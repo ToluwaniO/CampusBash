@@ -12,6 +12,7 @@ import toluog.campusbash.data.AppContract
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.data.EventDao
 import android.R.array
+import android.content.Intent
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.create_event_layout.*
 
@@ -31,12 +32,14 @@ class MainActivity : AppCompatActivity() {
                 bundle.putBoolean("myevent", true)
                 val fragment = EventsFragment()
                 fragment.arguments = bundle
+                fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, fragment, null)
                         .commit()
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_host -> {
                 fab.visibility = VISIBLE
+                fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
                         .commit()
                 return@OnNavigationItemSelectedListener true
@@ -52,11 +55,23 @@ class MainActivity : AppCompatActivity() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         fab.setOnClickListener {
+            fragManager.popBackStack()
             fragManager.beginTransaction().replace(R.id.fragment_frame, CreateEventFragment(), null).commit()
             fab.visibility = GONE
         }
         fab.visibility = GONE
         updateUi()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val frags = supportFragmentManager.fragments
+
+        for (i in frags){
+            if(i is CreateEventFragment){
+                i.onActivityResult(requestCode, resultCode, data)
+            }
+        }
     }
 
     fun updateUi(){

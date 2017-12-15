@@ -1,12 +1,14 @@
 package toluog.campusbash.view
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import com.myhexaville.smartimagepicker.ImagePicker
 import kotlinx.android.synthetic.main.create_event_layout.*
 import toluog.campusbash.R
 import toluog.campusbash.Utils.Util
@@ -20,6 +22,7 @@ class CreateEventFragment : Fragment(){
 
     private var rootView: View? = null
     private val calendar = Calendar.getInstance()
+    private var imagePicker: ImagePicker? = null
     private var type = 0
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -31,6 +34,16 @@ class CreateEventFragment : Fragment(){
         updateUi(view?.context)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        imagePicker?.handleActivityResult(resultCode,requestCode, data);
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        imagePicker?.handlePermission(requestCode, grantResults)
+    }
+
     private fun updateUi(context: Context?){
         val adapter = ArrayAdapter.createFromResource(context,
                 R.array.party_types, android.R.layout.simple_spinner_item)
@@ -38,7 +51,13 @@ class CreateEventFragment : Fragment(){
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         event_type_spinner.adapter = adapter
 
+        imagePicker = ImagePicker(activity /*activity non null*/,
+                this@CreateEventFragment /*fragment nullable*/,
+                { /*on image picked*/ imageUri -> event_image.setImageURI(imageUri) })
+
         event_save_button.setOnClickListener {  }
+
+        event_image.setOnClickListener { imagePicker?.choosePicture(true) }
 
         event_start_date.setOnClickListener {
             type = 0
@@ -106,4 +125,5 @@ class CreateEventFragment : Fragment(){
         })
         dialog.show(activity.supportFragmentManager, null)
     }
+
 }
