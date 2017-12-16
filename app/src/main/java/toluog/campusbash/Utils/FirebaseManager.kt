@@ -1,11 +1,16 @@
-package toluog.campusbash.utils
+package toluog.campusbash.Utils
 
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentReference
 import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import toluog.campusbash.data.EventDataSource
+import toluog.campusbash.data.EventDataSource.Companion.db
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 
 

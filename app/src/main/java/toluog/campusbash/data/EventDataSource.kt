@@ -3,10 +3,13 @@ package toluog.campusbash.data
 import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.*
+import io.reactivex.Observable
 import toluog.campusbash.model.Event
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.DocumentChange
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
-import toluog.campusbash.utils.AppContract
+import toluog.campusbash.Utils.AppContract
 
 
 /**

@@ -1,5 +1,6 @@
 package toluog.campusbash.view
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -11,17 +12,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide.init
 import kotlinx.android.synthetic.main.events_layout.*
-import org.jetbrains.anko.support.v4.intentFor
 import toluog.campusbash.R
-import toluog.campusbash.utils.AppContract
+import toluog.campusbash.Utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
 
 /**
  * Created by oguns on 12/13/2017.
  */
-class EventsFragment() : Fragment(){
+class EventsFragment() : Fragment() {
 
     private var rootView: View? = null
     private var myEvents = false

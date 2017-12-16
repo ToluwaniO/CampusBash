@@ -15,17 +15,14 @@ import android.content.Intent
 import android.util.Log
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.create_event_layout.*
-import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.support.v4.intentFor
-import toluog.campusbash.adapters.EventAdapter
-import toluog.campusbash.model.Event
-import toluog.campusbash.utils.AppContract
 
 
-class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
+class MainActivity : AppCompatActivity(), CreateEventFragment.SaveComplete {
 
     private val TAG = MainActivity::class.java.simpleName
-    private val fragManager = supportFragmentManager
+    var db: AppDatabase? = null
+    var eventDao: EventDao? = null
+    val fragManager = supportFragmentManager
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -58,7 +55,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         fab.setOnClickListener {
-            startActivity(intentFor<CreateEventActivity>())
+            fragManager.popBackStack()
+            fragManager.beginTransaction().replace(R.id.fragment_frame, CreateEventFragment(), null).commit()
+            fab.visibility = GONE
         }
         fab.visibility = GONE
 
@@ -69,16 +68,28 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        val frags = supportFragmentManager.fragments
 
+        for (i in frags){
+            if(i is CreateEventFragment){
+                i.onActivityResult(requestCode, resultCode, data)
+            }
+        }
+    }
+
+    override fun eventSaved() {
+        Log.d(TAG, "Event saved, delete fragment now")
+        fab.visibility = VISIBLE
+        val bundle = Bundle()
+        bundle.putBoolean("myevent", true)
+        val fragment = EventsFragment()
+        fragment.arguments = bundle
+        fragManager.popBackStack()
+        fragManager.beginTransaction().replace(R.id.fragment_frame, fragment, null)
+                .commit()
     }
 
     fun updateUi(){
 
-    }
-
-    override fun onItemClick(event: Event) {
-        val bundle = Bundle()
-        bundle.putParcelable(AppContract.MY_EVENT_BUNDLE, event)
-        startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
     }
 }

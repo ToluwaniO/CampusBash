@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-//apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 
 android {
@@ -18,8 +18,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled
-
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -36,7 +35,7 @@ dependencies {
     implementation "com.google.firebase:firebase-crash:$fbase_version"
     implementation "com.google.firebase:firebase-auth:$fbase_version"
     compile "com.google.firebase:firebase-firestore:$fbase_version"
-    //compile "com.google.firebase:firebase-perf:$fbase_version"
+    compile "com.google.firebase:firebase-perf:$fbase_version"
     compile "com.google.firebase:firebase-storage:$fbase_version"
 
     //Arch components
@@ -52,6 +51,7 @@ dependencies {
     //Espresso tests
     androidTestCompile "com.android.support.test:runner:$test_runner_version"
     androidTestCompile "com.android.support.test.espresso:espresso-core:$espresso_core_version"
+
 
     //RxAndroid
     compile "io.reactivex.rxjava2:rxandroid:$rxand_version"
