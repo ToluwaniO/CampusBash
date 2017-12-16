@@ -69,13 +69,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val frags = supportFragmentManager.fragments
 
-        for (i in frags){
-            if(i is CreateEventFragment){
-                i.onActivityResult(requestCode, resultCode, data)
-            }
-        }
     }
 
     fun updateUi(){

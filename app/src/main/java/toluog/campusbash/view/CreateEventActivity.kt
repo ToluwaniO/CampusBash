@@ -1,5 +1,6 @@
 package toluog.campusbash.view
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import toluog.campusbash.R
@@ -19,5 +20,16 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.SaveComplet
 
     override fun eventSaved() {
         finish()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val frags = supportFragmentManager.fragments
+
+        for (i in frags){
+            if(i is CreateEventFragment){
+                i.onActivityResult(requestCode, resultCode, data)
+            }
+        }
     }
 }
