@@ -11,21 +11,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.UploadTask
 import com.myhexaville.smartimagepicker.ImagePicker
 import kotlinx.android.synthetic.main.create_event_layout.*
 import org.jetbrains.anko.design.snackbar
-import org.jetbrains.anko.imageURI
 import toluog.campusbash.R
-import toluog.campusbash.Utils.AppContract
-import toluog.campusbash.Utils.FirebaseManager
-import toluog.campusbash.Utils.Util
+import toluog.campusbash.utils.AppContract
+import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.Util
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
 import java.lang.ClassCastException
 import java.util.*
-import kotlin.math.min
 
 /**
  * Created by oguns on 12/13/2017.

@@ -17,9 +17,23 @@ import toluog.campusbash.model.Event
  */
 class EventAdapter(var events: ArrayList<Event>, var context: Context?): RecyclerView.Adapter<EventAdapter.ViewHolder>(){
 
+    val listener: OnItemClickListener
+
+    init {
+        listener = context as OnItemClickListener
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(event: Event)
+    }
+
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val eventImage: ImageView = view.findViewById(R.id.event_image) as ImageView
-        val eventTitle: TextView = view.findViewById(R.id.event_title) as TextView
+        val eventImage: ImageView = itemView.findViewById(R.id.event_image) as ImageView
+        val eventTitle: TextView = itemView.findViewById(R.id.event_title) as TextView
+
+        fun bind(event: Event, listener: OnItemClickListener){
+            itemView.setOnClickListener { listener.onItemClick(event) }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
@@ -33,6 +47,7 @@ class EventAdapter(var events: ArrayList<Event>, var context: Context?): Recycle
         if(event.placeholderUrl != null){
             Glide.with(context).load(event.placeholderUrl).into(holder?.eventImage)
         }
+        holder?.bind(event, listener)
     }
 
     override fun getItemCount() = events.size

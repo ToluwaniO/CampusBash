@@ -1,5 +1,6 @@
-package toluog.campusbash.Utils
+package toluog.campusbash.utils
 
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -11,5 +12,10 @@ class Util{
                 "/${calendar[Calendar.YEAR]}"
 
         fun formatTime(calendar: Calendar) = "${calendar[Calendar.HOUR_OF_DAY]} : ${calendar[Calendar.MINUTE]}"
+
+        fun formatDateTime(date: Date): String{
+            val df = SimpleDateFormat("dd/MM/yyyy HH:mm")
+            return df.format(date)
+        }
     }
 }
