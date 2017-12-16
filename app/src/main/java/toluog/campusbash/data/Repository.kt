@@ -4,7 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
-import toluog.campusbash.utils.AppContract
+import toluog.campusbash.Utils.AppContract
 import toluog.campusbash.model.Event
 
 /**

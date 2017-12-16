@@ -1,4 +1,4 @@
-package toluog.campusbash.utils
+package toluog.campusbash.Utils
 
 import toluog.campusbash.model.Creator
 import toluog.campusbash.model.LatLng
@@ -24,8 +24,5 @@ class AppContract{
         val CREATOR = Creator("Toluwani Ogunsanya", "frfgbruf", "ifjihjri")
         val TICKETS = arrayOf(Ticket("VIP", "Want best service? You're at the right place",
                 1, 10, 15.50, 0, 33L, 0, 44L))
-
-        //FRAGMENT TAGS
-        val CREATE_EVENT_TAG = "createevent"
     }
 }
