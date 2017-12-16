@@ -3,7 +3,7 @@
 buildscript {
     ext{
         //dependencies
-        kotlin_version = '1.1.51'
+        kotlin_version = '1.2.10'
         fbase_version = '11.4.2'
         stripe_version = '5.1.0'
         glide_version = '4.3.1'
@@ -13,14 +13,16 @@ buildscript {
         arch_life_runtime_version = '1.0.3'
         test_runner_version = '1.0.1'
         espresso_core_version = '3.0.1'
+        anko_version='0.10.3'
     }
 
     repositories {
         google()
         jcenter()
+        maven { url 'https://maven.google.com' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.firebase:firebase-plugins:1.1.5'
 
