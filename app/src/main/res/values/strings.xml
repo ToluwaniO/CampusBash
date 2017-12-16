@@ -11,4 +11,5 @@
     <string name="event_starts">Event starts</string>
     <string name="event_ends_text">Event ends</string>
     <string name="save_event">SAVE EVENT</string>
+    <string name="description_title">Description</string>
 </resources>
