@@ -38,7 +38,8 @@ class FirebaseManager(){
         val storageRef = storage?.getReference()
 
         // Create a reference to "mountains.jpg"
-        val imagesRef = storageRef?.child("images")
+        val imagesRef = storageRef?.child(AppContract.FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS)
+                ?.child("${uri.lastPathSegment}${System.currentTimeMillis()}")
 
         return imagesRef?.putFile(uri)
     }
