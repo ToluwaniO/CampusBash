@@ -3,7 +3,6 @@ package toluog.campusbash.data
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.*
-import io.reactivex.Flowable
 import toluog.campusbash.model.Event
 import java.util.*
 

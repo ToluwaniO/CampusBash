@@ -1,13 +1,23 @@
 package toluog.campusbash.utils
 
+import android.app.Activity
+import android.content.Context
+import android.support.v4.app.ActivityCompat.startActivityForResult
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
+import com.firebase.ui.auth.AuthUI
+import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
+
 
 /**
  * Created by oguns on 12/14/2017.
  */
 class Util{
     companion object {
+
+        private val TAG = Util::class.java.simpleName
+
         fun formatDate(calendar: Calendar) = "${calendar[Calendar.DAY_OF_MONTH]}/${calendar[Calendar.MONTH]}" +
                 "/${calendar[Calendar.YEAR]}"
 
@@ -16,6 +26,15 @@ class Util{
         fun formatDateTime(date: Date): String{
             val df = SimpleDateFormat("dd/MM/yyyy HH:mm")
             return df.format(date)
+        }
+
+        fun startSignInActivity(activity: Activity){
+            Log.d(TAG, "startSignInActivity called")
+            val providers = Arrays.asList(
+                    AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                    AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())
+            activity.startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
+                    .setAvailableProviders(providers).build(), RC_SIGN_IN)
         }
     }
 }
