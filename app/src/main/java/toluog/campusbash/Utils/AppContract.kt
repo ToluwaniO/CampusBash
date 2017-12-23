@@ -11,7 +11,6 @@ class AppContract{
     companion object {
         val RC_SIGN_IN = 5634
         val MY_EVENT_BUNDLE = "myevent"
-        val FIREBASE_EVENTS = "events"
         val LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elementum ante " +
                 "vitae risus venenatis blandit. Proin cursus, ante et aliquet lobortis, enim mauris " +
                 "pulvinar turpis, eu tincidunt mi orci ac enim. Mauris mattis eget massa nec eleifend." +
@@ -28,5 +27,9 @@ class AppContract{
 
         //FRAGMENT TAGS
         val CREATE_EVENT_TAG = "createevent"
+
+        //FIREBASE KEYS
+        val FIREBASE_EVENTS = "events"
+        val FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS = "event_placeholder_images"
     }
 }
