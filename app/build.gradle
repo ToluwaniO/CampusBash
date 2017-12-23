@@ -37,6 +37,8 @@ dependencies {
     compile "com.google.firebase:firebase-firestore:$fbase_version"
     compile "com.google.firebase:firebase-perf:$fbase_version"
     compile "com.google.firebase:firebase-storage:$fbase_version"
+    compile "com.firebaseui:firebase-ui-auth:$fb_ui_version"
+    compile("com.facebook.android:facebook-android-sdk:$fcb_sdk_version")
 
     //Arch components
     implementation "android.arch.lifecycle:runtime:$arch_life_runtime_version"
@@ -46,16 +48,16 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$arch_version"
     kapt "android.arch.persistence.room:compiler:$arch_version"
     testImplementation "android.arch.persistence.room:testing:$arch_version"
-    implementation "android.arch.persistence.room:rxjava2:$arch_version"
+//    implementation "android.arch.persistence.room:rxjava2:$arch_version"
 
     //Espresso tests
     androidTestCompile "com.android.support.test:runner:$test_runner_version"
     androidTestCompile "com.android.support.test.espresso:espresso-core:$espresso_core_version"
-
-
-    //RxAndroid
-    compile "io.reactivex.rxjava2:rxandroid:$rxand_version"
-    compile "io.reactivex.rxjava2:rxjava:$rxjava_version"
+//
+//
+//    //RxAndroid
+//    compile "io.reactivex.rxjava2:rxandroid:$rxand_version"
+//    compile "io.reactivex.rxjava2:rxjava:$rxjava_version"
 
     //Stripe
     //compile "com.stripe:stripe-android:$stripe_version"

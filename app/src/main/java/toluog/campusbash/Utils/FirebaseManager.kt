@@ -3,6 +3,7 @@ package toluog.campusbash.utils
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -44,7 +45,12 @@ class FirebaseManager(){
 
     companion object {
         var storage: FirebaseStorage? = null
+        val auth = FirebaseAuth.getInstance()
         private val TAG = FirebaseManager::class.java.simpleName
+
+        fun isSignedIn() = auth.currentUser != null
+
+        fun getUser() = auth.currentUser
 
     }
 }

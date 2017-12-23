@@ -9,6 +9,7 @@ import toluog.campusbash.model.Ticket
  */
 class AppContract{
     companion object {
+        val RC_SIGN_IN = 5634
         val MY_EVENT_BUNDLE = "myevent"
         val FIREBASE_EVENTS = "events"
         val LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elementum ante " +
