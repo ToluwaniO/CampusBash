@@ -169,6 +169,8 @@ class CreateEventFragment : Fragment(){
         val event = Event("", title, eventType, AppContract.LOREM_IPSUM, null,
                 null, "uOttawa", AppContract.STANTON_ADDRESS, AppContract.STANTON_COORD,
                 startTime, endTime, null, tickets, AppContract.CREATOR)
+        val creator = FirebaseManager.getCreator()
+        if (creator != null) event.creator = creator
 
         if (uri != null) {
             Log.d(TAG, "uri is not null")

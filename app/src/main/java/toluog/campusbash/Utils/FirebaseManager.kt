@@ -8,6 +8,7 @@ import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
+import toluog.campusbash.model.Creator
 
 
 /**
@@ -44,6 +45,8 @@ class FirebaseManager(){
         return imagesRef?.putFile(uri)
     }
 
+
+
     companion object {
         var storage: FirebaseStorage? = null
         val auth = FirebaseAuth.getInstance()
@@ -52,6 +55,14 @@ class FirebaseManager(){
         fun isSignedIn() = auth.currentUser != null
 
         fun getUser() = auth.currentUser
+
+        fun getCreator(): Creator?{
+            val user = auth.currentUser
+            val name = user?.displayName
+            if(user == null) return null
+            else if(name == null) return Creator("Anonymous", user.photoUrl.toString(), user.uid)
+            else return Creator(name, user.photoUrl.toString(), user.uid)
+        }
 
     }
 }
