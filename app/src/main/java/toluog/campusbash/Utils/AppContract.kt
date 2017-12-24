@@ -28,6 +28,9 @@ class AppContract{
         //FRAGMENT TAGS
         val CREATE_EVENT_TAG = "createevent"
 
+        //ROOM KEYS
+        const val EVENT_TABLE = "Events"
+
         //FIREBASE KEYS
         val FIREBASE_EVENTS = "events"
         val FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS = "event_placeholder_images"

@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
 
     override fun onItemClick(event: Event) {
         val bundle = Bundle()
-        bundle.putParcelable(AppContract.MY_EVENT_BUNDLE, event)
+        bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
         startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
     }
 }

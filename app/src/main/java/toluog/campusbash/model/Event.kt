@@ -10,7 +10,7 @@ import toluog.campusbash.utils.AppContract
 /**
  * Created by oguns on 12/2/2017.
  */
-@Entity(tableName = "Events")
+@Entity(tableName = AppContract.EVENT_TABLE)
 data class Event(@PrimaryKey var eventId: String, var eventName: String, var eventType: String, var description: String, var placeholderUrl: String?,
                  var eventVideoUrl: String?, var university: String, var locationAddress: String, @Embedded var latLng: LatLng,
                  var startTime: Long, var endTime: Long, var notes: String?, var tickets: ArrayList<Ticket>, @Embedded var creator: Creator) : Parcelable {

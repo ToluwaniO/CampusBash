@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.*
 import toluog.campusbash.model.Event
+import toluog.campusbash.utils.AppContract
 import java.util.*
 
 /**
@@ -23,6 +24,9 @@ public interface EventDao{
 
     @Update
     fun updateEvent(event: Event)
+
+    @Query("SELECT * FROM ${AppContract.EVENT_TABLE} WHERE eventId LIKE :id LIMIT 1")
+    fun getEvent(id: String): LiveData<Event>
 
     @Query("Select * from Events")
     fun getEvents():LiveData<List<Event>>

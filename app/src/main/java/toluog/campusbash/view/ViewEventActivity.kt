@@ -1,5 +1,7 @@
 package toluog.campusbash.view
 
+import android.arch.lifecycle.ViewModelProviders
+import android.arch.lifecycle.Observer
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -13,14 +15,25 @@ import java.util.*
 
 class ViewEventActivity : AppCompatActivity() {
 
-    private lateinit var event: Event
+    private lateinit var eventId: String
+    private var event: Event? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_event)
 
         val bundle = intent.extras
-        event = bundle.getParcelable(AppContract.MY_EVENT_BUNDLE) as Event
+        eventId = bundle.getString(AppContract.MY_EVENT_BUNDLE)
+        val viewModel: ViewEventViewModel = ViewModelProviders.of(this).get(ViewEventViewModel::class.java)
+        viewModel.getEvent(eventId)?.observe(this, Observer { event ->
+            this.event = event
+            if(event != null) updateUi(event)
+        })
 
+
+    }
+
+    private fun updateUi(event: Event){
         if(event.placeholderUrl == null || TextUtils.isEmpty(event.placeholderUrl)){
 
         } else{
