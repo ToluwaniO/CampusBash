@@ -27,6 +27,10 @@ class Repository(c: Context){
         return db?.eventDao()?.getEvents()
     }
 
+    fun getEvent(eventId: String): LiveData<Event>?{
+        return db?.eventDao()?.getEvent(eventId)
+    }
+
     fun addEvent(event: Event){
         val collectionRef = mFireStore.collection(AppContract.FIREBASE_EVENTS)
         collectionRef.add(event)
