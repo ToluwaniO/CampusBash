@@ -30,7 +30,6 @@ class ViewEventActivity : AppCompatActivity() {
             if(event != null) updateUi(event)
         })
 
-
     }
 
     private fun updateUi(event: Event){

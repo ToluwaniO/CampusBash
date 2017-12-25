@@ -14,8 +14,10 @@ import android.widget.ArrayAdapter
 import com.google.firebase.storage.UploadTask
 import com.myhexaville.smartimagepicker.ImagePicker
 import kotlinx.android.synthetic.main.create_event_layout.*
+import kotlinx.android.synthetic.main.create_event_layout.view.*
 import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.R
+import toluog.campusbash.R.id.event_type_spinner
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
@@ -37,11 +39,12 @@ class CreateEventFragment : Fragment(){
     private lateinit var adapter: ArrayAdapter<CharSequence>
     private var imageUri: Uri? = null
     private lateinit var fbasemanager: FirebaseManager
-    private var mCallback: SaveComplete? = null
+    private var mCallback: CreateEventFragmentInterface? = null
     private var type = 0
 
-    interface SaveComplete {
-        fun eventSaved()
+    interface CreateEventFragmentInterface {
+        fun eventSaved(event: Event)
+        fun createTicket()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -78,6 +81,8 @@ class CreateEventFragment : Fragment(){
                     event_image.setImageURI(imageUri) })
 
         event_save_button.setOnClickListener { save() }
+
+        event_add_ticket_button.setOnClickListener { mCallback?.createTicket() }
 
         event_image.setOnClickListener { imagePicker?.choosePicture(true) }
 
@@ -178,7 +183,7 @@ class CreateEventFragment : Fragment(){
                 event.placeholderUrl = taskSnapshot?.downloadUrl.toString()
                 fbasemanager.addEvent(event)
                 snackbar(rootView!!, "Event saved")
-                mCallback?.eventSaved()
+                mCallback?.eventSaved(event)
 
             }
         }
@@ -186,7 +191,7 @@ class CreateEventFragment : Fragment(){
             Log.d(TAG, "uri is null")
             fbasemanager.addEvent(event)
             snackbar(rootView!!, "Event saved")
-            mCallback?.eventSaved()
+            mCallback?.eventSaved(event)
         }
     }
 
@@ -194,10 +199,51 @@ class CreateEventFragment : Fragment(){
         super.onAttach(context)
 
         try{
-            mCallback = context as SaveComplete
+            mCallback = context as CreateEventFragmentInterface
         }
         catch (e: ClassCastException){
             Log.d(TAG, e.message)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putParcelable(AppContract.MY_EVENT_BUNDLE,getEvent())
+        Log.d(TAG, "OnSavedInstanceState")
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+    }
+
+    private fun updateUi(event: Event){
+        val sTime = Calendar.getInstance()
+        val endTime = Calendar.getInstance()
+        sTime.timeInMillis = event.startTime
+        endTime.timeInMillis = event.endTime
+        event_name.setText(event.eventName)
+        event_type_spinner.setSelection(adapter.getPosition(event.eventType))
+        event_start_date.text = Util.formatDate(sTime)
+        event_start_time.text = Util.formatTime(sTime)
+        event_end_date.text = Util.formatDate(endTime)
+        event_end_time.text = Util.formatTime(endTime)
+    }
+
+    fun getEvent(): Event{
+        val title = event_name.text.toString()
+        val eventType = adapter.getItem(event_type_spinner.selectedItemPosition).toString()
+        val startTime = startCalendar.timeInMillis
+        val endTime = endCalendar.timeInMillis
+        val uri = imageUri
+        val tickets = arrayListOf<Ticket>(Ticket("VIP", "Want best service? You're at the right place",
+                1, 10, 15.50, 0, startTime, 0, endTime))
+
+        val event = Event("", title, eventType, AppContract.LOREM_IPSUM, null,
+                null, "uOttawa", AppContract.STANTON_ADDRESS, AppContract.STANTON_COORD,
+                startTime, endTime, null, tickets, AppContract.CREATOR)
+        val creator = FirebaseManager.getCreator()
+        if (creator != null) event.creator = creator
+        return event
     }
 }

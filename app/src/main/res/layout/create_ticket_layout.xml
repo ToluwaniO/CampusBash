@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/ticket_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:hint="Ticket Name"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/ticket_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ticket_name"
+        android:layout_margin="5dp"
+        android:ems="10"
+        android:hint="Ticket Description"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/ticket_quantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ticket_description"
+        android:layout_margin="5dp"
+        android:ems="10"
+        android:hint="Ticket Quantity"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/ticket_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ticket_quantity"
+        android:layout_margin="5dp"
+        android:ems="10"
+        android:hint="Ticket Price"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/save_ticket"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ticket_price"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:background="@color/colorAccent"
+        android:text="SAVE TICKET"
+        android:textColor="@android:color/white" />
+</RelativeLayout>
