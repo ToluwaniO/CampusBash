@@ -97,6 +97,15 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/event_add_ticket_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/colorAccent"
+            android:text="ADD TICKET"
+            android:textColor="@android:color/white" />
+
+        <Button
             android:id="@+id/event_save_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
