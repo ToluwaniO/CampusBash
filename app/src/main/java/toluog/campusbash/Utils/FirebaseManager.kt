@@ -3,6 +3,7 @@ package toluog.campusbash.utils
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
@@ -43,6 +44,12 @@ class FirebaseManager(){
                 ?.child("${uri.lastPathSegment}${System.currentTimeMillis()}")
 
         return imagesRef?.putFile(uri)
+    }
+
+    fun buyTicket(event: Event?, map: Map<String, Int>): Task<Void>?{
+        if(event == null) return null
+        return db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)?.collection("Tickets")
+                ?.document(event.creator.uid)?.set(map)
     }
 
 

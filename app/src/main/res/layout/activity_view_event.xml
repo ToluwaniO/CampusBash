@@ -59,6 +59,15 @@
                 android:layout_margin="5dp"
                 android:textColor="@android:color/black"
                 android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/event_get_ticket"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:text="@string/get_ticket"
+                android:textColor="@android:color/white" />
         </LinearLayout>
+
     </ScrollView>
 </android.support.constraint.ConstraintLayout>
