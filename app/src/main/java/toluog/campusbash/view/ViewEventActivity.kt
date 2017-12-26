@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_view_event.*
+import org.jetbrains.anko.intentFor
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.AppContract
@@ -30,6 +31,11 @@ class ViewEventActivity : AppCompatActivity() {
             if(event != null) updateUi(event)
         })
 
+
+        event_get_ticket.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putString(AppContract.MY_EVENT_BUNDLE, event?.eventId)
+            startActivity(intentFor<BuyTicketActivity>().putExtras(bundle)) }
     }
 
     private fun updateUi(event: Event){
