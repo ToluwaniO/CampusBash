@@ -72,10 +72,6 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
 
     }
 
-    override fun onQuantityChanged(quantity: Int) {
-
-    }
-
     private fun getData(): HashMap<String, Int> {
         val map = HashMap<String, Int>()
         var total = 0
@@ -99,7 +95,12 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private fun saveData(map: Map<String, Int>){
         val task = fbaseManager.buyTicket(event, map)
 
-        task?.addOnSuccessListener { longToast("Ticket purchased") }
-                ?.addOnFailureListener { longToast("Could not purchase ticket") }
+        task?.addOnSuccessListener {
+            longToast("Ticket purchased")
+            finish()
+        }?.addOnFailureListener {
+            longToast("Could not purchase ticket")
+            finish()
+        }
     }
 }
