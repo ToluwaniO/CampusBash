@@ -30,6 +30,7 @@ class AppContract{
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"
+        const val UNIVERSITY_TABLE = "Universities"
 
         //FIREBASE KEYS
         val FIREBASE_EVENTS = "events"
