@@ -37,4 +37,7 @@ public interface UniversityDao{
 
     @Delete
     fun deleteUniversities(universities: List<University>)
+
+    @Query("DELETE FROM ${AppContract.UNIVERSITY_TABLE}")
+    fun nukeTable()
 }

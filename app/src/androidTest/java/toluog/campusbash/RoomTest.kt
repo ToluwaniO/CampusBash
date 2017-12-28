@@ -35,6 +35,8 @@ class RoomTest{
 
     @After
     fun closeDb(){
+        eventDao?.nukeTable()
+        uniDao?.nukeTable()
         AppDatabase.destroyDbInstance()
     }
 
@@ -91,6 +93,6 @@ class RoomTest{
         uniDao?.insertUniversities(TestContract.unis)
         uniDao?.deleteUniversity(TestContract.unis[0])
         val unis = uniDao?.getUniversities()
-        assert(unis?.value?.size == 0)
+        assert(unis?.value?.size == 2)
     }
 }
