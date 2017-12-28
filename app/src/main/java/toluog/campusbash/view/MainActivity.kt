@@ -32,6 +32,7 @@ import com.firebase.ui.auth.ResultCodes
 import android.R.attr.data
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
+import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.act
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import toluog.campusbash.utils.FirebaseManager
@@ -77,6 +78,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        launch { firstOpen() }
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         fab.setOnClickListener {
@@ -127,5 +130,12 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
         val bundle = Bundle()
         bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
         startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
+    }
+
+    fun firstOpen(){
+        val fOpen = Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)
+        if(fOpen == 0){
+            Util.setPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY, 1)
+        }
     }
 }
