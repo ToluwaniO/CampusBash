@@ -10,5 +10,9 @@
         android:id="@+id/navigation_host"
         android:icon="@drawable/ticket"
         android:title="@string/title_host" />
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/adult_emoji"
+        android:title="@string/title_profile" />
 
 </menu>

@@ -65,6 +65,11 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
                         .commit()
                 return@OnNavigationItemSelectedListener true
             }
+            R.id.navigation_profile -> {
+                fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
+                        .commit()
+                return@OnNavigationItemSelectedListener true
+            }
         }
         false
     }
@@ -80,32 +85,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
         fab.visibility = GONE
 
         fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null).commit()
-
-        val info: PackageInfo
-        try {
-            info = packageManager.getPackageInfo("toluog.campusbash", PackageManager.GET_SIGNATURES)
-            for (signature in info.signatures) {
-                val md: MessageDigest
-                md = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                val something = String(Base64.encode(md.digest(), 0))
-                //String something = new String(Base64.encodeBytes(md.digest()));
-                Log.e("hash key", something)
-            }
-        } catch (e1: PackageManager.NameNotFoundException) {
-            Log.e("name not found", e1.toString())
-        } catch (e: NoSuchAlgorithmException) {
-            Log.e("no such an algorithm", e.toString())
-        } catch (e: Exception) {
-            Log.e("exception", e.toString())
-        }
-
-//        val providers = Arrays.asList(
-//                AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-//                AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())
-//        startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
-//                .setAvailableProviders(providers).build(), RC_SIGN_IN)
-
 
         updateUi()
     }
