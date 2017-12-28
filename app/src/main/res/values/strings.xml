@@ -15,5 +15,6 @@
     <string name="facebook_app_id">154707055152249</string>
     <string name="fb_login_protocol_scheme">fb154707055152249</string>
     <string name="get_ticket">GET TICKET</string>
+    <string name="title_profile">Profile</string>
 
 </resources>

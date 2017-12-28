@@ -4,9 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.util.Log
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.util.*
 import com.firebase.ui.auth.AuthUI
+import de.hdodenhof.circleimageview.CircleImageView
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 
 
@@ -36,5 +39,14 @@ class Util{
             activity.startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
                     .setAvailableProviders(providers).build(), RC_SIGN_IN)
         }
+
+        fun ImageView.loadImage(url: String, context: Context){
+            Glide.with(context).load(url).into(this)
+        }
+
+        fun CircleImageView.loadImage(url: String, context: Context){
+            Glide.with(context).load(url).into(this)
+        }
     }
+
 }
