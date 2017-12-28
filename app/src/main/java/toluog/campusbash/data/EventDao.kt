@@ -31,6 +31,9 @@ public interface EventDao{
     @Query("Select * from ${AppContract.EVENT_TABLE}")
     fun getEvents():LiveData<List<Event>>
 
-    @Delete
+    @Delete()
     fun deleteEvent(event: Event)
+
+    @Query("DELETE FROM ${AppContract.EVENT_TABLE}")
+    fun nukeTable()
 }
