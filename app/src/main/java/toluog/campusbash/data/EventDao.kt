@@ -28,9 +28,12 @@ public interface EventDao{
     @Query("SELECT * FROM ${AppContract.EVENT_TABLE} WHERE eventId LIKE :id LIMIT 1")
     fun getEvent(id: String): LiveData<Event>
 
-    @Query("Select * from Events")
+    @Query("Select * from ${AppContract.EVENT_TABLE}")
     fun getEvents():LiveData<List<Event>>
 
-    @Delete
+    @Delete()
     fun deleteEvent(event: Event)
+
+    @Query("DELETE FROM ${AppContract.EVENT_TABLE}")
+    fun nukeTable()
 }
