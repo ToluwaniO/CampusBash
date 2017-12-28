@@ -33,6 +33,7 @@ class AppContract{
 
         //FIREBASE KEYS
         val FIREBASE_EVENTS = "events"
+        val FIREBASE_UNIVERSITIES = "universities"
         val FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS = "event_placeholder_images"
 
         //SHAREDPREFERENCES
