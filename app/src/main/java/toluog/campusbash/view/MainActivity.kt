@@ -78,18 +78,14 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        launch { firstOpen() }
+        firstOpen()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         fab.setOnClickListener {
             startActivity(intentFor<CreateEventActivity>())
         }
         fab.visibility = GONE
-
         fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null).commit()
-
-        updateUi()
     }
 
     override fun onStart() {
@@ -122,10 +118,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
 
     }
 
-    fun updateUi(){
-
-    }
-
     override fun onItemClick(event: Event) {
         val bundle = Bundle()
         bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
@@ -136,6 +128,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
         val fOpen = Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)
         if(fOpen == 0){
             Util.setPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY, 1)
+            startActivity(intentFor<FirstOpenActivity>())
+            finish()
         }
     }
 }

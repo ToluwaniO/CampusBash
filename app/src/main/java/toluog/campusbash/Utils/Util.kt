@@ -13,8 +13,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import android.R.id.edit
 import android.content.SharedPreferences
-
-
+import kotlin.collections.ArrayList
 
 
 /**
@@ -41,6 +40,7 @@ class Util{
                     AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
                     AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())
             activity.startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
+                    .setIsSmartLockEnabled(false)
                     .setAvailableProviders(providers).build(), RC_SIGN_IN)
         }
 
@@ -67,6 +67,13 @@ class Util{
             val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
             val editor = sharedPref.edit()
             editor.putString(key, value)
+            editor.apply()
+        }
+
+        fun setPrefStringSet(activity: Activity, key: String, value: Set<String>){
+            val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+            val editor = sharedPref.edit()
+            editor.putStringSet(key, value)
             editor.apply()
         }
 

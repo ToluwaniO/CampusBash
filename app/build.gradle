@@ -74,8 +74,8 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
     compile 'com.myhexaville:smart-image-picker:1.0'
     compile 'de.hdodenhof:circleimageview:2.2.0'
-
     compile 'com.google.code.gson:gson:2.8.2'
+    compile 'com.github.igalata:Bubble-Picker:v0.2.4'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'

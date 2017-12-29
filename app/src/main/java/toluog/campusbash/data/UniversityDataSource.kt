@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.experimental.launch
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract
 
 /**
@@ -21,36 +22,33 @@ class UniversityDataSource {
         fun initListener(context: Context){
             Log.d(TAG, "initListener")
             db = AppDatabase.getDbInstance(context)
-            query.addSnapshotListener(object : EventListener<QuerySnapshot> {
-                override fun onEvent(value: QuerySnapshot,
-                                     e: FirebaseFirestoreException?) {
-                    if (e != null) {
-                        Log.d(TAG, "onEvent:error", e)
-                        return
-                    }
+            val uniDao = db?.universityDao()
+            query.addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
+                if (e != null) {
+                    Log.d(TAG, "onEvent:error", e)
+                    return@EventListener
+                }
 
-                    // Dispatch the event
-                    for (change in value.getDocumentChanges()) {
-                        // Snapshot of the changed document
-                        Log.d(TAG, change.document.toString())
-                        val snapshot = change.document.toObject(University::class.java)
+                // Dispatch the event
+                for (change in value.getDocumentChanges()) {
+                    // Snapshot of the changed document
+                    Log.d(TAG, change.document.toString())
+                    val snapshot = change.document.toObject(University::class.java)
 
-                        when (change.getType()) {
-                            DocumentChange.Type.ADDED -> {
-                                Log.d(TAG, "ChildAdded")
-                                launch { db?.eventDao()?.insertEvent(snapshot) }
-                            }
-                            DocumentChange.Type.MODIFIED -> {
-                                Log.d(TAG, "ChildModified")
-                                launch { db?.eventDao()?.updateEvent(snapshot) }
-                            }
-                            DocumentChange.Type.REMOVED -> {
-                                Log.d(TAG, "ChildRemoved")
-                                launch { db?.eventDao()?.deleteEvent(snapshot) }
-                            }
+                    when (change.getType()) {
+                        DocumentChange.Type.ADDED -> {
+                            Log.d(TAG, "ChildAdded")
+                            launch { uniDao?.insertUniversity(snapshot) }
+                        }
+                        DocumentChange.Type.MODIFIED -> {
+                            Log.d(TAG, "ChildModified")
+                            launch { uniDao?.updateUniversity(snapshot) }
+                        }
+                        DocumentChange.Type.REMOVED -> {
+                            Log.d(TAG, "ChildRemoved")
+                            launch { uniDao?.deleteUniversity(snapshot) }
                         }
                     }
-
                 }
             })
         }
