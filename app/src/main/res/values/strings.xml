@@ -16,5 +16,8 @@
     <string name="fb_login_protocol_scheme">fb154707055152249</string>
     <string name="get_ticket">GET TICKET</string>
     <string name="title_profile">Profile</string>
+    <string name="country">Country</string>
+    <string name="university">University</string>
+    <string name="next">Next</string>
 
 </resources>

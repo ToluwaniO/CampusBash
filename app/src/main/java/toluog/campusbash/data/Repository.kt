@@ -6,6 +6,7 @@ import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.University
 
 /**
  * Created by oguns on 12/7/2017.
@@ -16,12 +17,13 @@ class Repository(c: Context){
     private val db: AppDatabase? = AppDatabase.getDbInstance(c)
     private val mFireStore = FirebaseFirestore.getInstance()
     private val context = c
-    private var initialized = false
+    private var initializedEvents = false
+    private var initializedUnis = false
     fun getEvents() : LiveData<List<Event>>?{
         Log.d(TAG, "getEvents called")
-        if(initialized == false){
+        if(initializedEvents == false){
             EventDataSource.initListener(context)
-            initialized = true
+            initializedEvents = true
             Log.d(TAG, "datasource initialized")
         }
         return db?.eventDao()?.getEvents()
@@ -34,6 +36,15 @@ class Repository(c: Context){
     fun addEvent(event: Event){
         val collectionRef = mFireStore.collection(AppContract.FIREBASE_EVENTS)
         collectionRef.add(event)
+    }
+
+    fun getUnis(country: String): LiveData<List<University>>? {
+        Log.d(TAG, "get unis called")
+        if(initializedUnis == false){
+            UniversityDataSource.initListener(context)
+            initializedUnis = true
+        }
+        return db?.universityDao()?.getUniversities(country)
     }
 
 }
