@@ -19,5 +19,6 @@
     <string name="country">Country</string>
     <string name="university">University</string>
     <string name="next">Next</string>
+    <string name="whats_happening">What\'s happening in</string>
 
 </resources>
