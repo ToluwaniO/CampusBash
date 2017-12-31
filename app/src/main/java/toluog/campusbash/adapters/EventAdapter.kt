@@ -8,9 +8,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.event_card_layout.*
 import kotlinx.android.synthetic.main.event_card_layout.view.*
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
+import toluog.campusbash.utils.Util
 
 /**
  * Created by oguns on 12/15/2017.
@@ -27,11 +30,18 @@ class EventAdapter(var events: ArrayList<Event>, var context: Context?): Recycle
         fun onItemClick(event: Event)
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val eventImage: ImageView = itemView.findViewById(R.id.event_image) as ImageView
-        val eventTitle: TextView = itemView.findViewById(R.id.event_title) as TextView
+    class ViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
+            LayoutContainer {
 
-        fun bind(event: Event, listener: OnItemClickListener){
+        fun bind(event: Event, listener: OnItemClickListener, context: Context?){
+            event_title.text = event.eventName
+            event_address.text = event.locationAddress
+            event_day.text = Util.getDay(event.startTime)
+            event_month.text = Util.getShortMonth(event.startTime)
+            if(event.placeholderUrl != null){
+                Glide.with(context).load(event.placeholderUrl).into(event_image)
+            }
+            Glide.with(context).load(event.creator.imageUrl).into(event_creator_image)
             itemView.setOnClickListener { listener.onItemClick(event) }
         }
     }
@@ -43,11 +53,7 @@ class EventAdapter(var events: ArrayList<Event>, var context: Context?): Recycle
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         val event = events[position]
-        holder?.eventTitle?.text = event.eventName
-        if(event.placeholderUrl != null){
-            Glide.with(context).load(event.placeholderUrl).into(holder?.eventImage)
-        }
-        holder?.bind(event, listener)
+        holder?.bind(event, listener, context)
     }
 
     override fun getItemCount() = events.size

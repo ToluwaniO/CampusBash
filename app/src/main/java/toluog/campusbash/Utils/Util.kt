@@ -23,6 +23,8 @@ class Util{
     companion object {
 
         private val TAG = Util::class.java.simpleName
+        private val shortMonths = arrayOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
+                "SEP", "OCT", "NOV", "DEC")
 
         fun formatDate(calendar: Calendar) = "${calendar[Calendar.DAY_OF_MONTH]}/${calendar[Calendar.MONTH]}" +
                 "/${calendar[Calendar.YEAR]}"
@@ -32,6 +34,22 @@ class Util{
         fun formatDateTime(date: Date): String{
             val df = SimpleDateFormat("dd/MM/yyyy HH:mm")
             return df.format(date)
+        }
+
+        fun getShortMonth(date: Long): String{
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = date
+            val m = cal.get(Calendar.MONTH)
+            return shortMonths[m-1]
+        }
+
+        fun getDay(date: Long): String {
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = date
+            val d = cal.get(Calendar.DAY_OF_MONTH)
+
+            if(d < 10) return "0$d"
+            return "$d"
         }
 
         fun startSignInActivity(activity: Activity){
