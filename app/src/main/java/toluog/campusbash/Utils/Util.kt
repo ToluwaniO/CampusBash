@@ -40,7 +40,7 @@ class Util{
             val cal = Calendar.getInstance()
             cal.timeInMillis = date
             val m = cal.get(Calendar.MONTH)
-            return shortMonths[m-1]
+            return shortMonths[m]
         }
 
         fun getDay(date: Long): String {

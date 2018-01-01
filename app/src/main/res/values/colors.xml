@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#ff4081</color>
+    <color name="colorPrimary">#CC2434</color>
+    <color name="colorPrimaryDark">#FFBA1929</color>
+    <color name="colorAccent">#11c612</color>
 
     <color name="blueStart">#4EFFF3</color>
     <color name="blueEnd">#0ca6f9</color>
@@ -12,4 +12,5 @@
     <color name="roseEnd">#ef0276</color>
     <color name="greenStart">#a7f56e</color>
     <color name="greenEnd">#11c612</color>
+
 </resources>
