@@ -5,46 +5,40 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.arch.lifecycle.*
+import android.arch.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_main.*
 import toluog.campusbash.R
-
-import toluog.campusbash.data.AppDatabase
-import toluog.campusbash.data.EventDao
-import android.R.array
 import android.content.Intent
 import android.util.Log
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.create_event_layout.*
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.support.v4.intentFor
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.AppContract
-import android.provider.SyncStateContract.Helpers.update
-import android.content.pm.PackageManager
-import android.content.pm.PackageInfo
-import android.util.Base64
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.firebase.ui.auth.ResultCodes
-import android.R.attr.data
-import com.firebase.ui.auth.AuthUI
+import android.arch.lifecycle.ViewModelProviders
+import android.graphics.Color
+import android.view.View
+import android.widget.AdapterView
+import android.widget.TextView
 import com.firebase.ui.auth.IdpResponse
-import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.act
+import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
-import java.util.*
+import kotlin.collections.ArrayList
 
 
-class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
+class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
 
     private val TAG = MainActivity::class.java.simpleName
     private val fragManager = supportFragmentManager
-
+    private lateinit var uniAdapter: ArrayAdapter<CharSequence>
+    private lateinit var viewModel: MainActivityViewModel
+    private val uniChar = ArrayList<CharSequence>()
+    private val uniList = ArrayList<University>()
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_events -> {
@@ -78,6 +72,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         firstOpen()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
@@ -85,6 +80,10 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
             startActivity(intentFor<CreateEventActivity>())
         }
         fab.visibility = GONE
+
+        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+
+        updateUi()
         fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null).commit()
     }
 
@@ -97,12 +96,26 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
         }
     }
 
+    private fun updateUi() {
+        uniAdapter = ArrayAdapter(this, R.layout.text_view_layout, uniChar)
+        viewModel.getUniversities()?.observe(this, Observer { unis ->
+            if(unis != null && uniList.isEmpty()){
+                for (i in unis){
+                    uniList.add(i)
+                    uniChar.add(i.shortName)
+                }
+                uniAdapter.notifyDataSetChanged()
+            }
+        })
+        main_uni_spinner.adapter = uniAdapter
+        main_uni_spinner.onItemSelectedListener = this
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "onActivityResult")
 
         if (requestCode == RC_SIGN_IN) {
-            val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == ResultCodes.OK) {
                 // Successfully signed in
@@ -124,7 +137,14 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
         startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
     }
 
-    fun firstOpen(){
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        (view as TextView?)?.setTextColor(Color.WHITE)
+    }
+
+    private fun firstOpen(){
         val fOpen = Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)
         if(fOpen == 0){
             Util.setPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY, 1)
