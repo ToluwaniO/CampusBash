@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -11,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide.init
 import kotlinx.android.synthetic.main.events_layout.*
 import org.jetbrains.anko.support.v4.intentFor
 import toluog.campusbash.R
@@ -28,6 +30,7 @@ class EventsFragment() : Fragment(){
     private val TAG = EventsFragment::class.java.simpleName
     private var adapter: EventAdapter? = null
     private val events: ArrayList<Event> = ArrayList()
+    private var isMine = false
 
     init {
 
