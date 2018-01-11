@@ -95,6 +95,11 @@ class Util{
             editor.apply()
         }
 
+        fun getPrefStringSet(activity: Activity, key: String): Set<String>? {
+            val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+            return sharedPref.getStringSet(key,null)
+        }
+
         fun ImageView.loadImage(url: String, context: Context){
             Glide.with(context).load(url).into(this)
         }

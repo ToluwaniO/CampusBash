@@ -38,6 +38,7 @@ dependencies {
     compile "com.google.firebase:firebase-firestore:$fbase_version"
     compile "com.google.firebase:firebase-perf:$fbase_version"
     compile "com.google.firebase:firebase-storage:$fbase_version"
+    compile "com.google.firebase:firebase-ads:$fbase_version"
     compile "com.firebaseui:firebase-ui-auth:$fb_ui_version"
     compile("com.facebook.android:facebook-android-sdk:$fcb_sdk_version")
 
