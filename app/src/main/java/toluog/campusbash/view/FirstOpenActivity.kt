@@ -24,8 +24,11 @@ PickEventTypeFragment.PickEventTypeListener{
 
     }
 
-    override fun universitySelectionDone(name: String) {
-        launch { Util.setPrefString(act, AppContract.PREF_UNIVERSITY_KEY, name) }
+    override fun universitySelectionDone(country: String, name: String) {
+        launch {
+            Util.setPrefString(act, AppContract.PREF_UNIVERSITY_KEY, name)
+            Util.setPrefString(act, AppContract.PREF_COUNTRY_KEY, country)
+        }
         count++
         fragManager.beginTransaction().replace(R.id.fragment_frame, PickEventTypeFragment(), null).commit()
     }

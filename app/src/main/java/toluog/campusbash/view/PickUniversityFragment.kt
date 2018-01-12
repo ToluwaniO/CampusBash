@@ -24,7 +24,7 @@ import java.lang.ClassCastException
 class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
 
     interface PickUniversityListener {
-        fun universitySelectionDone(name: String)
+        fun universitySelectionDone(country: String, name: String)
     }
 
     private val TAG = PickUniversityFragment::class.java.simpleName
@@ -55,8 +55,10 @@ class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
 
         next_button.setOnClickListener {
             val uni = university
-            if (uni!= null)
-                callback.universitySelectionDone(uni)
+            if (uni!= null) {
+                val con = country as String
+                callback.universitySelectionDone(con, uni)
+            }
         }
     }
 

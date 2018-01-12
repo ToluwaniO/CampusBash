@@ -39,6 +39,7 @@ class AppContract{
 
         //SHAREDPREFERENCES
         val PREF_FIRST_OPEN_KEY = "first_open"
+        val PREF_COUNTRY_KEY = "pref_country"
         val PREF_UNIVERSITY_KEY = "pref_university"
         val PREF_EVENT_TYPES_KEY = "pref_event_type_set"
 
