@@ -49,7 +49,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.BuyTicketActivity" />
-        <activity android:name=".view.FirstOpenActivity"></activity>
+        <activity android:name=".view.FirstOpenActivity" />
+        <activity
+            android:name=".view.OnboardSignInActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_onboard_sign_in"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

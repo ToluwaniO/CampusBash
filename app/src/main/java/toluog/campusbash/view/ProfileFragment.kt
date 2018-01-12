@@ -2,6 +2,7 @@ package toluog.campusbash.view
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import toluog.campusbash.utils.Util
  */
 class ProfileFragment(): Fragment(), AdapterView.OnItemSelectedListener {
 
+    private val TAG = ProfileFragment::class.java.simpleName
     var rootView: View? = null
     lateinit var university:String
     lateinit var country: String
@@ -44,14 +46,23 @@ class ProfileFragment(): Fragment(), AdapterView.OnItemSelectedListener {
 
         university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
         country = Util.getPrefString(act, AppContract.PREF_COUNTRY_KEY)
+
+        profile_university.text = university
+        profile_country.text = country
+
         val ints = Util.getPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY)
         if(ints != null) interests.addAll(ints)
+
+        Log.d(TAG, "Universities $interests")
 
         adapter = ArrayAdapter(rootView?.context, R.layout.text_view_layout, interests)
         profile_interest_list.adapter = adapter
 
         profile_interest_list.onItemClickListener = AdapterView.OnItemClickListener {
-            parent, view, position, id -> interests.remove(interests[position]) }
+            parent, view, position, id ->
+                interests.remove(interests[position])
+                adapter.notifyDataSetChanged()
+        }
 
         spinnerAdadpter = ArrayAdapter.createFromResource(rootView?.context, R.array.party_types,
                 R.layout.text_view_layout)

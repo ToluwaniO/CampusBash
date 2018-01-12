@@ -21,4 +21,9 @@
     <string name="next">Next</string>
     <string name="whats_happening">What\'s happening in</string>
 
+    <string name="title_activity_onboard_sign_in">OnboardSignInActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="add_interest">Add interest</string>
+
 </resources>
