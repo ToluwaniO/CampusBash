@@ -25,5 +25,8 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="add_interest">Add interest</string>
+    <string name="zero_items_selected">0 items selected</string>
+
+    <string name="items_at_least_two">You have to pick at least 2 items</string>
 
 </resources>

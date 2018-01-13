@@ -2,56 +2,42 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/country_layout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/country_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:orientation="horizontal">
+        android:text="@string/country"
+        android:textColor="@color/com_facebook_device_auth_text"
+        android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/country_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/country"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
-
-        <Spinner
-            android:id="@+id/country_spinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_weight="1"
-            android:spinnerMode="dialog" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/university_layout"
+    <Spinner
+        android:id="@+id/country_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/country_layout"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
+        android:layout_below="@+id/country_title"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:spinnerMode="dialog" />
 
-        <TextView
-            android:id="@+id/university_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/university"
-            android:textColor="@android:color/black"
-            android:textSize="18sp" />
+    <TextView
+        android:id="@+id/university_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/country_spinner"
+        android:layout_margin="5dp"
+        android:text="@string/university"
+        android:textColor="@color/com_facebook_device_auth_text"
+        android:textSize="18sp" />
 
-        <Spinner
-            android:id="@+id/university_spinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_weight="1"
-            android:spinnerMode="dialog" />
-    </LinearLayout>
+    <Spinner
+        android:id="@+id/university_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/university_title"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:spinnerMode="dialog" />
 
     <Button
         android:id="@+id/next_button"

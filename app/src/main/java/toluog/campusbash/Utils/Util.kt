@@ -13,6 +13,8 @@ import de.hdodenhof.circleimageview.CircleImageView
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import android.R.id.edit
 import android.content.SharedPreferences
+import android.preference.PreferenceManager
+import org.jetbrains.anko.defaultSharedPreferences
 import kotlin.collections.ArrayList
 
 
@@ -64,39 +66,41 @@ class Util{
 
         fun getPrefInt(activity: Activity, key: String): Int {
             Log.d(TAG, "pref gotten")
-            val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
             return sharedPref.getInt(key,0)
         }
 
         fun setPrefInt(activity: Activity, key: String, value: Int){
-            val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
             val editor = sharedPref.edit()
             editor.putInt(key, value)
-            editor.apply()
-            Log.d(TAG, "pref set")
+            editor.commit()
+            Log.d(TAG, "PREF [\"key\" : $value]")
         }
 
         fun getPrefString(activity: Activity, key: String): String {
-            val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
             return sharedPref.getString(key,"")
         }
 
         fun setPrefString(activity: Activity, key: String, value: String){
-            val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
             val editor = sharedPref.edit()
             editor.putString(key, value)
-            editor.apply()
+            editor.commit()
+            Log.d(TAG, "PREF [\"$key\" : \"$value\"]")
         }
 
         fun setPrefStringSet(activity: Activity, key: String, value: Set<String>){
-            val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
             val editor = sharedPref.edit()
             editor.putStringSet(key, value)
             editor.apply()
+            Log.d(TAG, "PREF [\"$key\" : $value]")
         }
 
         fun getPrefStringSet(activity: Activity, key: String): Set<String>? {
-            val sharedPref = activity.getPreferences(Context.MODE_PRIVATE)
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
             return sharedPref.getStringSet(key,null)
         }
 

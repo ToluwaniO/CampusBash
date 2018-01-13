@@ -72,7 +72,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         firstOpen()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
@@ -146,10 +145,17 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     private fun firstOpen(){
         val fOpen = Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)
+        Log.d(TAG, "FOPEN KEY: ${Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)}")
         if(fOpen == 0){
-            Util.setPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY, 1)
+            Log.d(TAG, "First Open")
             startActivity(intentFor<FirstOpenActivity>())
             finish()
+        } else{
+            Log.d(TAG, "Not first open")
+            val interestSet = Util.getPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY)
+            val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
+            Log.d(TAG, "INTERESTS $interestSet")
+            Log.d(TAG, "UNIVERSITY $university")
         }
     }
 }

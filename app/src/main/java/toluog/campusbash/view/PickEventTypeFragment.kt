@@ -18,6 +18,7 @@ import com.igalata.bubblepicker.rendering.BubblePicker
 import kotlinx.android.synthetic.main.pick_event_type_fragment_layout.*
 import kotlinx.android.synthetic.main.pick_event_type_fragment_layout.view.*
 import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.R
 import toluog.campusbash.R.array.colors
 import java.lang.ClassCastException
@@ -61,7 +62,12 @@ class PickEventTypeFragment(): Fragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         evetTypes = resources.getStringArray(R.array.party_types)
-        next_button.setOnClickListener { callback?.eventsPickDone(selectedTypes) }
+        next_button.setOnClickListener {
+            if(selectedTypes.size < 2){
+                view?.context?.getString(R.string.items_at_least_two)?.let { x -> snackbar(container, x) }
+            }
+            else callback?.eventsPickDone(selectedTypes)
+        }
         updateUi()
     }
 
@@ -105,12 +111,16 @@ class PickEventTypeFragment(): Fragment() {
         picker.listener = object : BubblePickerListener {
             override fun onBubbleDeselected(item: PickerItem) {
                 selectedTypes.remove(item.title)
+                Log.d(TAG, "Just removed ${item.title}")
+                number_selected_view.text = "${selectedTypes.size} items selected"
             }
 
             override fun onBubbleSelected(item: PickerItem) {
                 val type = item.title
                 if(type != null){
                     selectedTypes.add(type)
+                    Log.d(TAG, "Just added $type")
+                    number_selected_view.text = "${selectedTypes.size} items selected"
                 }
             }
         }
