@@ -46,10 +46,10 @@ class FirebaseManager(){
         return imagesRef?.putFile(uri)
     }
 
-    fun buyTicket(event: Event?, map: Map<String, Int>): Task<Void>?{
+    fun buyTicket(event: Event?, map: Map<String, Any>): Task<Void>?{
         if(event == null) return null
         return db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)?.collection("Tickets")
-                ?.document(event.creator.uid)?.set(map)
+                ?.document()?.set(map)
     }
 
 

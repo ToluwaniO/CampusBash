@@ -8,14 +8,11 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
-import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
-import kotlinx.android.synthetic.main.events_layout.*
 import kotlinx.android.synthetic.main.ticket_item_layout.*
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.longToast
 import toluog.campusbash.R
-import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
@@ -59,11 +56,24 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
 
         tickets_buy_button.setOnClickListener {
             val dataMap = getData()
-            if(dataMap["total"] == 0){
-                longToast("No ticket purchased")
+            val overallMap = HashMap<String, Any>()
+            if(dataMap["quantity"] == 0){
+                snackbar(container,"No ticket purchased")
             } else{
-                dataMap.remove("total")
-                saveData(dataMap)
+                overallMap.put("tickets", dataMap)
+                overallMap.put("timeSpent", System.currentTimeMillis())
+
+                val uid = FirebaseManager.auth.currentUser?.uid
+
+                if(uid != null) {
+                    overallMap.put("buyerId", uid)
+                    val quan = dataMap["quantity"]
+                    if(quan != null) overallMap.put("quantity", quan)
+                    dataMap.remove("quantity")
+                    saveData(overallMap)
+                } else {
+                    snackbar(container, "you're not signed in")
+                }
             }
         }
     }
@@ -88,11 +98,11 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
                 total += quantity
             }
         }
-        map.put("total", total)
+        map.put("quantity", total)
         return map
     }
 
-    private fun saveData(map: Map<String, Int>){
+    private fun saveData(map: Map<String, Any>){
         val task = fbaseManager.buyTicket(event, map)
 
         task?.addOnSuccessListener {
