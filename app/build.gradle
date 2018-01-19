@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.firebase.firebase-perf'
 
-
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -89,8 +88,8 @@ dependencies {
     testImplementation "android.arch.persistence.room:testing:1.0.0"
 }
 
-
 apply plugin: 'com.google.gms.google-services'
+
 kotlin {
     experimental {
         coroutines "enable"
