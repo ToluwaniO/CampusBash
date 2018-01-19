@@ -5,7 +5,6 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.arch.lifecycle.*
 import android.arch.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_main.*
 import toluog.campusbash.R
@@ -22,14 +21,12 @@ import android.graphics.Color
 import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
-import com.firebase.ui.auth.IdpResponse
 import org.jetbrains.anko.act
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import kotlin.collections.ArrayList
-
 
 class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
 

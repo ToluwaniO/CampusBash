@@ -69,6 +69,12 @@ class ProfileFragment(): Fragment(), AdapterView.OnItemSelectedListener {
         profile_spinner.adapter = spinnerAdadpter
         profile_spinner.onItemSelectedListener = this
 
+        sign_out_button.setOnClickListener {
+            FirebaseManager.signOut()
+            Util.startSignInActivity(act)
+            act.finish()
+        }
+
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

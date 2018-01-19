@@ -28,5 +28,6 @@
     <string name="zero_items_selected">0 items selected</string>
 
     <string name="items_at_least_two">You have to pick at least 2 items</string>
+    <string name="sign_out">Sign Out</string>
 
 </resources>
