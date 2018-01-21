@@ -3,7 +3,7 @@
 buildscript {
     ext{
         //dependencies
-        kotlin_version = '1.2.10'
+        kotlin_version = '1.2.20'
         fb_ui_version = '3.1.0'
         fcb_sdk_version = '4.27.0'
         fbase_version = '11.4.2'
@@ -24,7 +24,7 @@ buildscript {
         maven { url 'https://maven.google.com' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.firebase:firebase-plugins:1.1.5'
 

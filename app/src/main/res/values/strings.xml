@@ -29,5 +29,8 @@
 
     <string name="items_at_least_two">You have to pick at least 2 items</string>
     <string name="sign_out">Sign Out</string>
+    <string name="interests">Interests</string>
+    <string name="title_activity_interests">Interests</string>
+    <string name="update_interests">Update Interests</string>
 
 </resources>
