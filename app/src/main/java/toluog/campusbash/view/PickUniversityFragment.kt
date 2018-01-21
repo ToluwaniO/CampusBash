@@ -13,7 +13,9 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Switch
+import kotlinx.android.synthetic.main.list_with_x_layout.view.*
 import kotlinx.android.synthetic.main.pick_university_fragment_layout.*
+import org.jetbrains.anko.support.v4.act
 import toluog.campusbash.R
 import toluog.campusbash.model.University
 import java.lang.ClassCastException
@@ -36,22 +38,16 @@ class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
     private var country: String? = null
     private var university: String? = null
     private val universities = ArrayList<CharSequence>()
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater?.inflate(R.layout.pick_university_fragment_layout, container, false)
         viewModel = ViewModelProviders.of(this).get(FirstOpenViewModel::class.java)
+
         return rootView
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        counAdapter = ArrayAdapter.createFromResource(view?.context, R.array.countries,
-                R.layout.text_view_layout)
-        country_spinner.adapter = counAdapter
-
-        uniAdapter = ArrayAdapter(view?.context, R.layout.text_view_layout, universities)
-        university_spinner.adapter = uniAdapter
-        university_spinner.onItemSelectedListener = this
-        country_spinner.onItemSelectedListener = this
 
         next_button.setOnClickListener {
             val uni = university
@@ -72,6 +68,23 @@ class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
         })
     }
 
+    override fun onStart() {
+        super.onStart()
+        //TODO: Fix spinner before launch!!!!!!!!!!!!!!!!!!!!
+        counAdapter = ArrayAdapter.createFromResource(act, R.array.countries,
+                R.layout.text_view_layout)
+        counAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        uniAdapter = ArrayAdapter(act, R.layout.text_view_layout, universities)
+        uniAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        country_spinner.adapter = counAdapter
+        university_spinner.adapter = uniAdapter
+
+        university_spinner.onItemSelectedListener = this
+        country_spinner.onItemSelectedListener = this
+    }
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         try {
@@ -87,6 +100,7 @@ class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         when(parent?.id){
             R.id.university_spinner -> {
+                university_spinner.setSelection(position)
                 university = universities[position].toString()
             }
             R.id.country_spinner -> {

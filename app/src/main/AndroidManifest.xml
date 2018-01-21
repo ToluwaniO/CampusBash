@@ -25,7 +25,8 @@
             android:label="@string/app_name" />
         <activity
             android:name=".view.ViewEventActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:parentActivityName=".view.MainActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -51,10 +52,8 @@
         <activity android:name=".view.BuyTicketActivity" />
         <activity android:name=".view.FirstOpenActivity" />
         <activity
-            android:name=".view.OnboardSignInActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_onboard_sign_in"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:name=".view.InterestsActivity"
+            android:label="@string/title_activity_interests"/>
     </application>
 
 </manifest>

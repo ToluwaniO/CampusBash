@@ -16,6 +16,7 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import org.jetbrains.anko.defaultSharedPreferences
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 
 /**
@@ -99,9 +100,9 @@ class Util{
             Log.d(TAG, "PREF [\"$key\" : $value]")
         }
 
-        fun getPrefStringSet(activity: Activity, key: String): Set<String>? {
+        fun getPrefStringSet(activity: Activity, key: String): MutableSet<String> {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
-            return sharedPref.getStringSet(key,null)
+            return sharedPref.getStringSet(key,HashSet<String>())
         }
 
         fun ImageView.loadImage(url: String, context: Context){

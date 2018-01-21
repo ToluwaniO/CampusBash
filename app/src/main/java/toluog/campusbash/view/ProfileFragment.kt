@@ -11,7 +11,10 @@ import android.widget.ArrayAdapter
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.profile_fragment_layout.*
 import org.jetbrains.anko.support.v4.act
+import org.jetbrains.anko.support.v4.intentFor
 import toluog.campusbash.R
+import toluog.campusbash.R.id.*
+import toluog.campusbash.R.string.interests
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
@@ -19,15 +22,12 @@ import toluog.campusbash.utils.Util
 /**
  * Created by oguns on 12/26/2017.
  */
-class ProfileFragment(): Fragment(), AdapterView.OnItemSelectedListener {
+class ProfileFragment(): Fragment() {
 
     private val TAG = ProfileFragment::class.java.simpleName
     var rootView: View? = null
     lateinit var university:String
     lateinit var country: String
-    val interests = ArrayList<String>()
-    lateinit var adapter: ArrayAdapter<String>
-    lateinit var spinnerAdadpter: ArrayAdapter<CharSequence>
     val util = Util()
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater?.inflate(R.layout.profile_fragment_layout, container, false)
@@ -50,41 +50,14 @@ class ProfileFragment(): Fragment(), AdapterView.OnItemSelectedListener {
         profile_university.text = university
         profile_country.text = country
 
-        val ints = Util.getPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY)
-        if(ints != null) interests.addAll(ints)
-
-        Log.d(TAG, "Universities $interests")
-
-        adapter = ArrayAdapter(rootView?.context, R.layout.text_view_layout, interests)
-        profile_interest_list.adapter = adapter
-
-        profile_interest_list.onItemClickListener = AdapterView.OnItemClickListener {
-            parent, view, position, id ->
-                interests.remove(interests[position])
-                adapter.notifyDataSetChanged()
+        update_interests_button.setOnClickListener {
+            startActivity(intentFor<InterestsActivity>())
         }
-
-        spinnerAdadpter = ArrayAdapter.createFromResource(rootView?.context, R.array.party_types,
-                R.layout.text_view_layout)
-        profile_spinner.adapter = spinnerAdadpter
-        profile_spinner.onItemSelectedListener = this
 
         sign_out_button.setOnClickListener {
             FirebaseManager.signOut()
             Util.startSignInActivity(act)
-            act.finish()
         }
 
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-    }
-
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        val intrs = spinnerAdadpter.getItem(position).toString()
-        if(!interests.contains(intrs)) {
-            interests.add(intrs)
-            adapter.notifyDataSetChanged()
-        }
     }
 }

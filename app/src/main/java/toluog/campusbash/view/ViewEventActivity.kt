@@ -23,6 +23,8 @@ class ViewEventActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_event)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         val bundle = intent.extras
         eventId = bundle.getString(AppContract.MY_EVENT_BUNDLE)
         val viewModel: ViewEventViewModel = ViewModelProviders.of(this).get(ViewEventViewModel::class.java)
