@@ -63,6 +63,8 @@ class FirebaseManager(){
 
         fun getUser() = auth.currentUser
 
+        fun signOut() = auth.signOut()
+
         fun getCreator(): Creator?{
             val user = auth.currentUser
             val name = user?.displayName
