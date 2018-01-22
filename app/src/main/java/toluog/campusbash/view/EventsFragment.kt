@@ -19,6 +19,8 @@ import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
+import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.Util
 
 /**
  * Created by oguns on 12/13/2017.
@@ -37,20 +39,23 @@ class EventsFragment() : Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val bundle = arguments
+        rootView = inflater?.inflate(R.layout.events_layout, container, false)
+
+        val bundle = this.arguments
         if(bundle != null){
             myEvents = bundle.getBoolean(AppContract.MY_EVENT_BUNDLE)
         }
 
-        rootView = inflater?.inflate(R.layout.events_layout, container, false)
-
-
         val viewModel: EventsViewModel = ViewModelProviders.of(activity).get(EventsViewModel::class.java)
         viewModel.getEvents()?.observe(this, Observer { eventsList ->
+            val user = FirebaseManager.getUser()
             events.clear()
             eventsList?.forEach {
-                events.add(it)
-                Log.d(TAG, it.toString())
+                if(myEvents) {
+                    if(it.creator.uid == user?.uid) events.add(it)
+                } else {
+                    events.add(it)
+                }
             }
             adapter?.notifyDataSetChanged()
         })

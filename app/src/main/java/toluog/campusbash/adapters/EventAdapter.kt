@@ -40,6 +40,8 @@ class EventAdapter(var events: ArrayList<Event>, var context: Context?): Recycle
             event_month.text = Util.getShortMonth(event.startTime)
             if(event.placeholderUrl != null){
                 Glide.with(context).load(event.placeholderUrl).into(event_image)
+            } else {
+                event_image.setImageResource(R.drawable.default_event_background)
             }
             Glide.with(context).load(event.creator.imageUrl).into(event_creator_image)
             itemView.setOnClickListener { listener.onItemClick(event) }

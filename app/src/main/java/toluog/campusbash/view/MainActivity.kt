@@ -38,11 +38,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private val uniList = ArrayList<University>()
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
-            R.id.navigation_events -> {
-                //message.setText(R.string.title_events)
-                fab.visibility = GONE
+            R.id.navigation_host -> {
                 val bundle = Bundle()
-                bundle.putBoolean("myevent", true)
+                bundle.putBoolean(AppContract.MY_EVENT_BUNDLE, true)
                 val fragment = EventsFragment()
                 fragment.arguments = bundle
                 fragManager.popBackStack()
@@ -50,7 +48,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                         .commit()
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_host -> {
+            R.id.navigation_events -> {
                 fab.visibility = VISIBLE
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
@@ -75,7 +73,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         fab.setOnClickListener {
             startActivity(intentFor<CreateEventActivity>())
         }
-        fab.visibility = GONE
 
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
 
