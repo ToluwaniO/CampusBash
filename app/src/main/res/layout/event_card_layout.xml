@@ -19,7 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:scaleType="fitXY"
-                app:srcCompat="@android:color/darker_gray" />
+                app:srcCompat="@drawable/default_event_background" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/event_creator_image"
