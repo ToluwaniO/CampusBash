@@ -71,12 +71,12 @@ class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
     override fun onStart() {
         super.onStart()
         //TODO: Fix spinner before launch!!!!!!!!!!!!!!!!!!!!
-        counAdapter = ArrayAdapter.createFromResource(act, R.array.countries,
+        counAdapter = ArrayAdapter.createFromResource(rootView?.context, R.array.countries,
                 R.layout.text_view_layout)
-        counAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        //counAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        uniAdapter = ArrayAdapter(act, R.layout.text_view_layout, universities)
-        uniAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        uniAdapter = ArrayAdapter(rootView?.context, R.layout.text_view_layout, universities)
+        //uniAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         country_spinner.adapter = counAdapter
         university_spinner.adapter = uniAdapter
