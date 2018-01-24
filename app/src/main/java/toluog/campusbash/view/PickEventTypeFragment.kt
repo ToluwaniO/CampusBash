@@ -92,6 +92,7 @@ class PickEventTypeFragment(): Fragment() {
 
     private fun updateUi(){
         picker.centerImmediately = true
+        picker.bubbleSize = 20
         picker.adapter = object : BubblePickerAdapter {
             override val totalCount = evetTypes.size
             override fun getItem(position: Int): PickerItem {
