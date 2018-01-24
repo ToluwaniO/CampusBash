@@ -70,7 +70,6 @@ class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
 
     override fun onStart() {
         super.onStart()
-        //TODO: Fix spinner before launch!!!!!!!!!!!!!!!!!!!!
         counAdapter = ArrayAdapter.createFromResource(rootView?.context, R.array.countries,
                 R.layout.text_view_layout)
         //counAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
