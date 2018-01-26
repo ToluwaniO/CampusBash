@@ -48,7 +48,7 @@ class FirebaseManager(){
 
     fun buyTicket(event: Event?, map: Map<String, Any>): Task<Void>?{
         if(event == null) return null
-        return db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)?.collection("Tickets")
+        return db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)?.collection("tickets")
                 ?.document()?.set(map)
     }
 
