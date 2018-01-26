@@ -54,51 +54,35 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         tickets_recycler.itemAnimator = DefaultItemAnimator()
         tickets_recycler.adapter = adapter
 
-        tickets_buy_button.setOnClickListener {
-            val dataMap = getData()
-            val overallMap = HashMap<String, Any>()
-            if(dataMap["quantity"] == 0){
-                snackbar(container,"No ticket purchased")
-            } else{
-                overallMap.put("tickets", dataMap)
-                overallMap.put("timeSpent", System.currentTimeMillis())
-
-                val uid = FirebaseManager.auth.currentUser?.uid
-
-                if(uid != null) {
-                    overallMap.put("buyerId", uid)
-                    val quan = dataMap["quantity"]
-                    if(quan != null) overallMap.put("quantity", quan)
-                    dataMap.remove("quantity")
-                    saveData(overallMap)
-                } else {
-                    snackbar(container, "you're not signed in")
-                }
-            }
-        }
+        tickets_buy_button.setOnClickListener { buyTickets() }
     }
 
     override fun onTicketClick(ticket: Ticket) {
 
     }
 
-    private fun getData(): HashMap<String, Int> {
-        val map = HashMap<String, Int>()
-        var total = 0
+    private fun getData(): HashMap<String, Any> {
+        val map = HashMap<String, Any>()
+        var totalQuantity = 0
+        var totalPrice = 0.0
         for (i in 0 until tickets.size){
             val holder = tickets_recycler.findViewHolderForAdapterPosition(i) as TicketAdapter.ViewHolder?
             if(holder != null){
                 val name = tickets[i].name
                 val quantityString = holder.ticket_quantity.text.toString()
+                val priceString = holder.ticket_price.text.toString().substring(1)
                 var quantity = 0
+                var price = priceString.toDouble()
                 if(!TextUtils.isEmpty(quantityString)){
                     quantity = quantityString.toInt()
                 }
                 map.put(name, quantity)
-                total += quantity
+                totalQuantity += quantity
+                totalPrice += quantity * price
             }
         }
-        map.put("quantity", total)
+        map.put("quantity", totalQuantity)
+        map.put("total", totalPrice)
         return map
     }
 
@@ -111,6 +95,32 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         }?.addOnFailureListener {
             longToast("Could not purchase ticket")
             finish()
+        }
+    }
+
+    private fun buyTickets() {
+        val dataMap = getData()
+        val overallMap = HashMap<String, Any>()
+        if(dataMap["quantity"] == 0){
+            snackbar(container,"No ticket purchased")
+        } else{
+            overallMap.put("tickets", dataMap)
+            overallMap.put("timeSpent", System.currentTimeMillis())
+
+            val uid = FirebaseManager.auth.currentUser?.uid
+
+            if(uid != null) {
+                overallMap.put("buyerId", uid)
+                val quan = dataMap["quantity"]
+                val total = dataMap["total"]
+                if(quan != null) overallMap.put("quantity", quan)
+                if(total != null) overallMap.put("total", total)
+                dataMap.remove("quantity")
+                dataMap.remove("total")
+                saveData(overallMap)
+            } else {
+                snackbar(container, "you're not signed in")
+            }
         }
     }
 }
