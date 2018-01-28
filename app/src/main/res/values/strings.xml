@@ -20,7 +20,9 @@
     <string name="university">University</string>
     <string name="next">Next</string>
     <string name="whats_happening">What\'s happening in</string>
-
+    <string name = "Description1Onboarding">Campus Bash helps you find and host the hottest parties and events on your campus</string>
+    <string name = "Description2Onboarding">Take the work out of getting lit and just focus on getting lit</string>
+    <string name = "Description3Onboarding">Hosting parties are hard, lets make it dead easy. Trusssttt us...</string>
     <string name="title_activity_onboard_sign_in">OnboardSignInActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
@@ -32,5 +34,6 @@
     <string name="interests">Interests</string>
     <string name="title_activity_interests">Interests</string>
     <string name="update_interests">Update Interests</string>
+    <string name="title_activity_on_boarding">OnBoardingActivity</string>
 
 </resources>
