@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         Log.d(TAG, "FOPEN KEY: ${Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)}")
         if(fOpen == 0){
             Log.d(TAG, "First Open")
-            startActivity(intentFor<FirstOpenActivity>())
+            startActivity(intentFor<OnBoardingActivity>())
             finish()
         } else{
             Log.d(TAG, "Not first open")

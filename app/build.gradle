@@ -41,6 +41,7 @@ dependencies {
     compile "com.google.firebase:firebase-ads:$fbase_version"
     compile "com.firebaseui:firebase-ui-auth:$fb_ui_version"
     compile("com.facebook.android:facebook-android-sdk:$fcb_sdk_version")
+    compile 'com.github.apl-devs:appintro:v4.2.2'
 
     //Arch components
     implementation "android.arch.lifecycle:runtime:$arch_life_runtime_version"

@@ -53,7 +53,12 @@
         <activity android:name=".view.FirstOpenActivity" />
         <activity
             android:name=".view.InterestsActivity"
-            android:label="@string/title_activity_interests"/>
+            android:label="@string/title_activity_interests" />
+        <activity
+            android:name=".view.OnBoardingActivity"
+            android:label="@string/title_activity_on_boarding"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
