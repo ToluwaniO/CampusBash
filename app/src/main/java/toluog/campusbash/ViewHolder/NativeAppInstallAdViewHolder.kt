@@ -23,6 +23,12 @@ class NativeAppInstallAdViewHolder(override val containerView: View?) : Recycler
         appinstall_body.text = ad.body
         appinstall_call_to_action.text = ad.callToAction
 
+        val images = ad.images
+
+        if(images != null && images.isNotEmpty()) {
+            appinstall_image.setImageDrawable(images[0].drawable)
+        }
+
         if(ad.price == null) {
             appinstall_price.visibility = View.INVISIBLE
         } else {

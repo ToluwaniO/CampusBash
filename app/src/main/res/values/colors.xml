@@ -14,5 +14,6 @@
     <color name="greenEnd">#11c612</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="material_grey">#fafafa</color>
 
 </resources>

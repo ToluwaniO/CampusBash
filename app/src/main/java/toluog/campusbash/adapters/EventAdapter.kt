@@ -2,6 +2,7 @@ package toluog.campusbash.adapters
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerV
     private val EVENT_VIEW_TYPE = 0
     private val NATIVE_APP_INSTALL_AD_VIEW_TYPE = 1
     private val NATIVE_CONTENT_AD_VIEW_TYPE = 2
+    private val TAG = EventAdapter::class.java.simpleName
 
     init {
         listener = context as OnItemClickListener
@@ -72,13 +74,12 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerV
                 EventViewHolder(view)
             }
         }
-
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
         val viewType = getItemViewType(position)
         val item = events[position]
+        Log.d(TAG, "VIEW TYPE is ${viewType}")
 
         when(viewType) {
             EVENT_VIEW_TYPE -> (holder as EventViewHolder?)?.bind(item as Event, listener, context)
@@ -88,14 +89,16 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerV
                     ?.bind(item as NativeContentAd)
         }
     }
-    override fun getItemViewType(position: Int): Int {
-        val items = events[position]
 
-        return when(items) {
-            items is NativeAppInstallAd -> NATIVE_APP_INSTALL_AD_VIEW_TYPE
-            items is NativeContentAd -> NATIVE_CONTENT_AD_VIEW_TYPE
-            else -> EVENT_VIEW_TYPE
+    override fun getItemViewType(position: Int): Int {
+        val item = events[position]
+
+        if(item is NativeAppInstallAd) {
+            return NATIVE_APP_INSTALL_AD_VIEW_TYPE
+        } else if(item is NativeContentAd) {
+            return NATIVE_CONTENT_AD_VIEW_TYPE
         }
+        return EVENT_VIEW_TYPE
     }
 
     override fun getItemCount() = events.size

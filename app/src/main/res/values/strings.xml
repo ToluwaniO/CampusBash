@@ -34,6 +34,7 @@
     <string name="update_interests">Update Interests</string>
 
     <string name="ad_attribution">Ad</string>
-    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="admob_app_id">ca-app-pub-6048560905035130~3362797617</string>
+    <string name="admob_app_id_debug">ca-app-pub-3940256099942544/2247696110</string>
 
 </resources>

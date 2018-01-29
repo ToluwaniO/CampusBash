@@ -12,9 +12,9 @@ import kotlinx.android.synthetic.main.native_ad_view.*
  * Created by oguns on 1/28/2018.
  */
 class NativeContentAdViewHolder(override val containerView: View?) : RecyclerView.ViewHolder(containerView), LayoutContainer {
-    var adView: NativeContentAd? = null
+    var adView: NativeContentAdView? = null
     init {
-        adView = containerView as NativeContentAd?
+        adView = containerView as NativeContentAdView?
     }
 
     fun bind(ad: NativeContentAd) {
