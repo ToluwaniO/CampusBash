@@ -86,16 +86,29 @@ class EventsFragment() : Fragment(){
     }
 
     private fun copyAds() {
-        if (ads.size <= 0) {
-            return
-        }
-        if(events.size < 10 || ads.size < AppContract.NUM_ADS) return
-
+        if(events.size < AppContract.MAX_EVENTS_FOR_ADS_IN_FRAGMENT || ads.size < AppContract.NUM_EVENTS_FRAGMENT_ADS) return
+        clearAds()
         val offset = events.size / ads.size + 1
         var index = 2
+        Log.d(TAG, "AD NUMBER: ${ads.size}")
         for (ad in ads) {
-            events.add(index, ad)
-            index += offset
+            if(index < events.size && events[index] !is NativeAd){
+                events.add(index, ad)
+                Log.d(TAG, "Adding to position $index")
+                index += offset
+            }
+            else{
+                break
+            }
         }
+    }
+
+    private fun clearAds() {
+        (0 until events.size)
+                .filter { events[it] is NativeAd }
+                .forEach {
+                    Log.d(TAG, "Removimg from position $it")
+                    events.remove(it)
+                }
     }
 }

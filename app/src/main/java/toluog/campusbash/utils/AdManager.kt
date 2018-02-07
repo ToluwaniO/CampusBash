@@ -19,32 +19,26 @@ import toluog.campusbash.R
  * Created by oguns on 1/27/2018.
  */
 class AdManager(val context: Context, val adList: MutableLiveData<ArrayList<NativeAd>>) {
-    private val admobAppId: String
-    private val TAG = AdManager::class.java.simpleName
-
-    init {
-        if (BuildConfig.DEBUG) {
-            admobAppId = context.getString(R.string.admob_app_id_debug)
-        } else {
-            admobAppId = context.getString(R.string.admob_app_id)
-        }
-    }
 
     fun loadAds() {
+        if(!isInitialized) {
+            initializeAds(context)
+        }
+
         val ads = adList.value
         if(ads != null) {
-            if (ads.size >= AppContract.NUM_ADS) return
+            if (ads.size >= AppContract.NUM_EVENTS_FRAGMENT_ADS) return
 
             val builder = AdLoader.Builder(context, admobAppId)
 
             val adLoader = builder.forAppInstallAd { ad: NativeAppInstallAd ->
-                Log.d(TAG, "LOADING APP INSTALL AD ${ad.toString()}")
+                Log.d(TAG, "LOADING APP INSTALL AD")
                 ads.add(ad)
                 adList.postValue(ads)
                 loadAds()
             }
             .forContentAd { ad: NativeContentAd ->
-                Log.d(TAG, "LOADING CONTENT AD ${ad.toString()}")
+                Log.d(TAG, "LOADING CONTENT AD")
                 ads.add(ad)
                 adList.postValue(ads)
                 loadAds()
@@ -64,8 +58,20 @@ class AdManager(val context: Context, val adList: MutableLiveData<ArrayList<Nati
     }
 
     companion object {
+        private val TAG = AdManager::class.java.simpleName
+        private var admobAppId: String = ""
+        private var isInitialized = false
+
         fun initializeAds(context: Context) {
-            MobileAds.initialize(context, context.getString(R.string.admob_app_id))
+            Log.d(TAG, "Initializing MobileAds")
+            if (BuildConfig.DEBUG) {
+                admobAppId = context.getString(R.string.admob_app_id_debug)
+            } else {
+                admobAppId = context.getString(R.string.admob_app_id)
+            }
+            MobileAds.initialize(context, admobAppId)
+            isInitialized = true
+            Log.d(TAG, "MobileAds initialized")
         }
     }
 

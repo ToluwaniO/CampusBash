@@ -44,7 +44,8 @@ class AppContract{
         val PREF_EVENT_TYPES_KEY = "pref_event_type_set"
 
         //ADS
-        const val NUM_ADS = 5
+        const val NUM_EVENTS_FRAGMENT_ADS = 5
+        const val MAX_EVENTS_FOR_ADS_IN_FRAGMENT = 20
 
     }
 }

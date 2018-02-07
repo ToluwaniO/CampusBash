@@ -12,10 +12,6 @@ import kotlinx.android.synthetic.main.native_ad_view.*
  * Created by oguns on 1/28/2018.
  */
 class NativeContentAdViewHolder(override val containerView: View?) : RecyclerView.ViewHolder(containerView), LayoutContainer {
-    var adView: NativeContentAdView? = null
-    init {
-        adView = containerView as NativeContentAdView?
-    }
 
     fun bind(ad: NativeContentAd) {
         contentad_headline.text = ad.headline
@@ -37,6 +33,6 @@ class NativeContentAdViewHolder(override val containerView: View?) : RecyclerVie
             contentad_logo.setImageDrawable(logoImage.drawable)
         }
 
-        (containerView as NativeContentAdView?)?.setNativeAd(ad)
+        adView.setNativeAd(ad)
     }
 }

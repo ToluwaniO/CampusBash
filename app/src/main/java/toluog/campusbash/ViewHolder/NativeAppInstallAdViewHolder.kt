@@ -12,10 +12,6 @@ import kotlinx.android.synthetic.main.native_app_install_view.*
  * Created by oguns on 1/28/2018.
  */
 class NativeAppInstallAdViewHolder(override val containerView: View?) : RecyclerView.ViewHolder(containerView), LayoutContainer {
-    var adView: NativeAppInstallAdView? = null
-    init {
-        adView = containerView as NativeAppInstallAdView?
-    }
 
     fun bind(ad: NativeAppInstallAd) {
         appinstall_app_icon.setImageDrawable(ad.icon.drawable)
