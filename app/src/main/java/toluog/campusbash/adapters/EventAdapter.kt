@@ -2,25 +2,35 @@ package toluog.campusbash.adapters
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.Glide.init
+import com.google.android.gms.ads.formats.NativeAppInstallAd
+import com.google.android.gms.ads.formats.NativeContentAd
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.event_card_layout.*
 import kotlinx.android.synthetic.main.event_card_layout.view.*
 import toluog.campusbash.R
+import toluog.campusbash.ViewHolder.NativeAppInstallAdViewHolder
+import toluog.campusbash.ViewHolder.NativeContentAdViewHolder
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.Util
 
 /**
  * Created by oguns on 12/15/2017.
  */
-class EventAdapter(var events: ArrayList<Event>, var context: Context?): RecyclerView.Adapter<EventAdapter.ViewHolder>(){
+class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
-    val listener: OnItemClickListener
+    private val listener: OnItemClickListener
+    private val EVENT_VIEW_TYPE = 0
+    private val NATIVE_APP_INSTALL_AD_VIEW_TYPE = 1
+    private val NATIVE_CONTENT_AD_VIEW_TYPE = 2
+    private val TAG = EventAdapter::class.java.simpleName
 
     init {
         listener = context as OnItemClickListener
@@ -30,7 +40,7 @@ class EventAdapter(var events: ArrayList<Event>, var context: Context?): Recycle
         fun onItemClick(event: Event)
     }
 
-    class ViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
+    class EventViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
             LayoutContainer {
 
         fun bind(event: Event, listener: OnItemClickListener, context: Context?){
@@ -48,14 +58,47 @@ class EventAdapter(var events: ArrayList<Event>, var context: Context?): Recycle
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent?.context).inflate(R.layout.event_card_layout, parent, false)
-        return ViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
+
+        return when(viewType) {
+            NATIVE_APP_INSTALL_AD_VIEW_TYPE -> {
+                val view = LayoutInflater.from(parent?.context).inflate(R.layout.native_app_install_view, parent, false)
+                NativeAppInstallAdViewHolder(view)
+            }
+            NATIVE_CONTENT_AD_VIEW_TYPE -> {
+                val view = LayoutInflater.from(parent?.context).inflate(R.layout.native_ad_view, parent, false)
+                NativeContentAdViewHolder(view)
+            }
+            else -> {
+                val view = LayoutInflater.from(parent?.context).inflate(R.layout.event_card_layout, parent, false)
+                EventViewHolder(view)
+            }
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        val event = events[position]
-        holder?.bind(event, listener, context)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+        val viewType = getItemViewType(position)
+        val item = events[position]
+        Log.d(TAG, "VIEW TYPE is ${viewType}")
+
+        when(viewType) {
+            EVENT_VIEW_TYPE -> (holder as EventViewHolder?)?.bind(item as Event, listener, context)
+            NATIVE_APP_INSTALL_AD_VIEW_TYPE -> (holder as NativeAppInstallAdViewHolder?)
+                    ?.bind(item as NativeAppInstallAd)
+            NATIVE_CONTENT_AD_VIEW_TYPE -> (holder as NativeContentAdViewHolder?)
+                    ?.bind(item as NativeContentAd)
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        val item = events[position]
+
+        if(item is NativeAppInstallAd) {
+            return NATIVE_APP_INSTALL_AD_VIEW_TYPE
+        } else if(item is NativeContentAd) {
+            return NATIVE_CONTENT_AD_VIEW_TYPE
+        }
+        return EVENT_VIEW_TYPE
     }
 
     override fun getItemCount() = events.size

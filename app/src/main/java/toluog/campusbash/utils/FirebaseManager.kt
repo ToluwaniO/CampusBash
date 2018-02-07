@@ -1,5 +1,6 @@
 package toluog.campusbash.utils
 
+import android.arch.persistence.room.Delete
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
@@ -51,8 +52,6 @@ class FirebaseManager(){
         return db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)?.collection("tickets")
                 ?.document()?.set(map)
     }
-
-
 
     companion object {
         var storage: FirebaseStorage? = null
