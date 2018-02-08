@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide.init
 import com.google.android.gms.ads.formats.NativeAd
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.events_layout.*
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.support.v4.intentFor
@@ -23,6 +24,7 @@ import toluog.campusbash.R.id.event_recycler
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
+import toluog.campusbash.utils.ConfigProvider
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 
@@ -34,10 +36,12 @@ class EventsFragment() : Fragment(){
     private var rootView: View? = null
     private var myEvents = false
     private val TAG = EventsFragment::class.java.simpleName
+    private lateinit var viewModel: EventsViewModel
+    private val configProvider = ConfigProvider(FirebaseRemoteConfig.getInstance())
     private var adapter: EventAdapter? = null
     private val events: ArrayList<Any> = ArrayList()
-    private var isMine = false
     private val ads = ArrayList<NativeAd>()
+    var eventSize = 0
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater?.inflate(R.layout.events_layout, container, false)
@@ -47,32 +51,35 @@ class EventsFragment() : Fragment(){
             myEvents = bundle.getBoolean(AppContract.MY_EVENT_BUNDLE)
         }
 
-        val viewModel: EventsViewModel = ViewModelProviders.of(activity).get(EventsViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity).get(EventsViewModel::class.java)
         viewModel.getEvents()?.observe(this, Observer { eventsList ->
             val user = FirebaseManager.getUser()
             events.clear()
+            eventsList?.let { eventSize = eventsList.size }
             eventsList?.forEach {
                 if(myEvents) {
                     if(it.creator.uid == user?.uid) events.add(it)
                 } else {
                     events.add(it)
                 }
-                copyAds()
             }
-
+            copyAds(eventSize)
             adapter?.notifyDataSetChanged()
         })
 
-        viewModel.getAds().observe(this, Observer {
-            if (it != null){
-                ads.clear()
-                it.forEach { ad ->
-                    ads.add(ad)
+        if(configProvider.isAdsEventsFragmentEnabled()) {
+            Log.d(TAG, "Observing ads")
+            viewModel.getAds().observe(this, Observer {
+                if (it != null){
+                    ads.clear()
+                    it.forEach { ad ->
+                        ads.add(ad)
+                    }
+                    copyAds(eventSize)
+                    adapter?.notifyDataSetChanged()
                 }
-                copyAds()
-                adapter?.notifyDataSetChanged()
-            }
-        })
+            })
+        }
 
         return rootView
     }
@@ -85,8 +92,9 @@ class EventsFragment() : Fragment(){
         event_recycler.adapter = adapter
     }
 
-    private fun copyAds() {
-        if(events.size < AppContract.MAX_EVENTS_FOR_ADS_IN_FRAGMENT || ads.size < AppContract.NUM_EVENTS_FRAGMENT_ADS) return
+    private fun copyAds(eventSize: Int) {
+        if(eventSize < configProvider.minEventsToDisplayAds()
+                || ads.size < configProvider.eventsFragmentAdsMax()) return
         clearAds()
         val offset = events.size / ads.size + 1
         var index = 2
@@ -94,7 +102,6 @@ class EventsFragment() : Fragment(){
         for (ad in ads) {
             if(index < events.size && events[index] !is NativeAd){
                 events.add(index, ad)
-                Log.d(TAG, "Adding to position $index")
                 index += offset
             }
             else{
@@ -107,7 +114,6 @@ class EventsFragment() : Fragment(){
         (0 until events.size)
                 .filter { events[it] is NativeAd }
                 .forEach {
-                    Log.d(TAG, "Removimg from position $it")
                     events.remove(it)
                 }
     }

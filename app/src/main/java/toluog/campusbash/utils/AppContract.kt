@@ -47,5 +47,8 @@ class AppContract{
         const val NUM_EVENTS_FRAGMENT_ADS = 5
         const val MAX_EVENTS_FOR_ADS_IN_FRAGMENT = 20
 
+        //RemoteConfig
+        val configRefreshTime = 3600L
+
     }
 }
