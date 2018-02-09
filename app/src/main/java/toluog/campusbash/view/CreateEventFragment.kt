@@ -25,6 +25,7 @@ import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
 import java.lang.ClassCastException
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by oguns on 12/13/2017.
@@ -45,6 +46,7 @@ class CreateEventFragment : Fragment(){
     interface CreateEventFragmentInterface {
         fun eventSaved(event: Event)
         fun createTicket()
+        fun getTicketList(): ArrayList<Ticket>
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -54,7 +56,11 @@ class CreateEventFragment : Fragment(){
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        updateUi(view?.context)
+        if(savedInstanceState != null) {
+            onActivityCreated(savedInstanceState)
+        } else {
+            updateUi(view?.context)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -163,8 +169,7 @@ class CreateEventFragment : Fragment(){
         val startTime = startCalendar.timeInMillis
         val endTime = endCalendar.timeInMillis
         val uri = imageUri
-        val tickets = arrayListOf<Ticket>(Ticket("VIP", "Want best service? You're at the right place",
-                1, 10, 15.50, 0, startTime, 0, endTime))
+        val tickets = mCallback?.getTicketList() ?: ArrayList<Ticket>()
 
         if (TextUtils.isEmpty(title)) {
             event_name.error = "Please enter name"
@@ -191,7 +196,7 @@ class CreateEventFragment : Fragment(){
             Log.d(TAG, "uri is null")
             fbasemanager.addEvent(event)
             snackbar(rootView!!, "Event saved")
-            mCallback?.eventSaved(event)
+            //mCallback?.eventSaved(event)
         }
     }
 
@@ -209,25 +214,33 @@ class CreateEventFragment : Fragment(){
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putParcelable(AppContract.MY_EVENT_BUNDLE,getEvent())
+        outState?.putParcelable("uri", imageUri)
         Log.d(TAG, "OnSavedInstanceState")
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        val event = savedInstanceState?.getParcelable<Event>(AppContract.MY_EVENT_BUNDLE)
+        val imageUri = savedInstanceState?.getParcelable<Uri>("uri")
+        Log.d(TAG, "Restore instance = $event")
+        //event?.let { updateUi(event, imageUri) }
     }
 
-    private fun updateUi(event: Event){
-        val sTime = Calendar.getInstance()
-        val endTime = Calendar.getInstance()
-        sTime.timeInMillis = event.startTime
-        endTime.timeInMillis = event.endTime
+    fun updateUi(event: Event, imageUri: Uri?){
+        val sTime = Date(event.startTime)
+        val endTime = Date(event.endTime)
+        val startCalendar = Calendar.getInstance()
+        startCalendar.time = sTime
+        val endCalendar = Calendar.getInstance()
+        endCalendar.time = endTime
+
         event_name.setText(event.eventName)
         event_type_spinner.setSelection(adapter.getPosition(event.eventType))
-        event_start_date.text = Util.formatDate(sTime)
-        event_start_time.text = Util.formatTime(sTime)
-        event_end_date.text = Util.formatDate(endTime)
-        event_end_time.text = Util.formatTime(endTime)
+        event_start_date.text = Util.formatDate(startCalendar)
+        event_start_time.text = Util.formatTime(startCalendar)
+        event_end_date.text = Util.formatDate(endCalendar)
+        event_end_time.text = Util.formatTime(endCalendar)
+        event_image.setImageURI(imageUri)
     }
 
     fun getEvent(): Event{
@@ -246,4 +259,6 @@ class CreateEventFragment : Fragment(){
         if (creator != null) event.creator = creator
         return event
     }
+
+    fun getUri() = imageUri
 }
