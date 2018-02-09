@@ -30,7 +30,8 @@
             android:id="@+id/event_type_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
+            android:layout_margin="5dp"
+            android:spinnerMode="dialog" />
 
         <TextView
             android:id="@+id/event_starts_text"

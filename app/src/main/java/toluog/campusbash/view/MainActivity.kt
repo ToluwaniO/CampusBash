@@ -18,10 +18,12 @@ import toluog.campusbash.utils.AppContract
 import com.firebase.ui.auth.ResultCodes
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
+import android.support.design.widget.CoordinatorLayout
 import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import org.jetbrains.anko.act
+import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import toluog.campusbash.utils.FirebaseManager
