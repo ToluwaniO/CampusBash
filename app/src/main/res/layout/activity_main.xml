@@ -82,8 +82,7 @@
         android:layout_marginBottom="60dp"
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
-        android:clickable="true"
-        android:focusable="true"
+        app:layout_behavior=".ViewBehavior.FabScrollBehavior"
         app:srcCompat="@drawable/ic_add_white_24px" />
 
     <android.support.design.widget.BottomNavigationView
