@@ -8,6 +8,7 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
 import kotlinx.android.synthetic.main.ticket_item_layout.*
 import org.jetbrains.anko.design.snackbar
@@ -26,6 +27,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private lateinit var adapter: TicketAdapter
     private val fbaseManager = FirebaseManager()
     private var event: Event? = null
+    private val TAG = BuyTicketActivity::class.java.simpleName
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buy_ticket)
@@ -38,6 +40,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         viewModel.getEvent(eventId)?.observe(this, Observer { event ->
             if(event != null) {
                 this.event = event
+                Log.d(TAG, "$event")
                 tickets.clear()
                 for(i in event.tickets){
                     tickets.add(i)
