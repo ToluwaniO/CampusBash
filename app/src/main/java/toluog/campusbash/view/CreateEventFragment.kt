@@ -1,5 +1,6 @@
 package toluog.campusbash.view
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,6 +17,7 @@ import com.myhexaville.smartimagepicker.ImagePicker
 import kotlinx.android.synthetic.main.create_event_layout.*
 import kotlinx.android.synthetic.main.create_event_layout.view.*
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.support.v4.act
 import toluog.campusbash.R
 import toluog.campusbash.R.id.event_type_spinner
 import toluog.campusbash.utils.AppContract
@@ -42,11 +44,18 @@ class CreateEventFragment : Fragment(){
     private lateinit var fbasemanager: FirebaseManager
     private var mCallback: CreateEventFragmentInterface? = null
     private var type = 0
+    private lateinit var viewModel: CreateEventViewModel
+    var isSaved = false
 
     interface CreateEventFragmentInterface {
         fun eventSaved(event: Event)
         fun createTicket()
         fun getTicketList(): ArrayList<Ticket>
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -56,11 +65,8 @@ class CreateEventFragment : Fragment(){
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        if(savedInstanceState != null) {
-            onActivityCreated(savedInstanceState)
-        } else {
-            updateUi(view?.context)
-        }
+        updateUi(view?.context)
+        if(isSaved) updateUi()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -84,6 +90,7 @@ class CreateEventFragment : Fragment(){
                 this@CreateEventFragment /*fragment nullable*/,
                 { /*on image picked*/ imageUri ->
                     this.imageUri = imageUri
+                    viewModel.imageUri = imageUri
                     event_image.setImageURI(imageUri) })
 
         event_save_button.setOnClickListener { save() }
@@ -119,12 +126,14 @@ class CreateEventFragment : Fragment(){
             startCalendar.set(Calendar.MONTH, month)
             startCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             event_start_date.text = Util.formatDate(startCalendar)
+            viewModel.event.startTime = startCalendar.timeInMillis
         }
         else{
             endCalendar.set(Calendar.DAY_OF_YEAR, year)
             endCalendar.set(Calendar.MONTH, month)
             endCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             event_end_date.text = Util.formatDate(endCalendar)
+            viewModel.event.endTime = endCalendar.timeInMillis
         }
     }
 
@@ -134,11 +143,13 @@ class CreateEventFragment : Fragment(){
             startCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             startCalendar.set(Calendar.MINUTE, minute)
             event_start_time.text = Util.formatTime(startCalendar)
+            viewModel.event.startTime = startCalendar.timeInMillis
         }
         else{
             endCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             endCalendar.set(Calendar.MINUTE, minute)
             event_end_time.text = Util.formatTime(endCalendar)
+            viewModel.event.endTime = endCalendar.timeInMillis
         }
     }
 
@@ -170,15 +181,27 @@ class CreateEventFragment : Fragment(){
         val endTime = endCalendar.timeInMillis
         val uri = imageUri
         val tickets = mCallback?.getTicketList() ?: ArrayList<Ticket>()
+        Log.d(TAG, "$tickets")
+        val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
 
         if (TextUtils.isEmpty(title)) {
             event_name.error = "Please enter name"
             return
         }
 
-        val event = Event("", title, eventType, AppContract.LOREM_IPSUM, null,
-                null, "uOttawa", AppContract.STANTON_ADDRESS, AppContract.STANTON_COORD,
-                startTime, endTime, null, tickets, AppContract.CREATOR)
+        val event = viewModel.event
+        event.eventName = title
+        event.eventType = eventType
+        event.description = AppContract.LOREM_IPSUM
+        event.university = university
+        event.locationAddress = AppContract.STANTON_ADDRESS
+        event.latLng = AppContract.STANTON_COORD
+        event.startTime = startTime
+        event.endTime = endTime
+        event.creator = AppContract.CREATOR
+        event.tickets = tickets
+        Log.d(TAG, "${event.tickets}")
+
         val creator = FirebaseManager.getCreator()
         if (creator != null) event.creator = creator
 
@@ -196,7 +219,7 @@ class CreateEventFragment : Fragment(){
             Log.d(TAG, "uri is null")
             fbasemanager.addEvent(event)
             snackbar(rootView!!, "Event saved")
-            //mCallback?.eventSaved(event)
+            mCallback?.eventSaved(event)
         }
     }
 
@@ -213,34 +236,30 @@ class CreateEventFragment : Fragment(){
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState?.putParcelable(AppContract.MY_EVENT_BUNDLE,getEvent())
-        outState?.putParcelable("uri", imageUri)
         Log.d(TAG, "OnSavedInstanceState")
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        val event = savedInstanceState?.getParcelable<Event>(AppContract.MY_EVENT_BUNDLE)
-        val imageUri = savedInstanceState?.getParcelable<Uri>("uri")
-        Log.d(TAG, "Restore instance = $event")
-        //event?.let { updateUi(event, imageUri) }
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
     }
 
-    fun updateUi(event: Event, imageUri: Uri?){
-        val sTime = Date(event.startTime)
-        val endTime = Date(event.endTime)
-        val startCalendar = Calendar.getInstance()
-        startCalendar.time = sTime
-        val endCalendar = Calendar.getInstance()
-        endCalendar.time = endTime
-
+    private fun updateUi(){
+        val event = viewModel.event
+        val sTime = Calendar.getInstance()
+        val endTime = Calendar.getInstance()
+        sTime.timeInMillis = event.startTime
+        endTime.timeInMillis = event.endTime
         event_name.setText(event.eventName)
         event_type_spinner.setSelection(adapter.getPosition(event.eventType))
-        event_start_date.text = Util.formatDate(startCalendar)
-        event_start_time.text = Util.formatTime(startCalendar)
-        event_end_date.text = Util.formatDate(endCalendar)
-        event_end_time.text = Util.formatTime(endCalendar)
-        event_image.setImageURI(imageUri)
+        event_start_date.text = Util.formatDate(sTime)
+        event_start_time.text = Util.formatTime(sTime)
+        event_end_date.text = Util.formatDate(endTime)
+        event_end_time.text = Util.formatTime(endTime)
+        if(viewModel.imageUri != null){
+            imageUri = viewModel.imageUri
+            event_image.setImageURI(imageUri)
+        }
     }
 
     fun getEvent(): Event{
@@ -259,6 +278,4 @@ class CreateEventFragment : Fragment(){
         if (creator != null) event.creator = creator
         return event
     }
-
-    fun getUri() = imageUri
 }

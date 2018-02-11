@@ -14,6 +14,7 @@ import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import android.R.id.edit
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.view.inputmethod.InputMethodManager
 import org.jetbrains.anko.defaultSharedPreferences
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
@@ -83,6 +84,14 @@ class Util{
 
             if(d < 10) return "0$d"
             return "$d"
+        }
+
+        fun hideKeyboard(ctx: Context) {
+            val inputManager = ctx
+                    .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            // check if no view has focus:
+            val v = (ctx as Activity).currentFocus ?: return
+            inputManager.hideSoftInputFromWindow(v.windowToken, 0)
         }
 
         fun startSignInActivity(activity: Activity){
