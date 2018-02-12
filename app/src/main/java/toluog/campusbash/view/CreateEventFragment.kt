@@ -18,11 +18,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.create_event_layout.*
-import kotlinx.android.synthetic.main.create_event_layout.view.*
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.act
 import toluog.campusbash.R
-import toluog.campusbash.R.id.event_type_spinner
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.Util
 import toluog.campusbash.model.Event
@@ -32,14 +30,10 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.ui.PlaceAutocomplete
 import toluog.campusbash.utils.AppContract.Companion.PLACE_AUTOCOMPLETE_REQUEST_CODE
-import android.R.attr.data
 import com.google.android.gms.location.places.Place
 import android.app.Activity.RESULT_CANCELED
-import android.R.attr.data
-import com.google.android.gms.location.places.ui.PlaceAutocomplete.getStatus
-import android.app.Activity.RESULT_OK
-import org.jetbrains.anko.support.v4.act
 import org.jetbrains.anko.support.v4.toast
+import toluog.campusbash.model.LatLng
 import kotlin.collections.ArrayList
 
 /**
@@ -90,15 +84,14 @@ class CreateEventFragment : Fragment(){
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 val place = PlaceAutocomplete.getPlace(activity.applicationContext, data)
+                updateLocation(place)
                 Log.i(TAG, "Place: " + place.name)
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 val status = PlaceAutocomplete.getStatus(activity.applicationContext, data)
                 toast("Could not get location")
                 Log.i(TAG, status.statusMessage)
-
             } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-                toast("Could not get location")
+
             }
         }
     }
@@ -217,7 +210,10 @@ class CreateEventFragment : Fragment(){
     }
 
     private fun updateLocation(place: Place) {
-
+        viewModel.event.latLng = LatLng(place.latLng.latitude, place.latLng.longitude)
+        viewModel.event.locationAddress = place.address.toString()
+        viewModel.place = place
+        address_text.text = "${place.name} | ${place.address}"
     }
 
     private fun save() {
@@ -240,8 +236,6 @@ class CreateEventFragment : Fragment(){
         event.eventType = eventType
         event.description = AppContract.LOREM_IPSUM
         event.university = university
-        event.locationAddress = AppContract.STANTON_ADDRESS
-        event.latLng = AppContract.STANTON_COORD
         event.startTime = startTime
         event.endTime = endTime
         event.creator = AppContract.CREATOR
@@ -302,6 +296,7 @@ class CreateEventFragment : Fragment(){
         event_start_time.text = Util.formatTime(sTime)
         event_end_date.text = Util.formatDate(endTime)
         event_end_time.text = Util.formatTime(endTime)
+        address_text.text = "${viewModel.place?.name} | ${viewModel.place?.address}"
         if(viewModel.imageUri != null){
             imageUri = viewModel.imageUri
             event_image.setImageURI(imageUri)
