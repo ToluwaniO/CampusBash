@@ -50,5 +50,7 @@ class AppContract{
         //RemoteConfig
         val configRefreshTime = 3600L
 
+        val PLACE_AUTOCOMPLETE_REQUEST_CODE = 48547
+
     }
 }

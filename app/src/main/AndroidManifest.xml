@@ -27,12 +27,6 @@
             android:name=".view.ViewEventActivity"
             android:label="@string/app_name"
             android:parentActivityName=".view.MainActivity" />
-
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"
-            tools:replace="android:value" />
-
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -57,8 +51,15 @@
         <activity
             android:name=".view.OnBoardingActivity"
             android:label="@string/title_activity_on_boarding"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"
+            tools:replace="android:value" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCgc9d10vxBYA5r9tKLd_eQ2iRQAwDE_uA" />
     </application>
 
 </manifest>

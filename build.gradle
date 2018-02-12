@@ -3,10 +3,11 @@
 buildscript {
     ext{
         //dependencies
-        kotlin_version = '1.2.20'
+        kotlin_version = '1.2.21'
         fb_ui_version = '3.1.0'
         fcb_sdk_version = '4.27.0'
         fbase_version = '11.4.2'
+        play_services_version = '11.4.2'
         stripe_version = '5.1.0'
         glide_version = '4.3.1'
         rxjava_version = '2.1.7'
