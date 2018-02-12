@@ -14,9 +14,11 @@ import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import android.R.id.edit
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.view.inputmethod.InputMethodManager
 import org.jetbrains.anko.defaultSharedPreferences
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
+import kotlin.math.min
 
 
 /**
@@ -26,24 +28,53 @@ class Util{
     companion object {
 
         private val TAG = Util::class.java.simpleName
-        private val shortMonths = arrayOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
+        private val shortMonthsCaps = arrayOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
                 "SEP", "OCT", "NOV", "DEC")
+        private val shortDays = arrayOf("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri")
+        private val shortMonths = arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+                "Sep", "Oct", "Nov", "Dec")
 
-        fun formatDate(calendar: Calendar) = "${calendar[Calendar.DAY_OF_MONTH]}/${calendar[Calendar.MONTH]}" +
-                "/${calendar[Calendar.YEAR]}"
+        fun formatDate(calendar: Calendar): String {
+            val dayName = shortDays[calendar[Calendar.DAY_OF_WEEK]-1]
+            val day = calendar[Calendar.DAY_OF_MONTH]
+            val month = shortMonths[calendar[Calendar.MONTH]]
+            val year = calendar[Calendar.YEAR]
+            return "$dayName, $month $day, $year"
+        }
 
-        fun formatTime(calendar: Calendar) = "${calendar[Calendar.HOUR_OF_DAY]} : ${calendar[Calendar.MINUTE]}"
+        fun formatTime(calendar: Calendar): String {
+            var hour = ""
+            var minute = ""
+            val hVal = calendar[Calendar.HOUR_OF_DAY]
+            val mVal = calendar[Calendar.MINUTE]
+
+            hour = if(hVal < 10) {
+                "0$hVal"
+            } else{
+                "$hVal"
+            }
+
+            minute = if(mVal < 10) {
+                "0$mVal"
+            } else {
+                "$mVal"
+            }
+
+            return "$hour:$minute"
+        }
 
         fun formatDateTime(date: Date): String{
             val df = SimpleDateFormat("dd/MM/yyyy HH:mm")
             return df.format(date)
         }
 
+        fun formatDateTime(calendar: Calendar) = "${formatDate(calendar)} ${formatTime(calendar)}"
+
         fun getShortMonth(date: Long): String{
             val cal = Calendar.getInstance()
             cal.timeInMillis = date
             val m = cal.get(Calendar.MONTH)
-            return shortMonths[m]
+            return shortMonthsCaps[m]
         }
 
         fun getDay(date: Long): String {
@@ -53,6 +84,14 @@ class Util{
 
             if(d < 10) return "0$d"
             return "$d"
+        }
+
+        fun hideKeyboard(ctx: Context) {
+            val inputManager = ctx
+                    .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            // check if no view has focus:
+            val v = (ctx as Activity).currentFocus ?: return
+            inputManager.hideSoftInputFromWindow(v.windowToken, 0)
         }
 
         fun startSignInActivity(activity: Activity){

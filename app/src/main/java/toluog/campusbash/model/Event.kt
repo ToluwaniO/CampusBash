@@ -20,6 +20,5 @@ data class Event(@PrimaryKey var eventId: String = "", var eventName: String = "
                  var eventVideoUrl: String? = null, var university: String = "",
                  var locationAddress: String = "", @Embedded var latLng: LatLng = LatLng(0.0,0.0),
                  var startTime: Long = 0L, var endTime: Long = 0L, var notes: String? = null,
-                 var tickets: ArrayList<Ticket> = arrayListOf(Ticket("", null, 0, 0, 0.0, 0,
-                         0L, 0, 0L)),
+                 var tickets: ArrayList<Ticket> = ArrayList(),
                  @Embedded var creator: Creator = AppContract.CREATOR): Parcelable
