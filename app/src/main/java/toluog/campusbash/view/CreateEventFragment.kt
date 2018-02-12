@@ -1,30 +1,40 @@
 package toluog.campusbash.view
 
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import android.widget.ArrayAdapter
+import com.myhexaville.smartimagepicker.ImagePicker
+import toluog.campusbash.model.Ticket
+import toluog.campusbash.utils.FirebaseManager
+import android.app.Activity.RESULT_OK
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
+import android.content.Intent
 import android.support.v4.app.Fragment
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import com.google.firebase.storage.UploadTask
-import com.myhexaville.smartimagepicker.ImagePicker
 import kotlinx.android.synthetic.main.create_event_layout.*
-import kotlinx.android.synthetic.main.create_event_layout.view.*
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.support.v4.act
 import toluog.campusbash.R
-import toluog.campusbash.R.id.event_type_spinner
 import toluog.campusbash.utils.AppContract
-import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import toluog.campusbash.model.Event
-import toluog.campusbash.model.Ticket
 import java.lang.ClassCastException
 import java.util.*
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
+import com.google.android.gms.location.places.ui.PlaceAutocomplete
+import toluog.campusbash.utils.AppContract.Companion.PLACE_AUTOCOMPLETE_REQUEST_CODE
+import com.google.android.gms.location.places.Place
+import android.app.Activity.RESULT_CANCELED
+import org.jetbrains.anko.support.v4.toast
+import toluog.campusbash.model.LatLng
+import kotlin.collections.ArrayList
 
 /**
  * Created by oguns on 12/13/2017.
@@ -41,10 +51,19 @@ class CreateEventFragment : Fragment(){
     private lateinit var fbasemanager: FirebaseManager
     private var mCallback: CreateEventFragmentInterface? = null
     private var type = 0
+    private lateinit var viewModel: CreateEventViewModel
+    var isSaved = false
+
 
     interface CreateEventFragmentInterface {
         fun eventSaved(event: Event)
         fun createTicket()
+        fun getTicketList(): ArrayList<Ticket>
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -55,11 +74,26 @@ class CreateEventFragment : Fragment(){
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         updateUi(view?.context)
+        if(isSaved) updateUi()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        imagePicker?.handleActivityResult(resultCode,requestCode, data);
+        imagePicker?.handleActivityResult(resultCode,requestCode, data)
+
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                val place = PlaceAutocomplete.getPlace(activity.applicationContext, data)
+                updateLocation(place)
+                Log.i(TAG, "Place: " + place.name)
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                val status = PlaceAutocomplete.getStatus(activity.applicationContext, data)
+                toast("Could not get location")
+                Log.i(TAG, status.statusMessage)
+            } else if (resultCode == RESULT_CANCELED) {
+
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -78,6 +112,7 @@ class CreateEventFragment : Fragment(){
                 this@CreateEventFragment /*fragment nullable*/,
                 { /*on image picked*/ imageUri ->
                     this.imageUri = imageUri
+                    viewModel.imageUri = imageUri
                     event_image.setImageURI(imageUri) })
 
         event_save_button.setOnClickListener { save() }
@@ -85,6 +120,19 @@ class CreateEventFragment : Fragment(){
         event_add_ticket_button.setOnClickListener { mCallback?.createTicket() }
 
         event_image.setOnClickListener { imagePicker?.choosePicture(true) }
+
+        event_address_layout.setOnClickListener {
+            try {
+                val intent = PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                        .build(activity)
+                startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE)
+            } catch (e: GooglePlayServicesRepairableException) {
+                Log.d(TAG, e.message)
+            } catch (e: GooglePlayServicesNotAvailableException) {
+                Log.d(TAG, e.message)
+            }
+
+        }
 
         event_start_date.setOnClickListener {
             type = 0
@@ -113,12 +161,14 @@ class CreateEventFragment : Fragment(){
             startCalendar.set(Calendar.MONTH, month)
             startCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             event_start_date.text = Util.formatDate(startCalendar)
+            viewModel.event.startTime = startCalendar.timeInMillis
         }
         else{
             endCalendar.set(Calendar.DAY_OF_YEAR, year)
             endCalendar.set(Calendar.MONTH, month)
             endCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             event_end_date.text = Util.formatDate(endCalendar)
+            viewModel.event.endTime = endCalendar.timeInMillis
         }
     }
 
@@ -128,11 +178,13 @@ class CreateEventFragment : Fragment(){
             startCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             startCalendar.set(Calendar.MINUTE, minute)
             event_start_time.text = Util.formatTime(startCalendar)
+            viewModel.event.startTime = startCalendar.timeInMillis
         }
         else{
             endCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             endCalendar.set(Calendar.MINUTE, minute)
             event_end_time.text = Util.formatTime(endCalendar)
+            viewModel.event.endTime = endCalendar.timeInMillis
         }
     }
 
@@ -157,23 +209,39 @@ class CreateEventFragment : Fragment(){
         dialog.show(activity.supportFragmentManager, null)
     }
 
+    private fun updateLocation(place: Place) {
+        viewModel.event.latLng = LatLng(place.latLng.latitude, place.latLng.longitude)
+        viewModel.event.locationAddress = place.address.toString()
+        viewModel.place = place
+        address_text.text = "${place.name} | ${place.address}"
+    }
+
     private fun save() {
         val title = event_name.text.toString()
         val eventType = adapter.getItem(event_type_spinner.selectedItemPosition).toString()
         val startTime = startCalendar.timeInMillis
         val endTime = endCalendar.timeInMillis
         val uri = imageUri
-        val tickets = arrayListOf<Ticket>(Ticket("VIP", "Want best service? You're at the right place",
-                1, 10, 15.50, 0, startTime, 0, endTime))
+        val tickets = mCallback?.getTicketList() ?: ArrayList<Ticket>()
+        Log.d(TAG, "$tickets")
+        val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
 
         if (TextUtils.isEmpty(title)) {
             event_name.error = "Please enter name"
             return
         }
 
-        val event = Event("", title, eventType, AppContract.LOREM_IPSUM, null,
-                null, "uOttawa", AppContract.STANTON_ADDRESS, AppContract.STANTON_COORD,
-                startTime, endTime, null, tickets, AppContract.CREATOR)
+        val event = viewModel.event
+        event.eventName = title
+        event.eventType = eventType
+        event.description = AppContract.LOREM_IPSUM
+        event.university = university
+        event.startTime = startTime
+        event.endTime = endTime
+        event.creator = AppContract.CREATOR
+        event.tickets = tickets
+        Log.d(TAG, "${event.tickets}")
+
         val creator = FirebaseManager.getCreator()
         if (creator != null) event.creator = creator
 
@@ -208,7 +276,6 @@ class CreateEventFragment : Fragment(){
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState?.putParcelable(AppContract.MY_EVENT_BUNDLE,getEvent())
         Log.d(TAG, "OnSavedInstanceState")
     }
 
@@ -217,7 +284,8 @@ class CreateEventFragment : Fragment(){
 
     }
 
-    private fun updateUi(event: Event){
+    private fun updateUi(){
+        val event = viewModel.event
         val sTime = Calendar.getInstance()
         val endTime = Calendar.getInstance()
         sTime.timeInMillis = event.startTime
@@ -228,6 +296,11 @@ class CreateEventFragment : Fragment(){
         event_start_time.text = Util.formatTime(sTime)
         event_end_date.text = Util.formatDate(endTime)
         event_end_time.text = Util.formatTime(endTime)
+        address_text.text = "${viewModel.place?.name} | ${viewModel.place?.address}"
+        if(viewModel.imageUri != null){
+            imageUri = viewModel.imageUri
+            event_image.setImageURI(imageUri)
+        }
     }
 
     fun getEvent(): Event{

@@ -1,5 +1,6 @@
 package toluog.campusbash.view
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.ClipDescription
 import android.content.Context
 import android.os.Bundle
@@ -26,6 +27,8 @@ class CreateTicketFragment: Fragment(){
     val TAG = CreateEventFragment::class.java.simpleName
     var rootView: View? = null
     lateinit var callback: TicketListener
+    private lateinit var viewModel: CreateEventViewModel
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater?.inflate(R.layout.create_ticket_layout, container, false)
         return rootView
@@ -33,6 +36,7 @@ class CreateTicketFragment: Fragment(){
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
         save_ticket.setOnClickListener { save() }
     }
 
@@ -50,8 +54,6 @@ class CreateTicketFragment: Fragment(){
             ticket.price = price.toDouble()
             callback.ticketComplete(ticket)
         }
-
-
     }
 
     fun validate(name: String, description: String, quantity: String, price: String): Boolean{

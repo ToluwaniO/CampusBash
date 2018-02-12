@@ -24,7 +24,7 @@ class FirebaseManager(){
     }
 
     fun addEvent(event: Event) {
-        Log.d(TAG, "addEventCalled")
+        Log.d(TAG, "addEventCalled $event")
         val eventRef = db?.collection(AppContract.FIREBASE_EVENTS)
         if(TextUtils.isEmpty(event.eventId)){
             val document = eventRef?.document()

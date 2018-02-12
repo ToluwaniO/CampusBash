@@ -50,8 +50,7 @@ class AppContract{
         //RemoteConfig
         val configRefreshTime = 3600L
 
-        //API
-        val MAPS_API_KEY = "AIzaSyC6ArHoBH007ZRKp9CBFA8P58UJbbSsP4c"
+        val PLACE_AUTOCOMPLETE_REQUEST_CODE = 48547
 
     }
 }
