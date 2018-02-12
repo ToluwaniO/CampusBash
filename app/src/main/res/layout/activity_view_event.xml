@@ -182,7 +182,7 @@
                 android:textSize="24sp" />
 
             <fragment
-                android:id="@+id/fragment"
+                android:id="@+id/map_fragment"
                 android:name="com.google.android.gms.maps.MapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"

@@ -45,7 +45,7 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerV
 
         fun bind(event: Event, listener: OnItemClickListener, context: Context?){
             event_title.text = event.eventName
-            event_address.text = event.locationAddress
+            event_address.text = event.place.address
             event_day.text = Util.getDay(event.startTime)
             event_month.text = Util.getShortMonth(event.startTime)
             if(event.placeholderUrl != null){

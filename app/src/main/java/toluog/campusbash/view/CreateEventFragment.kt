@@ -173,7 +173,6 @@ class CreateEventFragment : Fragment(){
     }
 
     fun timeChanged(hourOfDay: Int, minute: Int) {
-
         if(type == 0){
             startCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             startCalendar.set(Calendar.MINUTE, minute)
@@ -204,15 +203,14 @@ class CreateEventFragment : Fragment(){
             override fun timeChanged(hourOfDay: Int, minute: Int) {
                 this@CreateEventFragment.timeChanged(hourOfDay, minute)
             }
-
         })
         dialog.show(activity.supportFragmentManager, null)
     }
 
     private fun updateLocation(place: Place) {
-        viewModel.event.latLng = LatLng(place.latLng.latitude, place.latLng.longitude)
-        viewModel.event.locationAddress = place.address.toString()
-        viewModel.place = place
+        viewModel.event.place.latLng = LatLng(place.latLng.latitude, place.latLng.longitude)
+        viewModel.event.place.address = place.address.toString()
+        viewModel.event.place.name = place.name.toString()
         address_text.text = "${place.name} | ${place.address}"
     }
 
@@ -279,11 +277,6 @@ class CreateEventFragment : Fragment(){
         Log.d(TAG, "OnSavedInstanceState")
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-    }
-
     private fun updateUi(){
         val event = viewModel.event
         val sTime = Calendar.getInstance()
@@ -301,22 +294,5 @@ class CreateEventFragment : Fragment(){
             imageUri = viewModel.imageUri
             event_image.setImageURI(imageUri)
         }
-    }
-
-    fun getEvent(): Event{
-        val title = event_name.text.toString()
-        val eventType = adapter.getItem(event_type_spinner.selectedItemPosition).toString()
-        val startTime = startCalendar.timeInMillis
-        val endTime = endCalendar.timeInMillis
-        val uri = imageUri
-        val tickets = arrayListOf<Ticket>(Ticket("VIP", "Want best service? You're at the right place",
-                1, 10, 15.50, 0, startTime, 0, endTime))
-
-        val event = Event("", title, eventType, AppContract.LOREM_IPSUM, null,
-                null, "uOttawa", AppContract.STANTON_ADDRESS, AppContract.STANTON_COORD,
-                startTime, endTime, null, tickets, AppContract.CREATOR)
-        val creator = FirebaseManager.getCreator()
-        if (creator != null) event.creator = creator
-        return event
     }
 }
