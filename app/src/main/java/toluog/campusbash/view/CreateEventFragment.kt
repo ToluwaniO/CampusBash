@@ -1,5 +1,6 @@
 package toluog.campusbash.view
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -25,6 +26,19 @@ import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
 import java.lang.ClassCastException
 import java.util.*
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
+import com.google.android.gms.location.places.ui.PlaceAutocomplete
+import toluog.campusbash.utils.AppContract.Companion.PLACE_AUTOCOMPLETE_REQUEST_CODE
+import android.R.attr.data
+import com.google.android.gms.location.places.Place
+import android.app.Activity.RESULT_CANCELED
+import android.R.attr.data
+import com.google.android.gms.location.places.ui.PlaceAutocomplete.getStatus
+import android.app.Activity.RESULT_OK
+import org.jetbrains.anko.support.v4.act
+import org.jetbrains.anko.support.v4.toast
+
 
 /**
  * Created by oguns on 12/13/2017.
@@ -41,6 +55,7 @@ class CreateEventFragment : Fragment(){
     private lateinit var fbasemanager: FirebaseManager
     private var mCallback: CreateEventFragmentInterface? = null
     private var type = 0
+
 
     interface CreateEventFragmentInterface {
         fun eventSaved(event: Event)
@@ -59,7 +74,22 @@ class CreateEventFragment : Fragment(){
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        imagePicker?.handleActivityResult(resultCode,requestCode, data);
+        imagePicker?.handleActivityResult(resultCode,requestCode, data)
+
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                val place = PlaceAutocomplete.getPlace(activity.applicationContext, data)
+                Log.i(TAG, "Place: " + place.name)
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                val status = PlaceAutocomplete.getStatus(activity.applicationContext, data)
+                toast("Could not get location")
+                Log.i(TAG, status.statusMessage)
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+                toast("Could not get location")
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -85,6 +115,19 @@ class CreateEventFragment : Fragment(){
         event_add_ticket_button.setOnClickListener { mCallback?.createTicket() }
 
         event_image.setOnClickListener { imagePicker?.choosePicture(true) }
+
+        event_address_layout.setOnClickListener {
+            try {
+                val intent = PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                        .build(activity)
+                startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE)
+            } catch (e: GooglePlayServicesRepairableException) {
+                Log.d(TAG, e.message)
+            } catch (e: GooglePlayServicesNotAvailableException) {
+                Log.d(TAG, e.message)
+            }
+
+        }
 
         event_start_date.setOnClickListener {
             type = 0
@@ -155,6 +198,10 @@ class CreateEventFragment : Fragment(){
 
         })
         dialog.show(activity.supportFragmentManager, null)
+    }
+
+    private fun updateLocation(place: Place) {
+
     }
 
     private fun save() {

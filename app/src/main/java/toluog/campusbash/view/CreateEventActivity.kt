@@ -11,11 +11,12 @@ import toluog.campusbash.utils.FirebaseManager
 
 class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEventFragmentInterface, CreateTicketFragment.TicketListener {
 
-    private val TAG = MainActivity::class.java.simpleName
+    private val TAG = CreateEventActivity::class.java.simpleName
     private val fragManager = supportFragmentManager
     val tickets = ArrayList<Ticket>()
-    lateinit var fbaseManager: FirebaseManager
-    val createEvent = CreateEventFragment()
+    private lateinit var fbaseManager: FirebaseManager
+    private val createEvent = CreateEventFragment()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_event)
