@@ -15,15 +15,11 @@ class AppContract{
                 "vitae risus venenatis blandit. Proin cursus, ante et aliquet lobortis, enim mauris " +
                 "pulvinar turpis, eu tincidunt mi orci ac enim. Mauris mattis eget massa nec eleifend." +
                 " Morbi faucibus semper gravida. Aenean pharetra tristique eros, sit amet scelerisque " +
-                "elit volutpat nec. Orci varius natoque penatibus et magnis dis parturient montes, " +
-                "nascetur ridiculus mus. Suspendisse cursus quam eget nisi tempor dapibus. Nunc sollicitudin" +
-                " a enim nec ornare. Ut tincidunt suscipit lectus, vitae auctor lacus pharetra ac. " +
-                "Suspendisse fermentum scelerisque bibendum."
+                "elit volutpat nec."
         val STANTON_ADDRESS = "9A7, 100 University Private, Ottawa, ON K1N 6N5"
         val STANTON_COORD = LatLng(45.4221, 75.6848)
         val CREATOR = Creator("Toluwani Ogunsanya", "frfgbruf", "ifjihjri")
-        val TICKETS = arrayOf(Ticket("VIP", "Want best service? You're at the right place",
-                1, 10, 15.50, 0, 33L, 0, 44L))
+        val TICKETS = arrayOf(Ticket())
 
         //FRAGMENT TAGS
         val CREATE_EVENT_TAG = "createevent"

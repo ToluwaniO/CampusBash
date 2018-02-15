@@ -48,8 +48,8 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerV
             event_address.text = event.place.address
             event_day.text = Util.getDay(event.startTime)
             event_month.text = Util.getShortMonth(event.startTime)
-            if(event.placeholderUrl != null){
-                Glide.with(context).load(event.placeholderUrl).into(event_image)
+            if(event.placeholderImage != null){
+                Glide.with(context).load(event.placeholderImage?.url).into(event_image)
             } else {
                 event_image.setImageResource(R.drawable.default_event_background)
             }

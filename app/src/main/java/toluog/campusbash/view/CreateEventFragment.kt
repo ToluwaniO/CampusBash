@@ -34,6 +34,7 @@ import com.google.android.gms.location.places.Place
 import android.app.Activity.RESULT_CANCELED
 import org.jetbrains.anko.support.v4.toast
 import toluog.campusbash.model.LatLng
+import toluog.campusbash.model.Media
 import kotlin.collections.ArrayList
 
 /**
@@ -61,14 +62,10 @@ class CreateEventFragment : Fragment(){
         fun getTicketList(): ArrayList<Ticket>
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
-    }
-
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater?.inflate(R.layout.create_event_layout, container, false)
         fbasemanager = FirebaseManager()
+        viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
         return rootView
     }
 
@@ -211,6 +208,7 @@ class CreateEventFragment : Fragment(){
         viewModel.event.place.latLng = LatLng(place.latLng.latitude, place.latLng.longitude)
         viewModel.event.place.address = place.address.toString()
         viewModel.event.place.name = place.name.toString()
+        viewModel.event.place.id = place.id
         address_text.text = "${place.name} | ${place.address}"
     }
 
@@ -221,6 +219,9 @@ class CreateEventFragment : Fragment(){
         val endTime = endCalendar.timeInMillis
         val uri = imageUri
         val tickets = mCallback?.getTicketList() ?: ArrayList<Ticket>()
+        if (tickets.size == 0) {
+            toast("You must add one ticket")
+        }
         Log.d(TAG, "$tickets")
         val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
 
@@ -238,6 +239,7 @@ class CreateEventFragment : Fragment(){
         event.endTime = endTime
         event.creator = AppContract.CREATOR
         event.tickets = tickets
+        event.timeZone = Calendar.getInstance().timeZone.displayName
         Log.d(TAG, "${event.tickets}")
 
         val creator = FirebaseManager.getCreator()
@@ -246,7 +248,9 @@ class CreateEventFragment : Fragment(){
         if (uri != null) {
             Log.d(TAG, "uri is not null")
             fbasemanager.uploadEventImage(uri)?.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
-                event.placeholderUrl = taskSnapshot?.downloadUrl.toString()
+                val placeholder = taskSnapshot?.storage?.path?.let{
+                    Media(taskSnapshot.downloadUrl.toString(), it, "image") }
+                event.placeholderImage = placeholder
                 fbasemanager.addEvent(event)
                 snackbar(rootView!!, "Event saved")
                 mCallback?.eventSaved(event)
@@ -289,7 +293,7 @@ class CreateEventFragment : Fragment(){
         event_start_time.text = Util.formatTime(sTime)
         event_end_date.text = Util.formatDate(endTime)
         event_end_time.text = Util.formatTime(endTime)
-        address_text.text = "${viewModel.place?.name} | ${viewModel.place?.address}"
+        address_text.text = "${viewModel.event.place?.name} | ${viewModel.event.place?.address}"
         if(viewModel.imageUri != null){
             imageUri = viewModel.imageUri
             event_image.setImageURI(imageUri)

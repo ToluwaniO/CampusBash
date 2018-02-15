@@ -30,7 +30,7 @@ class Util{
         private val TAG = Util::class.java.simpleName
         private val shortMonthsCaps = arrayOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
                 "SEP", "OCT", "NOV", "DEC")
-        private val shortDays = arrayOf("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri")
+        private val shortDays = arrayOf("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat")
         private val shortMonths = arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
                 "Sep", "Oct", "Nov", "Dec")
 

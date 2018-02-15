@@ -43,11 +43,6 @@ class EventsFragment() : Fragment(){
     private val ads = ArrayList<NativeAd>()
     var eventSize = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(activity).get(EventsViewModel::class.java)
-    }
-
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater?.inflate(R.layout.events_layout, container, false)
 
@@ -55,7 +50,7 @@ class EventsFragment() : Fragment(){
         if(bundle != null){
             myEvents = bundle.getBoolean(AppContract.MY_EVENT_BUNDLE)
         }
-
+        viewModel = ViewModelProviders.of(activity).get(EventsViewModel::class.java)
         viewModel.getEvents()?.observe(this, Observer { eventsList ->
             val user = FirebaseManager.getUser()
             events.clear()
