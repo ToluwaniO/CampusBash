@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context="toluog.campusbash.view.ViewEventActivity">
 
     <ScrollView
@@ -26,10 +27,14 @@
                 android:id="@+id/event_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/roboto_light"
                 android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -42,7 +47,7 @@
 
                 <ImageView
                     android:id="@+id/calendar_icon"
-                    android:layout_width="70dp"
+                    android:layout_width="50dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     app:srcCompat="@drawable/ic_calendar_icon" />
@@ -50,9 +55,13 @@
                 <TextView
                     android:id="@+id/event_time"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/roboto_light"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -66,7 +75,7 @@
 
                 <ImageView
                     android:id="@+id/location_icon"
-                    android:layout_width="70dp"
+                    android:layout_width="50dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     app:srcCompat="@drawable/ic_location" />
@@ -74,6 +83,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -81,12 +92,15 @@
                         android:id="@+id/place_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp" />
+                        android:fontFamily="@font/roboto_light"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/address_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_light"
                         android:textSize="14sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -102,7 +116,7 @@
 
                 <ImageView
                     android:id="@+id/ticket_icon"
-                    android:layout_width="70dp"
+                    android:layout_width="50dp"
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     app:srcCompat="@drawable/ic_ticket" />
@@ -111,8 +125,12 @@
                     android:id="@+id/ticket_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1" />
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/roboto_light"
+                    android:textColor="@android:color/black" />
             </LinearLayout>
 
             <View
@@ -126,6 +144,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/about_title"
                 android:textColor="@android:color/black"
                 android:textSize="24sp" />
@@ -135,6 +154,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
+                android:fontFamily="@font/roboto_light"
                 android:maxLines="2"
                 android:textColor="@android:color/black" />
 
@@ -146,7 +166,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="5dp"
-                android:background="@android:color/transparent"
+                android:background="?android:attr/selectableItemBackground"
                 android:text="@string/see_more"
                 android:textAllCaps="false"
                 android:textColor="@color/colorPrimary" />
@@ -165,6 +185,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/location"
                 android:textColor="@android:color/black"
                 android:textSize="24sp" />
@@ -190,6 +211,7 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="5dp"
                 android:layout_weight="1"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/host"
                 android:textColor="@android:color/black"
                 android:textSize="24sp" />
@@ -197,7 +219,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="15dp"
+                android:layout_marginBottom="10dp"
                 android:orientation="horizontal">
 
                 <de.hdodenhof.circleimageview.CircleImageView
@@ -212,19 +234,34 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_margin="5dp"
-                    android:layout_weight="1"
+                    android:fontFamily="@font/roboto_light"
                     android:textColor="@android:color/black"
                     android:textSize="12sp" />
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/event_get_ticket"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorAccent"
-                android:text="@string/get_ticket"
-                android:textColor="@android:color/white" />
+                android:layout_height="80dp">
+
+                <Button
+                    android:id="@+id/event_get_ticket"
+                    style="@style/AppTheme.RoundedCornerMaterialButton.Primary"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="36dp"
+                    android:text="@string/get_ticket"
+                    android:textColor="@android:color/white" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_centerVertical="true"
+                    android:background="#c0c0c0" />
+
+            </RelativeLayout>
         </LinearLayout>
 
     </ScrollView>

@@ -46,6 +46,6 @@
     <string name="host">Host</string>
     <string name="address">Address</string>
     <string name="search_address">Search venue or address</string>
-    <string name="free_event">This event is free 🎉</string>
+    <string name="free_event">This event is free</string>
 
 </resources>

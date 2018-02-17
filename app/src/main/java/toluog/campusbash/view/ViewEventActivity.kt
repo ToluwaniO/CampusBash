@@ -60,11 +60,6 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateUi(event: Event){
-        val calA = Calendar.getInstance()
-        val calB = Calendar.getInstance()
-        calA.timeInMillis = event.startTime
-        calB.timeInMillis = event.endTime
-
         if(event.placeholderImage == null || TextUtils.isEmpty(event.placeholderImage?.url)){
 
         } else{
@@ -74,17 +69,32 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         event_description.text = event.description
         Glide.with(this).load(event.creator.imageUrl).into(host_image)
         event_creator.text = "hosted by ${event.creator.name}"
-        event_time.text = "${Util.formatDateTime(calA)} - ${Util.formatDateTime(calB)}"
+        event_time.text = "${Util.getPeriod(event.startTime, event.endTime)}"
         place_name.text = event.place.name
         address_text.text = event.place.address
 
         when {
-            event.tickets.size == 0 -> ticket_text.text = getString(R.string.free_event)
             event.tickets.size == 1 -> {
                 val ticket = event.tickets[0]
-                ticket_text.text = "One ticket type available for $${ticket.price}"
+                if(ticket.type == "free") {
+                    ticket_text.text = this.getString(R.string.free_event)
+                } else {
+                    ticket_text.text = "One ticket type available for $${ticket.price}"
+                }
             }
-            else -> ticket_text.text = "${event.tickets.size} ticket types available"
+            else -> {
+                var min = event.tickets[0].price
+                var max = event.tickets[0].price
+                event.tickets.forEach {
+                    if(it.price < min) {
+                        min = it.price
+                    }
+                    if (it.price > max) {
+                        max = it.price
+                    }
+                }
+                ticket_text.text = "${event.tickets[0].currency}${min} - ${event.tickets[0].currency}${max}"
+            }
         }
     }
 }

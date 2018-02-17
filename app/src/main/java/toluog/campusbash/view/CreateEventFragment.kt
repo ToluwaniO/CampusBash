@@ -221,6 +221,7 @@ class CreateEventFragment : Fragment(){
         val tickets = mCallback?.getTicketList() ?: ArrayList<Ticket>()
         if (tickets.size == 0) {
             toast("You must add one ticket")
+            return
         }
         Log.d(TAG, "$tickets")
         val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
