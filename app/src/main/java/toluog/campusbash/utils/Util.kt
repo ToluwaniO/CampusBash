@@ -30,7 +30,7 @@ class Util{
         private val TAG = Util::class.java.simpleName
         private val shortMonthsCaps = arrayOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
                 "SEP", "OCT", "NOV", "DEC")
-        private val shortDays = arrayOf("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri")
+        private val shortDays = arrayOf("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat")
         private val shortMonths = arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
                 "Sep", "Oct", "Nov", "Dec")
 
@@ -69,6 +69,29 @@ class Util{
         }
 
         fun formatDateTime(calendar: Calendar) = "${formatDate(calendar)} ${formatTime(calendar)}"
+
+        fun getPeriod(start: Long, end: Long): String {
+            val sCal = Calendar.getInstance()
+            sCal.timeInMillis = start
+            val eCal = Calendar.getInstance()
+            eCal.timeInMillis = end
+            val sDay = sCal[Calendar.DAY_OF_YEAR]
+            val sYear = sCal[Calendar.YEAR]
+            val eDay = eCal[Calendar.DAY_OF_YEAR]
+            val eYear = eCal[Calendar.YEAR]
+            var date = ""
+
+            return if (sDay == eDay && sYear == eYear) {
+                "${formatDate(sCal)} ${formatTime(sCal)} - ${formatTime(eCal)}"
+            } else if(sDay.toInt() < eDay.toInt() && sYear == eYear) {
+                val a = formatDate(sCal)
+                a.removeRange(a.length-6, a.length-1)
+                val b = formatDate(eCal)
+                "$a ${formatTime(sCal)} - $b ${formatTime(eCal)}"
+            } else {
+                "${formatDateTime(sCal)} - ${formatDateTime(eCal)}"
+            }
+        }
 
         fun getShortMonth(date: Long): String{
             val cal = Calendar.getInstance()

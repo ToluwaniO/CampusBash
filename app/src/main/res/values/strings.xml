@@ -6,7 +6,7 @@
     <string name="title_events">Events</string>
     <string name="title_host">Host</string>
     <string name="event_name">Enter event name</string>
-    <string name="date_text">12/12/2017</string>
+    <string name="date_text">Mon, Jan 1, 2018</string>
     <string name="event_time">15:00</string>
     <string name="event_starts">Event starts</string>
     <string name="event_ends_text">Event ends</string>
@@ -39,7 +39,13 @@
     <string name="ad_attribution">Ad</string>
     <string name="admob_app_id">ca-app-pub-6048560905035130~3362797617</string>
     <string name="admob_app_id_debug">ca-app-pub-3940256099942544/2247696110</string>
+
+    <string name="about_title">About</string>
+    <string name="see_more">See more</string>
+    <string name="location">Location</string>
+    <string name="host">Host</string>
     <string name="address">Address</string>
     <string name="search_address">Search venue or address</string>
+    <string name="free_event">This event is free</string>
 
 </resources>

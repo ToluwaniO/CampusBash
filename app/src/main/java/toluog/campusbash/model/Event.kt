@@ -16,9 +16,9 @@ import toluog.campusbash.utils.AppContract
 @Entity(tableName = AppContract.EVENT_TABLE)
 @Parcelize
 data class Event(@PrimaryKey var eventId: String = "", var eventName: String = "", var eventType: String = "",
-                 var description: String = "", var placeholderUrl: String? = null,
-                 var eventVideoUrl: String? = null, var university: String = "",
-                 var locationAddress: String = "", @Embedded var latLng: LatLng = LatLng(0.0,0.0),
-                 var startTime: Long = 0L, var endTime: Long = 0L, var notes: String? = null,
+                 var description: String = "", @Embedded(prefix = "placeholderImage_") var placeholderImage: Media? = null,
+                 @Embedded(prefix = "eventVideo_") var eventVideo: Media? = null, var university: String = "",
+                 @Embedded(prefix = "location_") var place: Place = Place(),
+                 var startTime: Long = 0L, var endTime: Long = 0L, var timeZone: String = "",
                  var tickets: ArrayList<Ticket> = ArrayList(),
                  @Embedded var creator: Creator = AppContract.CREATOR): Parcelable

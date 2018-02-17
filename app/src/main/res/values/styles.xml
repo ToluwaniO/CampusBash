@@ -42,4 +42,12 @@
         <item name="android:height">15dp</item>
     </style>
 
+    <style name="AppTheme.RoundedCornerMaterialButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:background">@drawable/rounded_shape</item>
+    </style>
+
+    <style name="AppTheme.RoundedCornerMaterialButton.Primary" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:background">@drawable/rounded_shape_primary</item>
+    </style>
+
 </resources>
