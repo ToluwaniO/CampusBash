@@ -26,7 +26,7 @@ class Repository(c: Context){
             initializedEvents = true
             Log.d(TAG, "datasource initialized")
         }
-        return db?.eventDao()?.getEvents()
+        return db?.eventDao()?.getEvents(System.currentTimeMillis())
     }
 
     fun getEvent(eventId: String): LiveData<Event>?{
