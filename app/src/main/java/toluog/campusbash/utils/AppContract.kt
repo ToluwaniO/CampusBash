@@ -48,5 +48,8 @@ class AppContract{
 
         val PLACE_AUTOCOMPLETE_REQUEST_CODE = 48547
 
+        //JOB TAGS
+        val JOB_EVENT_DELETE = "delete_old_events"
+
     }
 }

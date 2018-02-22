@@ -2,7 +2,6 @@ package toluog.campusbash.utils
 
 import android.app.Activity
 import android.content.Context
-import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
@@ -11,14 +10,15 @@ import java.util.*
 import com.firebase.ui.auth.AuthUI
 import de.hdodenhof.circleimageview.CircleImageView
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
-import android.R.id.edit
-import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.inputmethod.InputMethodManager
-import org.jetbrains.anko.defaultSharedPreferences
-import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
-import kotlin.math.min
+import com.firebase.jobdispatcher.FirebaseJobDispatcher
+import com.firebase.jobdispatcher.GooglePlayDriver
+import com.firebase.jobdispatcher.RetryStrategy
+import com.firebase.jobdispatcher.Constraint
+import com.firebase.jobdispatcher.Lifetime
+import com.firebase.jobdispatcher.Trigger
 
 
 /**
@@ -28,6 +28,7 @@ class Util{
     companion object {
 
         private val TAG = Util::class.java.simpleName
+        private var mDispatcher: FirebaseJobDispatcher? = null
         private val shortMonthsCaps = arrayOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
                 "SEP", "OCT", "NOV", "DEC")
         private val shortDays = arrayOf("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat")
@@ -165,6 +166,27 @@ class Util{
         fun getPrefStringSet(activity: Activity, key: String): MutableSet<String> {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
             return sharedPref.getStringSet(key,HashSet<String>())
+        }
+
+        fun scheduleEventDeleteJob(context: Context) {
+            val mDispatcher = FirebaseJobDispatcher(GooglePlayDriver(context))
+            val myJob = mDispatcher.newJobBuilder()
+                    .setService(MyJobService::class.java)
+                    .setTag(AppContract.JOB_EVENT_DELETE)
+                    .setRecurring(true)
+                    .setTrigger(Trigger.executionWindow(5, 30))
+                    .setLifetime(Lifetime.FOREVER)
+                    .setReplaceCurrent(false)
+                    .setConstraints(Constraint.DEVICE_CHARGING)
+                    .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                    .build()
+            mDispatcher.mustSchedule(myJob)
+        }
+
+        fun cancelAllJobs(context: Context) {
+            val dispatcher = FirebaseJobDispatcher(GooglePlayDriver(context))
+            //Cancel all the jobs for this package
+            dispatcher.cancelAll()
         }
 
         fun ImageView.loadImage(url: String, context: Context){

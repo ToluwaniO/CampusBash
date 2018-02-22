@@ -69,6 +69,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Util.cancelAllJobs(this)
         firstOpen()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
