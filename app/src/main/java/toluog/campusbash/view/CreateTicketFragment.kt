@@ -13,7 +13,9 @@ import android.view.ViewGroup
 import toluog.campusbash.R
 import kotlinx.android.synthetic.main.create_ticket_layout.*
 import org.w3c.dom.Text
+import toluog.campusbash.R.drawable.ticket
 import toluog.campusbash.model.Ticket
+import toluog.campusbash.utils.AppContract
 import java.lang.ClassCastException
 
 /**
@@ -22,11 +24,11 @@ import java.lang.ClassCastException
 class CreateTicketFragment: Fragment(){
 
     interface TicketListener{
-        fun ticketComplete(ticket: Ticket)
+        fun ticketComplete(ticket: Ticket?)
     }
-    val TAG = CreateEventFragment::class.java.simpleName
-    var rootView: View? = null
-    lateinit var callback: TicketListener
+    private val TAG = CreateEventFragment::class.java.simpleName
+    private var rootView: View? = null
+    private lateinit var callback: TicketListener
     private lateinit var viewModel: CreateEventViewModel
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -37,56 +39,78 @@ class CreateTicketFragment: Fragment(){
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
+        viewModel.ticket = arguments?.getParcelable<Ticket>(AppContract.TICKETS_KEY)
+        if(viewModel.ticket != null) {
+            updateView(viewModel.ticket)
+        }
         save_ticket.setOnClickListener { save() }
     }
 
-    fun save(){
-        val ticket = Ticket()
+    private fun save(){
+        val ticket: Ticket? = if(viewModel.selectedTicket != null) {
+            viewModel.selectedTicket
+        } else {
+            Ticket()
+        }
+
         val name = ticket_name.text.toString()
         val description = ticket_description.text.toString()
         val quantity = ticket_quantity.text.toString()
         val price = ticket_price.text.toString()
 
         if(validate(name, description, quantity, price)){
-            ticket.name = name
-            ticket.description = description
-            ticket.quantity = quantity.toInt()
-            ticket.price = price.toDouble()
+            ticket?.name = name
+            ticket?.description = description
+            ticket?.quantity = quantity.toInt()
+            ticket?.price = price.toDouble()
+            if(viewModel.selectedTicket == null && ticket != null) {
+                viewModel.event.tickets.add(ticket)
+            }
             callback.ticketComplete(ticket)
         }
     }
 
-    fun validate(name: String, description: String, quantity: String, price: String): Boolean{
+    private fun validate(name: String, description: String, quantity: String, price: String): Boolean{
         var status = true
-        val err_message = "Field can't be empty"
-        val err_size = "Field must be greater than zero"
+        val errMessage = "Field can't be empty"
+        val errSize = "Field must be greater than zero"
         if(TextUtils.isEmpty(name)){
-            ticket_name.error = err_message
+            ticket_name.error = errMessage
             status = false
         }
         if(TextUtils.isEmpty(description)){
-            ticket_name.error = err_message
+            ticket_name.error = errMessage
             status = false
         }
         if (TextUtils.isEmpty(quantity)){
-            ticket_quantity.error = err_message
+            ticket_quantity.error = errMessage
             status = false
         } else if(quantity.toInt() < 0){
-            ticket_quantity.error = err_size
+            ticket_quantity.error = errSize
         }
         if (TextUtils.isEmpty(price)){
-            ticket_price.error = err_message
+            ticket_price.error = errMessage
             status = false
         } else if(quantity.toInt() < 0){
-            ticket_price.error = err_size
+            ticket_price.error = errSize
         }
         return status
+    }
+
+    private fun updateView(ticket: Ticket?) {
+        ticket?.let {
+            ticket_name.setText(ticket.name)
+            ticket_description.setText(ticket.description)
+            ticket_quantity.setText(ticket.quantity.toString())
+            ticket_price.setText(ticket.price.toString())
+        }
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         try {
             callback = context as TicketListener
+            Log.d(TAG, "onAttach")
         }catch (e: ClassCastException){
             Log.d(TAG, e.message)
         }

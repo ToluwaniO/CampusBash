@@ -23,6 +23,8 @@ class AppContract{
 
         //FRAGMENT TAGS
         val CREATE_EVENT_TAG = "createevent"
+        val CREATE_TICKETS_TAG = "view_tickets_fragment"
+        val TICKETS_KEY = "tickets"
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"

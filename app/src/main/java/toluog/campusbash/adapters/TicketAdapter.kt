@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.View
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.ticket_item_layout.*
+import kotlinx.android.synthetic.main.ticket_quantity_item_layout.*
 import toluog.campusbash.R
 import toluog.campusbash.model.Ticket
 
@@ -26,7 +26,7 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder{
-        val view = LayoutInflater.from(parent?.context).inflate(R.layout.ticket_item_layout, parent, false)
+        val view = LayoutInflater.from(parent?.context).inflate(R.layout.ticket_quantity_item_layout, parent, false)
         return ViewHolder(view)
     }
 

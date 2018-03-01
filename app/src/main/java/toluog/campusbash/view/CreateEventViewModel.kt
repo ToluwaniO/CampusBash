@@ -14,5 +14,20 @@ class CreateEventViewModel : ViewModel(){
     var event = Event()
     var imageUri: Uri? = null
     var place: Place? = null
+    var ticket: Ticket? = null
+
+    var selectedTicket: Ticket? = null
+
+    fun select(ticket: Ticket) {
+        selectedTicket = ticket
+    }
+
+    fun deleteTicket(index: Int) {
+        event.tickets.removeAt(index)
+    }
+
+    fun addTicket(ticket: Ticket) {
+        event.tickets.add(ticket)
+    }
 
 }

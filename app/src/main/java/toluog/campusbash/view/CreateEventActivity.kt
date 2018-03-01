@@ -6,6 +6,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import org.jetbrains.anko.intentFor
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
@@ -13,13 +14,14 @@ import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 
-class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEventFragmentInterface, CreateTicketFragment.TicketListener {
+class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEventFragmentInterface,
+        CreateTicketFragment.TicketListener, ViewTicketsFragment.ViewTicketsListener {
 
     private val TAG = CreateEventActivity::class.java.simpleName
     private val fragManager = supportFragmentManager
-    val tickets = ArrayList<Ticket>()
-    lateinit var fbaseManager: FirebaseManager
-    val createEvent = CreateEventFragment()
+    private val tickets = ArrayList<Ticket>()
+    private lateinit var fbaseManager: FirebaseManager
+    private val createEvent = CreateEventFragment()
     private lateinit var viewModel: CreateEventViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,14 +42,23 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
     override fun createTicket() {
         fragManager.saveFragmentInstanceState(createEvent)
         createEvent.isSaved = true
-        fragManager.beginTransaction().replace(R.id.fragment_frame, CreateTicketFragment()).commit()
+        fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
+//        startActivity(intentFor<CreateTicketsActivity>().putParcelableArrayListExtra(AppContract.TICKETS_KEY, viewModel.event.tickets))
     }
 
-    override fun ticketComplete(ticket: Ticket) {
+    override fun ticketComplete(ticket: Ticket?) {
         Util.hideKeyboard(this)
-        viewModel.event.tickets.add(ticket)
+//        ticket?.let { viewModel.event.tickets.add(it) }
         Log.d(TAG, "${viewModel.event.tickets}")
-        fragManager.beginTransaction().replace(R.id.fragment_frame, createEvent).commit()
+        fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
+    }
+
+    override fun ticketClicked(ticket: Ticket) {
+        fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
+    }
+
+    override fun addTicket() {
+        fragManager.beginTransaction().replace(R.id.fragment_frame, CreateTicketFragment()).commit()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -61,10 +72,10 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
     override fun onBackPressed() {
         val frag = fragManager.findFragmentById(R.id.fragment_frame)
 
-        if(frag is CreateTicketFragment) {
-            fragManager.beginTransaction().replace(R.id.fragment_frame, createEvent).commit()
-        } else {
-            finish()
+        when (frag) {
+            is CreateTicketFragment -> fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
+            is ViewTicketsFragment -> fragManager.beginTransaction().replace(R.id.fragment_frame, createEvent, AppContract.CREATE_EVENT_TAG).commit()
+            else -> finish()
         }
     }
 }

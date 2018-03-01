@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
-import kotlinx.android.synthetic.main.ticket_item_layout.*
+import kotlinx.android.synthetic.main.ticket_quantity_item_layout.*
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.longToast
 import toluog.campusbash.R
