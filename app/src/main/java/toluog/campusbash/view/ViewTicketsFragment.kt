@@ -4,6 +4,8 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +17,9 @@ import kotlinx.android.synthetic.main.view_tickets_layout.*
 import toluog.campusbash.R
 import toluog.campusbash.model.Ticket
 import java.lang.ClassCastException
+import android.support.v7.widget.DividerItemDecoration
+
+
 
 /**
  * Created by oguns on 2/27/2018.
@@ -44,6 +49,11 @@ class ViewTicketsFragment: Fragment() {
 
         tickets = viewModel.event.tickets
         adapter = TicketsAdapter()
+        val layoutManager = LinearLayoutManager(rootView?.context)
+        tickets_recycler.layoutManager = layoutManager
+        tickets_recycler.itemAnimator = DefaultItemAnimator()
+        val dividerItemDecoration = DividerItemDecoration(tickets_recycler.context, layoutManager.orientation)
+        tickets_recycler.addItemDecoration(dividerItemDecoration)
         tickets_recycler.adapter = adapter
 
         fab.setOnClickListener {
@@ -53,6 +63,7 @@ class ViewTicketsFragment: Fragment() {
         if(tickets.size == 0) {
             no_tickets_layout.visibility = View.VISIBLE
         } else {
+            tickets_recycler.visibility = View.VISIBLE
             Log.d(TAG, "$tickets")
             adapter.notifyDataSetChanged()
         }
@@ -72,9 +83,18 @@ class ViewTicketsFragment: Fragment() {
         super.onAttach(context)
         try {
             callback = context as ViewTicketsListener
-            Log.d(TAG, "onAttach")
         }catch (e: ClassCastException){
             Log.d(TAG, e.message)
+        }
+    }
+
+    private fun updateView() {
+        if(tickets.size == 0) {
+            tickets_recycler.visibility = View.GONE
+            no_tickets_layout.visibility = View.VISIBLE
+        } else{
+            tickets_recycler.visibility = View.VISIBLE
+            no_tickets_layout.visibility = View.GONE
         }
     }
 
@@ -106,7 +126,11 @@ class ViewTicketsFragment: Fragment() {
                 }
                 quantity.text = "${ticket.quantity} tickets"
 
-                delete.setOnClickListener { tickets.removeAt(adapterPosition) }
+                delete.setOnClickListener {
+                    tickets.removeAt(adapterPosition)
+                    notifyDataSetChanged()
+                    updateView()
+                }
                 containerView?.setOnClickListener {
                     viewModel.selectedTicket = ticket
                     callback.ticketClicked(ticket)

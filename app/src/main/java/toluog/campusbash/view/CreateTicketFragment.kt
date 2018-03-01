@@ -53,10 +53,10 @@ class CreateTicketFragment: Fragment(){
             Ticket()
         }
 
-        val name = ticket_name.text.toString()
-        val description = ticket_description.text.toString()
-        val quantity = ticket_quantity.text.toString()
-        val price = ticket_price.text.toString()
+        val name = ticket_name.text.toString().trim()
+        val description = ticket_description.text.toString().trim()
+        val quantity = ticket_quantity.text.toString().trim()
+        val price = ticket_price.text.toString().trim()
 
         if(validate(name, description, quantity, price)){
             ticket?.name = name
@@ -110,7 +110,6 @@ class CreateTicketFragment: Fragment(){
         super.onAttach(context)
         try {
             callback = context as TicketListener
-            Log.d(TAG, "onAttach")
         }catch (e: ClassCastException){
             Log.d(TAG, e.message)
         }

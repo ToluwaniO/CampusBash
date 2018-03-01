@@ -65,10 +65,10 @@
             android:resource="@array/preloaded_fonts" />
 
         <service
-            android:exported="false"
-            android:name=".utils.MyJobService">
+            android:name=".utils.MyJobService"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
 
@@ -77,6 +77,8 @@
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".view.CreateTicketsActivity"></activity>
     </application>
 
 </manifest>

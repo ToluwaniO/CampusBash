@@ -47,5 +47,6 @@
     <string name="address">Address</string>
     <string name="search_address">Search venue or address</string>
     <string name="free_event">This event is free</string>
+    <string name="no_tickets">No tickets</string>
 
 </resources>
