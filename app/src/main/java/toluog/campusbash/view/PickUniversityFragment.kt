@@ -9,21 +9,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Switch
-import kotlinx.android.synthetic.main.list_with_x_layout.view.*
 import kotlinx.android.synthetic.main.pick_university_fragment_layout.*
-import org.jetbrains.anko.support.v4.act
+import org.jetbrains.anko.support.v4.selector
 import toluog.campusbash.R
-import toluog.campusbash.model.University
 import java.lang.ClassCastException
+import kotlin.collections.ArrayList
 
 /**
  * Created by oguns on 12/28/2017.
  */
-class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
+class PickUniversityFragment(): Fragment(){
 
     interface PickUniversityListener {
         fun universitySelectionDone(country: String, name: String)
@@ -32,12 +27,11 @@ class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
     private val TAG = PickUniversityFragment::class.java.simpleName
     private var rootView: View? = null
     private lateinit var callback: PickUniversityListener
-    private lateinit var counAdapter: ArrayAdapter<CharSequence>
-    private lateinit var uniAdapter: ArrayAdapter<CharSequence>
+    private lateinit var countries: List<String>
     private var viewModel: FirstOpenViewModel? = null
     private var country: String? = null
     private var university: String? = null
-    private val universities = ArrayList<CharSequence>()
+    private var universities = ArrayList<String>()
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater?.inflate(R.layout.pick_university_fragment_layout, container, false)
@@ -48,40 +42,45 @@ class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        countries = resources.getStringArray(R.array.countries).asList()
+
+
+        country_text.setOnClickListener {
+            selector("Select country", countries, { dialogInterface, i ->
+                country_text.text = countries[i]
+                country = countries[i]
+                viewModel?.getUniversities(countries[i])?.observe(this, Observer {
+                    universities.clear()
+                    it?.forEach { uni ->
+                        universities.add(uni.name)
+                    }
+                })
+            })
+        }
+
+        university_text.setOnClickListener {
+            Log.d(TAG, "UNIVERSITIES -> ${universities.size}")
+            selector("Select university", universities, { dialogInterface, i ->
+                university_text.text = universities[i]
+                university = universities[i]
+            })
+        }
 
         next_button.setOnClickListener {
             val uni = university
-            if (uni!= null) {
-                val con = country as String
+            val con = country
+            if (uni!= null && con != null) {
                 callback.universitySelectionDone(con, uni)
             }
         }
     }
 
-    private fun setUpUniSpinner(){
-        viewModel?.getUniversities(country!!)?.observe(this, Observer { unis ->
-            if(unis != null){
-                universities.clear()
-                unis.mapTo(universities) { it.name }
-                uniAdapter.notifyDataSetChanged()
-            }
-        })
-    }
-
     override fun onStart() {
         super.onStart()
-        counAdapter = ArrayAdapter.createFromResource(rootView?.context, R.array.countries,
-                R.layout.text_view_layout)
-        //counAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    }
 
-        uniAdapter = ArrayAdapter(rootView?.context, R.layout.text_view_layout, universities)
-        //uniAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        country_spinner.adapter = counAdapter
-        university_spinner.adapter = uniAdapter
-
-        university_spinner.onItemSelectedListener = this
-        country_spinner.onItemSelectedListener = this
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onAttach(context: Context?) {
@@ -90,22 +89,6 @@ class PickUniversityFragment(): Fragment(), AdapterView.OnItemSelectedListener{
             callback = context as PickUniversityListener
         } catch (e: ClassCastException){
             e.printStackTrace()
-        }
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-    }
-
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        when(parent?.id){
-            R.id.university_spinner -> {
-                university_spinner.setSelection(position)
-                university = universities[position].toString()
-            }
-            R.id.country_spinner -> {
-                country = resources.getStringArray(R.array.countries)[position]
-                setUpUniSpinner()
-            }
         }
     }
 }

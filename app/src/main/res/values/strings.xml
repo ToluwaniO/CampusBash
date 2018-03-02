@@ -49,5 +49,7 @@
     <string name="free_event">This event is free</string>
     <string name="no_tickets">No tickets</string>
     <string name="event_description_hint">Enter event description</string>
+    <string name="select_country">Select country</string>
+    <string name="select_university">Select university</string>
 
 </resources>

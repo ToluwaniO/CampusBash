@@ -47,7 +47,7 @@ PickEventTypeFragment.PickEventTypeListener{
             Util.startSignInActivity(act)
         }
         count++
-        fragManager.beginTransaction().add(R.id.fragment_frame, PickUniversityFragment(), null).commit()
+        fragManager.beginTransaction().replace(R.id.fragment_frame, PickUniversityFragment(), null).commit()
     }
 
     override fun onBackPressed() {
