@@ -54,7 +54,7 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
     }
 
     override fun ticketClicked(ticket: Ticket) {
-        fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
+        fragManager.beginTransaction().replace(R.id.fragment_frame, CreateTicketFragment()).commit()
     }
 
     override fun addTicket() {

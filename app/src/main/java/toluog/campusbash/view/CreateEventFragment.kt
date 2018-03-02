@@ -32,6 +32,9 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete
 import toluog.campusbash.utils.AppContract.Companion.PLACE_AUTOCOMPLETE_REQUEST_CODE
 import com.google.android.gms.location.places.Place
 import android.app.Activity.RESULT_CANCELED
+import kotlinx.android.synthetic.main.pick_event_type_fragment_layout.*
+import org.jetbrains.anko.support.v4.indeterminateProgressDialog
+import org.jetbrains.anko.support.v4.progressDialog
 import org.jetbrains.anko.support.v4.toast
 import toluog.campusbash.model.LatLng
 import toluog.campusbash.model.Media
@@ -209,11 +212,14 @@ class CreateEventFragment : Fragment(){
         viewModel.event.place.address = place.address.toString()
         viewModel.event.place.name = place.name.toString()
         viewModel.event.place.id = place.id
-        address_text.text = "${place.name} | ${place.address}"
+        if(place.name.isNotEmpty() && place.address.isNotEmpty()) {
+            address_text.text = "${place.name} | ${place.address}"
+        }
     }
 
     private fun save() {
-        val title = event_name.text.toString()
+        val title = event_name.text.toString().trim()
+        val description = event_description.text.toString().trim()
         val eventType = adapter.getItem(event_type_spinner.selectedItemPosition).toString()
         val startTime = startCalendar.timeInMillis
         val endTime = endCalendar.timeInMillis
@@ -234,7 +240,7 @@ class CreateEventFragment : Fragment(){
         val event = viewModel.event
         event.eventName = title
         event.eventType = eventType
-        event.description = AppContract.LOREM_IPSUM
+        event.description = description
         event.university = university
         event.startTime = startTime
         event.endTime = endTime
@@ -246,11 +252,16 @@ class CreateEventFragment : Fragment(){
         val creator = FirebaseManager.getCreator()
         if (creator != null) event.creator = creator
 
+        val dialog = indeterminateProgressDialog(message = "", title = "Uploading Event")
+        dialog.show()
+
         if (uri != null) {
             Log.d(TAG, "uri is not null")
+            dialog.setMessage("Uploading media")
             fbasemanager.uploadEventImage(uri)?.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
                 val placeholder = taskSnapshot?.storage?.path?.let{
-                    Media(taskSnapshot.downloadUrl.toString(), it, "image") }
+                    Media(taskSnapshot.downloadUrl.toString(), it, "image")
+                }
                 event.placeholderImage = placeholder
                 fbasemanager.addEvent(event)
                 snackbar(rootView!!, "Event saved")
@@ -294,7 +305,10 @@ class CreateEventFragment : Fragment(){
         event_start_time.text = Util.formatTime(sTime)
         event_end_date.text = Util.formatDate(endTime)
         event_end_time.text = Util.formatTime(endTime)
-        address_text.text = "${viewModel.event.place?.name} | ${viewModel.event.place?.address}"
+        val place = viewModel.event.place
+        if(place.name.isNotEmpty() && place.address.isNotEmpty()) {
+            address_text.text = "${place.name} | ${place.address}"
+        }
         if(viewModel.imageUri != null){
             imageUri = viewModel.imageUri
             event_image.setImageURI(imageUri)

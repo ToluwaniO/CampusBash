@@ -39,9 +39,9 @@ class CreateTicketFragment: Fragment(){
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
-        viewModel.ticket = arguments?.getParcelable<Ticket>(AppContract.TICKETS_KEY)
-        if(viewModel.ticket != null) {
-            updateView(viewModel.ticket)
+        //viewModel.ticket = arguments?.getParcelable<Ticket>(AppContract.TICKETS_KEY)
+        if(viewModel.selectedTicket != null) {
+            updateView(viewModel.selectedTicket)
         }
         save_ticket.setOnClickListener { save() }
     }
