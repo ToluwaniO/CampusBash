@@ -19,7 +19,7 @@
         android:layout_margin="5dp"
         android:ems="10"
         android:hint="Ticket Description"
-        android:inputType="textPersonName" />
+        android:inputType="textMultiLine|textPersonName" />
 
     <EditText
         android:id="@+id/ticket_quantity"
