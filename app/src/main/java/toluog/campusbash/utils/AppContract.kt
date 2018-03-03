@@ -29,11 +29,13 @@ class AppContract{
         //ROOM KEYS
         const val EVENT_TABLE = "Events"
         const val UNIVERSITY_TABLE = "Universities"
+        const val CURRENCY_TABLE = "Currencies"
 
         //FIREBASE KEYS
         val FIREBASE_EVENTS = "events"
         val FIREBASE_UNIVERSITIES = "universities"
         val FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS = "event_placeholder_images"
+        val FIREBASE_CURRENCIES = "currencies"
 
         //SHAREDPREFERENCES
         val PREF_FIRST_OPEN_KEY = "first_open"
