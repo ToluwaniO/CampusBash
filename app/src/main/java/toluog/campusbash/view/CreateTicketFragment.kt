@@ -115,7 +115,8 @@ class CreateTicketFragment: Fragment(){
             if(ticketType == "paid") ticket?.price = price.toDouble()
             ticket?.type = ticketType
             ticket?.isVisible = visible
-            ticket?.currency = currency
+            if(ticketType == "paid") ticket?.currency = this.currency
+            else ticket?.currency = ""
             if(viewModel.selectedTicket == null && ticket != null) {
                 viewModel.event.tickets.add(ticket)
             }
