@@ -25,7 +25,7 @@ public interface CurrencyDao {
     @Query("SELECT * FROM ${AppContract.CURRENCY_TABLE} WHERE id LIKE :id LIMIT 1")
     fun getCurrency(id: String): LiveData<Currency>
 
-    @Query("Select * FROM ${AppContract.CURRENCY_TABLE}")
+    @Query("SELECT * FROM ${AppContract.CURRENCY_TABLE}")
     fun getCurrencies(): LiveData<List<Currency>>
 
     @Delete()

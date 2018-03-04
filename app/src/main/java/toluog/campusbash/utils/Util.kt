@@ -170,8 +170,8 @@ class Util{
             return sharedPref.getStringSet(key,HashSet<String>())
         }
 
-        fun downloadCurrencies() {
-            CurrencyDataSource.downloadCurrencies()
+        fun downloadCurrencies(context: Context) {
+            CurrencyDataSource.downloadCurrencies(context)
         }
 
         fun scheduleEventDeleteJob(context: Context) {

@@ -56,19 +56,18 @@ class CurrencyDataSource {
             })
         }
 
-        fun downloadCurrencies() {
+        fun downloadCurrencies(context: Context) {
+            db = AppDatabase.getDbInstance(context)
             val currDao = db?.currencyDao()
             query.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    launch {
-                        for (document in task.result) {
-                            val snapshot = document.toObject(Currency::class.java)
-                            currDao?.insertCurrency(snapshot)
-                            Log.d(TAG, "$snapshot")
-                        }
+                    for (document in task.result) {
+                        val snapshot = document.toObject(Currency::class.java)
+                        launch { currDao?.insertCurrency(snapshot) }
+                        Log.d(TAG, "$snapshot")
                     }
                 } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException())
+                    Log.d(TAG, "Error getting documents: ", task.exception)
                 }
             }
         }

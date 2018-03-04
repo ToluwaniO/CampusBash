@@ -12,8 +12,9 @@ import java.util.*
 @SuppressLint("ParcelCreator")
 @Parcelize
 data class Ticket(var name: String = "", var description: String = "", var type: String = "paid",
-                  var quantity: Int = 0, var price: Double = 0.0, var currency: String = "CAD$",
+                  var quantity: Int = 0, var price: Double = 0.0, var currency: String = "CA$",
                   var salesStartTime: Long = Calendar.getInstance().timeInMillis,
                   var salesEndTime: Long = Calendar.getInstance().timeInMillis,
                   var timeZone: String = Calendar.getInstance().timeZone.displayName,
-                  var minAllowedPerOrder: Int = 1, var maxAllowedPerOrder: Int = quantity) : Parcelable
+                  var minAllowedPerOrder: Int = 1, var maxAllowedPerOrder: Int = 10,
+                  var isVisible: Boolean = true) : Parcelable
