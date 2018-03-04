@@ -21,7 +21,7 @@ PickEventTypeFragment.PickEventTypeListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_first_open)
         Log.d(TAG, "Activity opened")
-
+        Util.downloadCurrencies(this)
     }
 
     override fun universitySelectionDone(country: String, name: String) {

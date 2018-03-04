@@ -2,18 +2,20 @@ package toluog.campusbash.data
 
 import android.arch.persistence.room.*
 import android.content.Context
+import toluog.campusbash.model.Currency
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.University
 
 /**
  * Created by oguns on 12/4/2017.
  */
-@Database(entities = arrayOf(Event::class, University::class), version = 1)
+@Database(entities = arrayOf(Event::class, University::class, Currency::class), version = 1)
 @TypeConverters(EventConverter::class)
 abstract class AppDatabase(): RoomDatabase() {
 
     abstract fun eventDao() : EventDao
     abstract fun universityDao(): UniversityDao
+    abstract fun currencyDao(): CurrencyDao
 
     companion object {
         var dbInstance: AppDatabase? = null

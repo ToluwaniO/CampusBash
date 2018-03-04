@@ -19,6 +19,8 @@ import com.firebase.jobdispatcher.RetryStrategy
 import com.firebase.jobdispatcher.Constraint
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
+import toluog.campusbash.data.CurrencyDataSource
+import toluog.campusbash.data.Repository
 
 
 /**
@@ -166,6 +168,10 @@ class Util{
         fun getPrefStringSet(activity: Activity, key: String): MutableSet<String> {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
             return sharedPref.getStringSet(key,HashSet<String>())
+        }
+
+        fun downloadCurrencies(context: Context) {
+            CurrencyDataSource.downloadCurrencies(context)
         }
 
         fun scheduleEventDeleteJob(context: Context) {

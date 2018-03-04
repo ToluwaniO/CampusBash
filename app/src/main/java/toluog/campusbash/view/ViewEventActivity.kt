@@ -85,15 +85,22 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             else -> {
                 var min = event.tickets[0].price
                 var max = event.tickets[0].price
+                var currency = ""
                 event.tickets.forEach {
-                    if(it.price < min) {
+                    if(it.price < min && it.isVisible) {
                         min = it.price
                     }
-                    if (it.price > max) {
+                    if (it.price > max && it.isVisible) {
                         max = it.price
+                        currency = it.currency
                     }
                 }
-                ticket_text.text = "${event.tickets[0].currency}${min} - ${event.tickets[0].currency}${max}"
+                if(event.tickets.any { it.price == 0.0 && it.isVisible }) {
+                    ticket_text.text = "FREE - $currency$max"
+                } else {
+                    ticket_text.text = "$currency$min - $currency$max"
+                }
+
             }
         }
     }

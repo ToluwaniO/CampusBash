@@ -42,9 +42,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
                 this.event = event
                 Log.d(TAG, "$event")
                 tickets.clear()
-                for(i in event.tickets){
-                    tickets.add(i)
-                }
+                event.tickets.filter { it.isVisible }.forEach { tickets.add(it) }
                 adapter.notifyDataSetChanged()
             }
         })

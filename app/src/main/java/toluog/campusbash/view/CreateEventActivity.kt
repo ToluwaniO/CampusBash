@@ -6,6 +6,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import org.jetbrains.anko.intentFor
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
@@ -19,7 +20,6 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
 
     private val TAG = CreateEventActivity::class.java.simpleName
     private val fragManager = supportFragmentManager
-    private val tickets = ArrayList<Ticket>()
     private lateinit var fbaseManager: FirebaseManager
     private val createEvent = CreateEventFragment()
     private lateinit var viewModel: CreateEventViewModel
@@ -27,6 +27,7 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_event)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         fbaseManager = FirebaseManager()
         viewModel = ViewModelProviders.of(this).get(CreateEventViewModel::class.java)
         fragManager.beginTransaction().replace(R.id.fragment_frame, createEvent, AppContract.CREATE_EVENT_TAG)
@@ -43,12 +44,10 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
         fragManager.saveFragmentInstanceState(createEvent)
         createEvent.isSaved = true
         fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
-//        startActivity(intentFor<CreateTicketsActivity>().putParcelableArrayListExtra(AppContract.TICKETS_KEY, viewModel.event.tickets))
     }
 
     override fun ticketComplete(ticket: Ticket?) {
         Util.hideKeyboard(this)
-//        ticket?.let { viewModel.event.tickets.add(it) }
         Log.d(TAG, "${viewModel.event.tickets}")
         fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
     }
@@ -67,6 +66,14 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
 
         frags.filterIsInstance<CreateEventFragment>()
                 .forEach { it.onActivityResult(requestCode, resultCode, data) }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val id = item?.itemId
+        when (id){
+            android.R.id.home -> onBackPressed()
+        }
+        return true
     }
 
     override fun onBackPressed() {
