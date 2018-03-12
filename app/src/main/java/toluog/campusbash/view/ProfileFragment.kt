@@ -25,21 +25,21 @@ import toluog.campusbash.utils.Util
 class ProfileFragment(): Fragment() {
 
     private val TAG = ProfileFragment::class.java.simpleName
-    var rootView: View? = null
+    private lateinit var rootView: View
     lateinit var university:String
     lateinit var country: String
     val util = Util()
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater?.inflate(R.layout.profile_fragment_layout, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        rootView = inflater.inflate(R.layout.profile_fragment_layout, container, false)
         return rootView
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val user = FirebaseManager.getUser()
         if(user != null) {
-            Glide.with(rootView?.context).load(user.photoUrl).into(profile_image)
+            Glide.with(rootView.context).load(user.photoUrl).into(profile_image)
             profile_name.text = user.displayName
             profile_email.text = user.email
         }

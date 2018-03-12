@@ -33,7 +33,7 @@ import toluog.campusbash.utils.Util
  */
 class EventsFragment() : Fragment(){
 
-    private var rootView: View? = null
+    private lateinit var rootView: View
     private var myEvents = false
     private val TAG = EventsFragment::class.java.simpleName
     private lateinit var viewModel: EventsViewModel
@@ -43,14 +43,14 @@ class EventsFragment() : Fragment(){
     private val ads = ArrayList<NativeAd>()
     var eventSize = 0
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater?.inflate(R.layout.events_layout, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        rootView = inflater.inflate(R.layout.events_layout, container, false)
 
         val bundle = this.arguments
         if(bundle != null){
             myEvents = bundle.getBoolean(AppContract.MY_EVENT_BUNDLE)
         }
-        viewModel = ViewModelProviders.of(activity).get(EventsViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
         viewModel.getEvents()?.observe(this, Observer { eventsList ->
             val user = FirebaseManager.getUser()
             events.clear()
@@ -83,9 +83,9 @@ class EventsFragment() : Fragment(){
         return rootView
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        adapter = EventAdapter(events, rootView?.context)
-        val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(rootView?.context)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        adapter = EventAdapter(events, rootView.context)
+        val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(rootView.context)
         event_recycler.layoutManager = layoutManager
         event_recycler.itemAnimator = DefaultItemAnimator()
         event_recycler.adapter = adapter

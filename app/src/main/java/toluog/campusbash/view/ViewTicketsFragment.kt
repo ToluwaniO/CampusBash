@@ -27,7 +27,7 @@ import android.support.v7.widget.DividerItemDecoration
 class ViewTicketsFragment: Fragment() {
 
     private lateinit var tickets: ArrayList<Ticket>
-    private var rootView: View? = null
+    private lateinit var rootView: View
     private lateinit var adapter: TicketsAdapter
     private lateinit var callback: ViewTicketsListener
     private lateinit var viewModel: CreateEventViewModel
@@ -38,18 +38,18 @@ class ViewTicketsFragment: Fragment() {
         fun addTicket()
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater?.inflate(R.layout.view_tickets_layout, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        rootView = inflater.inflate(R.layout.view_tickets_layout, container, false)
         return rootView
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity!!).get(CreateEventViewModel::class.java)
 
         tickets = viewModel.event.tickets
         adapter = TicketsAdapter()
-        val layoutManager = LinearLayoutManager(rootView?.context)
+        val layoutManager = LinearLayoutManager(rootView.context)
         tickets_recycler.layoutManager = layoutManager
         tickets_recycler.itemAnimator = DefaultItemAnimator()
         val dividerItemDecoration = DividerItemDecoration(tickets_recycler.context, layoutManager.orientation)
@@ -100,16 +100,16 @@ class ViewTicketsFragment: Fragment() {
 
     inner class TicketsAdapter : RecyclerView.Adapter<TicketsAdapter.ViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): TicketsAdapter.ViewHolder {
-            val view = LayoutInflater.from(parent?.context).inflate(R.layout.ticket_item_layout, parent,
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TicketsAdapter.ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.ticket_item_layout, parent,
                     false)
             return ViewHolder(view)
         }
 
         override fun getItemCount() = tickets.size
 
-        override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-            holder?.bind(tickets[position])
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.bind(tickets[position])
             Log.d(TAG, "Binding view")
         }
 
