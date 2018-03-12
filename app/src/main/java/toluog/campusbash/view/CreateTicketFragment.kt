@@ -145,7 +145,7 @@ class CreateTicketFragment: Fragment(){
         if (price.isEmpty() && ticketType == "paid"){
             ticket_price.error = errMessage
             status = false
-        } else if(ticketType == "paid" && price.toInt() < 0){
+        } else if(ticketType == "paid" && price.toDouble() < 0){
             ticket_price.error = errSize
             status = false
         }
