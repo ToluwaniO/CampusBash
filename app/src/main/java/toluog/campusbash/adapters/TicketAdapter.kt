@@ -25,15 +25,15 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
         fun onTicketClick(ticket: Ticket)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder{
-        val view = LayoutInflater.from(parent?.context).inflate(R.layout.ticket_quantity_item_layout, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder{
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.ticket_quantity_item_layout, parent, false)
         return ViewHolder(view)
     }
 
     override fun getItemCount() = tickets.size
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder?.bind(tickets[position], listener)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(tickets[position], listener)
     }
 
     class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView), LayoutContainer{

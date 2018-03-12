@@ -58,25 +58,25 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerV
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
         return when(viewType) {
             NATIVE_APP_INSTALL_AD_VIEW_TYPE -> {
-                val view = LayoutInflater.from(parent?.context).inflate(R.layout.native_app_install_view, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.native_app_install_view, parent, false)
                 NativeAppInstallAdViewHolder(view)
             }
             NATIVE_CONTENT_AD_VIEW_TYPE -> {
-                val view = LayoutInflater.from(parent?.context).inflate(R.layout.native_ad_view, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.native_ad_view, parent, false)
                 NativeContentAdViewHolder(view)
             }
             else -> {
-                val view = LayoutInflater.from(parent?.context).inflate(R.layout.event_card_layout, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.event_card_layout, parent, false)
                 EventViewHolder(view)
             }
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val viewType = getItemViewType(position)
         val item = events[position]
         Log.d(TAG, "VIEW TYPE is ${viewType}")

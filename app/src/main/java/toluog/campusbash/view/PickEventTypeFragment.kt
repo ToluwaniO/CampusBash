@@ -34,7 +34,7 @@ class PickEventTypeFragment(): Fragment() {
 
     private var callback: PickEventTypeListener? = null
     private val TAG = PickEventTypeFragment::class.java.simpleName
-    var rootView: View? = null
+   private lateinit var rootView: View
     lateinit var evetTypes: Array<String>
     val selectedTypes = HashSet<String>()
 
@@ -48,10 +48,10 @@ class PickEventTypeFragment(): Fragment() {
         private const val ROBOTO_MEDIUM = "roboto_medium.ttf"
         private const val ROBOTO_REGULAR = "roboto_regular.ttf"
     }
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater?.inflate(R.layout.pick_event_type_fragment_layout, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        rootView = inflater.inflate(R.layout.pick_event_type_fragment_layout, container, false)
 
-        assets = rootView?.context?.assets
+        assets = rootView.context?.assets
         boldTypeface = Typeface.createFromAsset(assets, ROBOTO_BOLD)
         mediumTypeface = Typeface.createFromAsset(assets, ROBOTO_MEDIUM)
         regularTypeface = Typeface.createFromAsset(assets, ROBOTO_REGULAR)
@@ -59,7 +59,7 @@ class PickEventTypeFragment(): Fragment() {
         return rootView
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         evetTypes = resources.getStringArray(R.array.party_types)
         next_button.setOnClickListener {
@@ -97,13 +97,13 @@ class PickEventTypeFragment(): Fragment() {
             override val totalCount = evetTypes.size
             override fun getItem(position: Int): PickerItem {
                 return PickerItem().apply {
-                    val colors = rootView!!.context.resources.obtainTypedArray(R.array.colors)
+                    val colors = rootView.context.resources.obtainTypedArray(R.array.colors)
                     title = evetTypes[position]
                     gradient = BubbleGradient(colors.getColor((position * 2) % 8, 0),
                             colors.getColor((position * 2) % 8 + 1, 0), BubbleGradient.VERTICAL)
                     typeface = mediumTypeface
-                    textColor = ContextCompat.getColor(rootView?.context, android.R.color.white)
-                    backgroundImage = ContextCompat.getDrawable(rootView!!.context, R.drawable.sit_down_event)
+                    textColor = ContextCompat.getColor(rootView.context, android.R.color.white)
+                    backgroundImage = ContextCompat.getDrawable(rootView.context, R.drawable.sit_down_event)
                 }
             }
 

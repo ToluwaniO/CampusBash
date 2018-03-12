@@ -20,7 +20,6 @@ import com.firebase.jobdispatcher.Constraint
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
 import toluog.campusbash.data.CurrencyDataSource
-import toluog.campusbash.data.Repository
 
 
 /**
@@ -36,6 +35,37 @@ class Util{
         private val shortDays = arrayOf("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat")
         private val shortMonths = arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
                 "Sep", "Oct", "Nov", "Dec")
+        private val utfCodes: Map<String, String> = mapOf("%21" to "!", "%22" to "\"", "%23" to "#", "%24" to "$",
+                "%26" to "&", "%27" to "'", "%28" to "(", "%29" to ")", "%2A" to "*",
+                "%2B" to "+", "%2C" to ",", "%2D" to "-", "%2E" to ".", "%2F" to "/", "%30" to "0",
+                "%31" to "1", "%32" to "2", "%33" to "3", "%34" to "4", "%35" to "5", "%36" to "6",
+                "%37" to "7", "%38" to "8", "%39" to "9", "%3A" to ":", "%3B" to ";", "%3C" to "<",
+                "%3D" to "=", "%3E" to ">", "%3F" to "?", "%40" to "@", "%41" to "A", "%42" to "B",
+                "%43" to "C", "%44" to "D", "%45" to "E", "%46" to "F", "%47" to "G", "%48" to "H",
+                "%49" to "I", "%4A" to "J", "%4B" to "K", "%4C" to "L", "%4D" to "M", "%4E" to "N",
+                "%4F" to "O", "%50" to "P", "%51" to "Q", "%52" to "R", "%53" to "S", "%54" to "T",
+                "%55" to "U", "%56" to "V", "%57" to "W", "%58" to "X", "%59" to "Y", "%5A" to "Z",
+                "%5B" to "[", "%5C" to "\\", "%5D" to "]", "%5E" to "^", "%5F" to "_", "%60" to "`",
+                "%61" to "a", "%62" to "b", "%63" to "c", "%64" to "d", "%65" to "e", "%66" to "f",
+                "%67" to "g", "%68" to "h", "%69" to "i", "%6A" to "j", "%6B" to "k", "%6C" to "l",
+                "%6D" to "m", "%6E" to "n", "%6F" to "o", "%70" to "p", "%71" to "q", "%72" to "r",
+                "%74" to "t", "%75" to "u", "%76" to "v", "%77" to "w", "%78" to "x", "%79" to "y",
+                "%7A" to "z", "%7B" to "{", "%7C" to "|", "%7D" to "}", "%7E" to "~", "%A2" to "¢",
+                "%A3" to "£", "%A5" to "¥", "%A6" to "|", "%A7" to "§", "%AB" to "«", "%AC" to "¬",
+                "%AD" to "¯", "%B0" to "º", "%B1" to "±", "%B2" to "ª", "%B4" to ",", "%B5" to "µ",
+                "%BB" to "»", "%BC" to "¼", "%BD" to "½", "%BF" to "¿", "%C0" to "À", "%C1" to "Á",
+                "%C2" to "Â", "%C3" to "Ã", "%C4" to "Ä", "%C5" to "Å", "%C6" to "Æ", "%C7" to "Ç",
+                "%C8" to "È", "%C9" to "É", "%CA" to "Ê", "%CB" to "Ë", "%CC" to "Ì", "%CD" to "Í",
+                "%CE" to "Î", "%CF" to "Ï", "%D0" to "Ð", "%D1" to "Ñ", "%D2" to "Ò", "%D3" to "Ó",
+                "%D4" to "Ô", "%D5" to "Õ", "%D6" to "Ö", "%D8" to "Ø", "%D9" to "Ù", "%DA" to "Ú",
+                "%DB" to "Û", "%DC" to "Ü", "%DD" to "Ý", "%DE" to "Þ", "%DF" to "ß", "%E0" to "à",
+                "%E1" to "á", "%E2" to "â", "%E3" to "ã", "%E4" to "ä", "%E5" to "å", "%E6" to "æ",
+                "%E7" to "ç", "%E8" to "è", "%E9" to "é", "%EA" to "ê", "%EB" to "ë", "%EC" to "ì",
+                "%ED" to "í", "%EE" to "î", "%EF" to "ï", "%F0" to "ð", "%F1" to "ñ", "%F2" to "ò",
+                "%F3" to "ó", "%F4" to "ô", "%F5" to "õ", "%F6" to "ö", "%F7" to "÷", "%F8" to "ø",
+                "%F9" to "ù", "%FA" to "ú", "%FB" to "û", "%FC" to "ü", "%FD" to "ý", "%FE" to "þ",
+                "%FF" to "ÿ", "%73" to "s")//, "%" to "%25"
+
 
         fun formatDate(calendar: Calendar): String {
             val dayName = shortDays[calendar[Calendar.DAY_OF_WEEK]-1]
@@ -193,6 +223,20 @@ class Util{
             val dispatcher = FirebaseJobDispatcher(GooglePlayDriver(context))
             //Cancel all the jobs for this package
             dispatcher.cancelAll()
+        }
+
+        fun fixLink(link: String): String {
+            var l = link
+            Log.d(TAG, "old Link -> $l")
+            val keys = utfCodes.keys
+            for (i in keys) {
+                val replacement = utfCodes[i]
+                if (replacement != null) {
+                    l = l.replace(i, replacement)
+                }
+            }
+            Log.d(TAG, "new Link -> $l")
+            return l
         }
 
         fun ImageView.loadImage(url: String, context: Context){

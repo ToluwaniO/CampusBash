@@ -25,7 +25,7 @@ class PickUniversityFragment(): Fragment(){
     }
 
     private val TAG = PickUniversityFragment::class.java.simpleName
-    private var rootView: View? = null
+    private lateinit var rootView: View
     private lateinit var callback: PickUniversityListener
     private lateinit var countries: List<String>
     private var viewModel: FirstOpenViewModel? = null
@@ -33,14 +33,14 @@ class PickUniversityFragment(): Fragment(){
     private var university: String? = null
     private var universities = ArrayList<String>()
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater?.inflate(R.layout.pick_university_fragment_layout, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        rootView = inflater.inflate(R.layout.pick_university_fragment_layout, container, false)
         viewModel = ViewModelProviders.of(this).get(FirstOpenViewModel::class.java)
 
         return rootView
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         countries = resources.getStringArray(R.array.countries).asList()
 

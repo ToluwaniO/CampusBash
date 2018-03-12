@@ -39,13 +39,13 @@ class CreateTicketFragment: Fragment(){
     private var ticketType = ""
     private lateinit var typeAdapter: ArrayAdapter<String>
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater?.inflate(R.layout.create_ticket_layout, container, false)
-        viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        rootView = inflater.inflate(R.layout.create_ticket_layout, container, false)
+        viewModel = ViewModelProviders.of(activity!!).get(CreateEventViewModel::class.java)
         return rootView
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getCurrencies()?.observe(this, Observer {
             currencies.clear()

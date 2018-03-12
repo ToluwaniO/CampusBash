@@ -24,13 +24,13 @@ class InterestAdapter(private val interests: ArrayList<String>, private val intr
         this.checkboxListener = context as OnCheckedChangeListener
     }
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder?.bind(interests[position], intrstSet?.contains(interests[position])?: false,
                 checkboxListener)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent?.context).inflate(R.layout.interest_item_layout, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.interest_item_layout, parent, false)
         return ViewHolder(view)
     }
 

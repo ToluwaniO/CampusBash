@@ -46,7 +46,7 @@ import kotlin.collections.ArrayList
 class CreateEventFragment : Fragment(){
 
     private val TAG = CreateEventFragment::class.java.simpleName
-    private var rootView: View? = null
+    private lateinit var rootView: View
     private val startCalendar = Calendar.getInstance()
     private val endCalendar = Calendar.getInstance()
     private var imagePicker: ImagePicker? = null
@@ -65,15 +65,15 @@ class CreateEventFragment : Fragment(){
         fun getTicketList(): ArrayList<Ticket>
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater?.inflate(R.layout.create_event_layout, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        rootView = inflater.inflate(R.layout.create_event_layout, container, false)
         fbasemanager = FirebaseManager()
-        viewModel = ViewModelProviders.of(activity).get(CreateEventViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity!!).get(CreateEventViewModel::class.java)
         return rootView
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        updateUi(view?.context)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        updateUi(view.context)
         if(isSaved) updateUi()
     }
 
@@ -83,11 +83,11 @@ class CreateEventFragment : Fragment(){
 
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                val place = PlaceAutocomplete.getPlace(activity.applicationContext, data)
+                val place = PlaceAutocomplete.getPlace(activity?.applicationContext, data)
                 updateLocation(place)
                 Log.i(TAG, "Place: " + place.name)
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                val status = PlaceAutocomplete.getStatus(activity.applicationContext, data)
+                val status = PlaceAutocomplete.getStatus(activity?.applicationContext, data)
                 toast("Could not get location")
                 Log.i(TAG, status.statusMessage)
             } else if (resultCode == RESULT_CANCELED) {
@@ -194,7 +194,7 @@ class CreateEventFragment : Fragment(){
                 this@CreateEventFragment.dateChanged(year, month, dayOfMonth)
             }
         })
-        dialog.show(activity.supportFragmentManager, null)
+        dialog.show(activity?.supportFragmentManager, null)
     }
 
     private fun callTimeDialog(){
@@ -204,7 +204,7 @@ class CreateEventFragment : Fragment(){
                 this@CreateEventFragment.timeChanged(hourOfDay, minute)
             }
         })
-        dialog.show(activity.supportFragmentManager, null)
+        dialog.show(activity?.supportFragmentManager, null)
     }
 
     private fun updateLocation(place: Place) {
@@ -288,7 +288,7 @@ class CreateEventFragment : Fragment(){
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.d(TAG, "OnSavedInstanceState")
     }
