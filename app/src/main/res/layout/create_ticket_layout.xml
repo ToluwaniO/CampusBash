@@ -9,7 +9,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/textView2"
@@ -26,12 +26,11 @@
 
         <EditText
             android:id="@+id/ticket_name"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/roboto_light"
             android:hint="Ticket Name"
             android:inputType="textPersonName"
@@ -53,12 +52,11 @@
 
         <EditText
             android:id="@+id/ticket_description"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:ems="10"
             android:fontFamily="@font/roboto_light"
             android:hint="Ticket Description"
@@ -83,10 +81,9 @@
             android:id="@+id/ticket_quantity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:ems="10"
             android:fontFamily="@font/roboto_light"
             android:hint="Ticket Quantity"
@@ -120,9 +117,9 @@
             android:id="@+id/ticket_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:ems="10"
             android:fontFamily="@font/roboto_light"
             android:hint="Ticket Price"
@@ -145,10 +142,11 @@
 
         <TextView
             android:id="@+id/ticket_currency"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:background="?android:attr/selectableItemBackground"
             android:fontFamily="@font/roboto_light"
             android:text="@string/select_currency"
