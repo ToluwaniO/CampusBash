@@ -38,6 +38,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private lateinit var viewModel: MainActivityViewModel
     private val uniChar = ArrayList<CharSequence>()
     private val uniList = ArrayList<University>()
+    private lateinit var country: String
+    private lateinit var university: String
+
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_host -> {
@@ -79,6 +82,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         }
 
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+        country = Util.getPrefString(act, AppContract.PREF_COUNTRY_KEY)
+        university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
 
         updateUi()
         fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null).commit()
@@ -95,13 +100,14 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     private fun updateUi() {
         uniAdapter = ArrayAdapter(this, R.layout.text_view_layout, uniChar)
-        viewModel.getUniversities()?.observe(this, Observer { unis ->
+        viewModel.getUniversities(country)?.observe(this, Observer { unis ->
             if(unis != null && uniList.isEmpty()){
                 for (i in unis){
                     uniList.add(i)
                     uniChar.add(i.shortName)
                 }
                 uniAdapter.notifyDataSetChanged()
+                updateUniversityAdapter()
             }
         })
         main_uni_spinner.adapter = uniAdapter
@@ -155,5 +161,16 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             Log.d(TAG, "INTERESTS $interestSet")
             Log.d(TAG, "UNIVERSITY $university")
         }
+    }
+
+    private fun updateUniversityAdapter() {
+        var uniPosition = 0
+        for (i in 0 until uniList.size) {
+            if(uniList[i].name == university) {
+                uniPosition = i
+                break
+            }
+        }
+        main_uni_spinner.setSelection(uniPosition)
     }
 }

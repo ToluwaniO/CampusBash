@@ -20,6 +20,6 @@ class MainActivityViewModel(app: Application) : AndroidViewModel(app){
 
     fun getEvents() = db?.eventDao()?.getEvents()
 
-    fun getUniversities() = repo.getUnis("Canada")
+    fun getUniversities(country: String) = repo.getUnis(country)
 
 }
