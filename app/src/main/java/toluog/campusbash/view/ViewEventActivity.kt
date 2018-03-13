@@ -25,7 +25,7 @@ import android.content.Intent
 import android.util.Log
 import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
-
+import com.google.android.gms.maps.model.CameraPosition
 
 class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -79,10 +79,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         val ev = event
 
         if(ev != null) {
-            val latLng = LatLng(ev.place.latLng.lat, ev.place.latLng.lon)
-            mMap?.addMarker(MarkerOptions().position(latLng))
-            mMap?.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-            mMap?.animateCamera(CameraUpdateFactory.zoomTo(16f))
+            updateLocation(ev)
         }
     }
 
@@ -201,8 +198,21 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun observeEvent() {
         liveEvent?.observe(this, Observer { event ->
             this.event = event
-            onMapReady(mMap)
-            if(event != null) updateUi(event)
+            if(event != null) {
+                updateUi(event)
+                updateLocation(event)
+            }
         })
+    }
+
+    private fun updateLocation(event: Event) {
+        val latLng = LatLng(event.place.latLng.lat, event.place.latLng.lon)
+        mMap?.addMarker(MarkerOptions().position(latLng))
+        mMap?.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        val cameraPosition = CameraPosition.Builder()
+                .target(latLng)
+                .zoom(16f)
+                .build()
+        mMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
 }
