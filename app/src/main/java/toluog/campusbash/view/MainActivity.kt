@@ -18,11 +18,13 @@ import toluog.campusbash.utils.AppContract
 import com.firebase.ui.auth.ResultCodes
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.CoordinatorLayout
 import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import org.jetbrains.anko.act
+import toluog.campusbash.ViewBehavior.BottomNavigationBehavior
 import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
@@ -77,6 +79,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         firstOpen()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
+        (fab.layoutParams as CoordinatorLayout.LayoutParams).behavior = FabScrollBehavior()
+        (navigation.layoutParams as CoordinatorLayout.LayoutParams).behavior = BottomNavigationBehavior()
         fab.setOnClickListener {
             startActivity(intentFor<CreateEventActivity>())
         }
