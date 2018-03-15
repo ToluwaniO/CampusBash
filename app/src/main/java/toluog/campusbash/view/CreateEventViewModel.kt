@@ -37,4 +37,6 @@ class CreateEventViewModel(app: Application) : AndroidViewModel(app){
 
     fun getCurrencies() = repo.getCurrencies()
 
+    fun getUniversities(country: String) = repo.getUnis(country)
+
 }

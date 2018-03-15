@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:ems="10"
+            android:fontFamily="@font/roboto_light"
             android:hint="@string/event_name"
             android:inputType="textPersonName" />
 
@@ -32,6 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:ems="10"
+            android:fontFamily="@font/roboto_light"
             android:hint="@string/event_description_hint"
             android:inputType="textMultiLine|textPersonName" />
 
@@ -47,6 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:fontFamily="@font/roboto_light"
             android:text="@string/event_starts" />
 
         <LinearLayout
@@ -61,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/date_text"
                 android:textColor="@android:color/black" />
 
@@ -70,6 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/event_time"
                 android:textColor="@android:color/black" />
         </LinearLayout>
@@ -79,6 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:fontFamily="@font/roboto_light"
             android:text="@string/event_ends_text" />
 
         <LinearLayout
@@ -93,6 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/date_text"
                 android:textColor="@android:color/black" />
 
@@ -102,6 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/event_time"
                 android:textColor="@android:color/black" />
         </LinearLayout>
@@ -118,6 +126,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/address" />
 
             <TextView
@@ -125,7 +134,56 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/search_address"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/event_country_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:fontFamily="@font/roboto_light"
+                android:text="Country" />
+
+            <TextView
+                android:id="@+id/event_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:fontFamily="@font/roboto_light"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/event_university_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:fontFamily="@font/roboto_light"
+                android:text="University" />
+
+            <TextView
+                android:id="@+id/event_university"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:fontFamily="@font/roboto_light"
                 android:textColor="@android:color/black" />
         </LinearLayout>
 

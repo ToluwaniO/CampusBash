@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import com.myhexaville.smartimagepicker.ImagePicker
-import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.FirebaseManager
 import android.app.Activity.RESULT_OK
 import android.arch.lifecycle.ViewModelProviders
@@ -23,21 +22,20 @@ import org.jetbrains.anko.support.v4.act
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.Util
-import toluog.campusbash.model.Event
 import java.lang.ClassCastException
-import java.util.*
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.location.places.ui.PlaceAutocomplete
 import toluog.campusbash.utils.AppContract.Companion.PLACE_AUTOCOMPLETE_REQUEST_CODE
 import com.google.android.gms.location.places.Place
 import android.app.Activity.RESULT_CANCELED
-import kotlinx.android.synthetic.main.pick_event_type_fragment_layout.*
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
-import org.jetbrains.anko.support.v4.progressDialog
+import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.support.v4.toast
-import toluog.campusbash.model.LatLng
-import toluog.campusbash.model.Media
+import toluog.campusbash.model.*
+import java.util.Calendar
 import kotlin.collections.ArrayList
 
 /**
@@ -56,7 +54,12 @@ class CreateEventFragment : Fragment(){
     private var mCallback: CreateEventFragmentInterface? = null
     private var type = 0
     private lateinit var viewModel: CreateEventViewModel
+    private lateinit var country: String
+    private lateinit var university: String
+    private lateinit var countries: List<String>
+    private val universities = ArrayList<String>()
     var isSaved = false
+    private var liveUniversities: LiveData<List<University>>? = null
 
 
     interface CreateEventFragmentInterface {
@@ -69,10 +72,19 @@ class CreateEventFragment : Fragment(){
         rootView = inflater.inflate(R.layout.create_event_layout, container, false)
         fbasemanager = FirebaseManager()
         viewModel = ViewModelProviders.of(activity!!).get(CreateEventViewModel::class.java)
+        country = Util.getPrefString(activity!!, AppContract.PREF_COUNTRY_KEY)
+        university = Util.getPrefString(activity!!, AppContract.PREF_UNIVERSITY_KEY)
         return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        countries = resources.getStringArray(R.array.countries).asList()
+        viewModel.getUniversities(country)?.observe(this, Observer {
+            universities.clear()
+            it?.forEach {university ->
+                universities.add(university.name)
+            }
+        })
         updateUi(view.context)
         if(isSaved) updateUi()
     }
@@ -102,6 +114,8 @@ class CreateEventFragment : Fragment(){
     }
 
     private fun updateUi(context: Context?){
+        event_country.text = country
+        event_university.text = university
         adapter = ArrayAdapter.createFromResource(context,
                 R.array.party_types, android.R.layout.simple_spinner_item)
         // Specify the layout to use when the list of choices appears
@@ -152,6 +166,21 @@ class CreateEventFragment : Fragment(){
         event_end_time.setOnClickListener {
             type = 1
             callTimeDialog()
+        }
+
+        event_country_layout.setOnClickListener {
+            selector("Select country", countries, { _, i ->
+                country = countries[i]
+                event_country.text = country
+                startObserver(country)
+            })
+        }
+
+        event_university_layout.setOnClickListener {
+            selector("Select university", universities, { _, i ->
+                university = universities[i]
+                event_university.text = university
+            })
         }
     }
 
@@ -247,6 +276,7 @@ class CreateEventFragment : Fragment(){
         event.creator = AppContract.CREATOR
         event.tickets = tickets
         event.timeZone = Calendar.getInstance().timeZone.displayName
+        event.university = university
         Log.d(TAG, "${event.tickets}")
 
         val creator = FirebaseManager.getCreator()
@@ -313,5 +343,15 @@ class CreateEventFragment : Fragment(){
             imageUri = viewModel.imageUri
             event_image.setImageURI(imageUri)
         }
+    }
+
+    private fun startObserver(country: String) {
+        liveUniversities = viewModel.getUniversities(country)
+        liveUniversities?.observe(this, Observer {
+            universities.clear()
+            it?.forEach { university ->
+                universities.add(university.name)
+            }
+        })
     }
 }
