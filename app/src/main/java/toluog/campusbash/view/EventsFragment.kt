@@ -4,29 +4,21 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.view.ViewCompat
 import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide.init
 import com.google.android.gms.ads.formats.NativeAd
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.events_layout.*
-import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.support.v4.intentFor
 import toluog.campusbash.R
-import toluog.campusbash.R.id.event_recycler
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
-import toluog.campusbash.model.Event
 import toluog.campusbash.utils.ConfigProvider
 import toluog.campusbash.utils.FirebaseManager
-import toluog.campusbash.utils.Util
 
 /**
  * Created by oguns on 12/13/2017.
@@ -84,7 +76,7 @@ class EventsFragment() : Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = EventAdapter(events, rootView.context)
+        adapter = EventAdapter(events, rootView.context, myEvents)
         val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(rootView.context)
         event_recycler.layoutManager = layoutManager
         event_recycler.itemAnimator = DefaultItemAnimator()

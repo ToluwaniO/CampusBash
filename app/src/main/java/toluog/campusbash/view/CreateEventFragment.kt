@@ -31,6 +31,7 @@ import com.google.android.gms.location.places.Place
 import android.app.Activity.RESULT_CANCELED
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
+import com.bumptech.glide.Glide
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.support.v4.toast
@@ -74,10 +75,12 @@ class CreateEventFragment : Fragment(){
         viewModel = ViewModelProviders.of(activity!!).get(CreateEventViewModel::class.java)
         country = Util.getPrefString(activity!!, AppContract.PREF_COUNTRY_KEY)
         university = Util.getPrefString(activity!!, AppContract.PREF_UNIVERSITY_KEY)
+
         return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val bundle = arguments
         countries = resources.getStringArray(R.array.countries).asList()
         viewModel.getUniversities(country)?.observe(this, Observer {
             universities.clear()
@@ -87,6 +90,11 @@ class CreateEventFragment : Fragment(){
         })
         updateUi(view.context)
         if(isSaved) updateUi()
+        else if(bundle != null) {
+            val event = bundle[AppContract.MY_EVENT_BUNDLE] as Event
+            viewModel.event = event
+            updateUi()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -325,16 +333,15 @@ class CreateEventFragment : Fragment(){
 
     private fun updateUi(){
         val event = viewModel.event
-        val sTime = Calendar.getInstance()
-        val endTime = Calendar.getInstance()
-        sTime.timeInMillis = event.startTime
-        endTime.timeInMillis = event.endTime
+        startCalendar.timeInMillis = event.startTime
+        endCalendar.timeInMillis = event.endTime
         event_name.setText(event.eventName)
         event_type_spinner.setSelection(adapter.getPosition(event.eventType))
-        event_start_date.text = Util.formatDate(sTime)
-        event_start_time.text = Util.formatTime(sTime)
-        event_end_date.text = Util.formatDate(endTime)
-        event_end_time.text = Util.formatTime(endTime)
+        event_start_date.text = Util.formatDate(startCalendar)
+        event_start_time.text = Util.formatTime(startCalendar)
+        event_end_date.text = Util.formatDate(endCalendar)
+        event_end_time.text = Util.formatTime(endCalendar)
+        event_description.setText(event.description)
         val place = viewModel.event.place
         if(place.name.isNotEmpty() && place.address.isNotEmpty()) {
             address_text.text = "${place.name} | ${place.address}"
@@ -342,6 +349,9 @@ class CreateEventFragment : Fragment(){
         if(viewModel.imageUri != null){
             imageUri = viewModel.imageUri
             event_image.setImageURI(imageUri)
+        }
+        else {
+            Glide.with(this).load(event.placeholderImage?.url).into(event_image)
         }
     }
 
