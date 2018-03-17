@@ -26,6 +26,7 @@ import android.util.Log
 import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
+import toluog.campusbash.utils.FirebaseManager
 
 class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -35,6 +36,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
     private val TAG = ViewEventActivity::class.java.simpleName
     private var liveEvent: LiveData<Event>? = null
     private lateinit var viewModel: ViewEventViewModel
+    private var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,14 +87,20 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.view_event_menu, menu)
+        this.menu = menu
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
         when(id) {
-            R.id.action_share -> share()
             android.R.id.home -> finish()
+            R.id.action_share -> share()
+            R.id.action_edit -> {
+                val bundle = Bundle()
+                bundle.putParcelable(AppContract.MY_EVENT_BUNDLE, event)
+                startActivity(intentFor<CreateEventActivity>().putExtras(bundle))
+            }
         }
         return true
     }
@@ -198,6 +206,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun observeEvent() {
         liveEvent?.observe(this, Observer { event ->
             this.event = event
+            setMenuButtons()
             if(event != null) {
                 updateUi(event)
                 updateLocation(event)
@@ -214,5 +223,16 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                 .zoom(16f)
                 .build()
         mMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+    }
+
+    private fun setMenuButtons() {
+        val menu = menu
+        val event = event
+        if (menu != null && event != null) {
+            val edit = menu.findItem(R.id.action_edit)
+            if(event.creator.uid != FirebaseManager.getCreator()?.uid) {
+                edit.isVisible = false
+            }
+        }
     }
 }
