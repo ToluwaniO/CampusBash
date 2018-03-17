@@ -1,6 +1,6 @@
 package toluog.campusbash.utils
 
-import android.arch.persistence.room.Delete
+import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
@@ -10,6 +10,7 @@ import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
+import org.jetbrains.anko.toast
 import toluog.campusbash.model.Creator
 
 
@@ -36,9 +37,19 @@ class FirebaseManager(){
         //db?.collection(AppContract.FIREBASE_EVENTS)?.add(event)
     }
 
+    fun deleteEvent(context: Context?, eventId: String) {
+        db?.collection(AppContract.FIREBASE_EVENTS)?.document(eventId)?.delete()
+                ?.addOnSuccessListener {
+                    context?.toast("Event deleted")
+                }?.addOnFailureListener {
+                    context?.toast("Event could not be deleted")
+                    Log.d(TAG, "An error occurred\n${it.message}")
+                }
+    }
+
     fun uploadEventImage(uri: Uri): UploadTask? {
         // Create a storage reference from our app
-        val storageRef = storage?.getReference()
+        val storageRef = storage?.reference
 
         // Create a reference to "mountains.jpg"
         val imagesRef = storageRef?.child(AppContract.FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS)

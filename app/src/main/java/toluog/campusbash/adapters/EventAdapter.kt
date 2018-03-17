@@ -6,25 +6,25 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.Glide.init
 import com.google.android.gms.ads.formats.NativeAppInstallAd
 import com.google.android.gms.ads.formats.NativeContentAd
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.event_card_layout.*
-import kotlinx.android.synthetic.main.event_card_layout.view.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.yesButton
 import toluog.campusbash.R
 import toluog.campusbash.ViewHolder.NativeAppInstallAdViewHolder
 import toluog.campusbash.ViewHolder.NativeContentAdViewHolder
 import toluog.campusbash.model.Event
+import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 
 /**
  * Created by oguns on 12/15/2017.
  */
-class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class EventAdapter(var events: ArrayList<Any>, var context: Context?, var myEvents: Boolean = false): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     private val listener: OnItemClickListener
     private val EVENT_VIEW_TYPE = 0
@@ -40,26 +40,7 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerV
         fun onItemClick(event: Event)
     }
 
-    class EventViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
-            LayoutContainer {
-
-        fun bind(event: Event, listener: OnItemClickListener, context: Context?){
-            event_title.text = event.eventName
-            event_address.text = event.place.address
-            event_day.text = Util.getDay(event.startTime)
-            event_month.text = Util.getShortMonth(event.startTime)
-            if(event.placeholderImage != null){
-                Glide.with(context).load(event.placeholderImage?.url).into(event_image)
-            } else {
-                event_image.setImageResource(R.drawable.default_event_background)
-            }
-            Glide.with(context).load(event.creator.imageUrl).into(event_creator_image)
-            itemView.setOnClickListener { listener.onItemClick(event) }
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
         return when(viewType) {
             NATIVE_APP_INSTALL_AD_VIEW_TYPE -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.native_app_install_view, parent, false)
@@ -82,7 +63,7 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerV
         Log.d(TAG, "VIEW TYPE is ${viewType}")
 
         when(viewType) {
-            EVENT_VIEW_TYPE -> (holder as EventViewHolder?)?.bind(item as Event, listener, context)
+            EVENT_VIEW_TYPE -> (holder as EventViewHolder?)?.bind(item as Event, listener, context, myEvents)
             NATIVE_APP_INSTALL_AD_VIEW_TYPE -> (holder as NativeAppInstallAdViewHolder?)
                     ?.bind(item as NativeAppInstallAd)
             NATIVE_CONTENT_AD_VIEW_TYPE -> (holder as NativeContentAdViewHolder?)
@@ -102,5 +83,42 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?): RecyclerV
     }
 
     override fun getItemCount() = events.size
+
+    class EventViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
+            LayoutContainer {
+
+        fun bind(event: Event, listener: OnItemClickListener, context: Context?, myEvent: Boolean){
+            event_title.text = event.eventName
+            event_address.text = event.place.address
+            event_day.text = Util.getDay(event.startTime)
+            event_month.text = Util.getShortMonth(event.startTime)
+            if(event.placeholderImage != null){
+                Glide.with(context).load(event.placeholderImage?.url).into(event_image)
+            } else {
+                event_image.setImageResource(R.drawable.default_event_background)
+            }
+            Glide.with(context).load(event.creator.imageUrl).into(event_creator_image)
+            itemView.setOnClickListener { listener.onItemClick(event) }
+            if(myEvent) {
+                itemView.isLongClickable = true
+                itemView.setOnLongClickListener {
+                    deleteEvent(context, event.eventId)
+                    true
+                }
+            }
+        }
+
+        private fun deleteEvent(context: Context?, eventId: String) {
+            context?.alert ("Do you want to delete this event?") {
+                yesButton {
+                    val fbaseManager = FirebaseManager()
+                    fbaseManager.deleteEvent(context, eventId)
+                }
+                noButton {
+                    it.dismiss()
+                }
+            }?.show()
+        }
+    }
 
 }
