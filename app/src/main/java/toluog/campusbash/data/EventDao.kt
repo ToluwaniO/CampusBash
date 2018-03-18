@@ -34,6 +34,12 @@ public interface EventDao{
     @Query("SELECT * FROM ${AppContract.EVENT_TABLE} WHERE endTime > :date")
     fun getEvents(date: Long): LiveData<List<Event>>
 
+    @Query("SELECT * FROM ${AppContract.EVENT_TABLE} WHERE eventName LIKE :name AND startTime >= :time")
+    fun getEventsWithQuery(name: String, time: Long): LiveData<List<Event>>
+
+    @Query("SELECT * FROM ${AppContract.EVENT_TABLE} WHERE eventName LIKE :name AND eventType LIKE :type AND startTime >= :time")
+    fun getEventsWithQueryAndType(name: String, type: String, time: Long): LiveData<List<Event>>
+
     @Delete()
     fun deleteEvent(event: Event)
 

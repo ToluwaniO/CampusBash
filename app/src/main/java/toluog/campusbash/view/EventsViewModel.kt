@@ -39,6 +39,16 @@ class EventsViewModel(app: Application) : AndroidViewModel(app) {
         return repo.getEvents()
     }
 
+    fun getEvents(name: String, type: String, time: Long): LiveData<List<Event>>? {
+        Log.d(TAG, "getEvents called")
+        return repo.getEventsWithQueryAndType(name, type, time)
+    }
+
+    fun getEvents(name: String, time: Long): LiveData<List<Event>>? {
+        Log.d(TAG, "getEvents called")
+        return repo.getEventsWithQuery(name, time)
+    }
+
     fun getAds(): MutableLiveData<ArrayList<NativeAd>> {
         if(ads.isEmpty()) {
             loadAds()

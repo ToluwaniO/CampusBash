@@ -18,12 +18,12 @@ import toluog.campusbash.utils.AppContract
 import com.firebase.ui.auth.ResultCodes
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
-import android.support.constraint.ConstraintLayout
 import android.support.design.widget.CoordinatorLayout
 import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import org.jetbrains.anko.act
+import org.jetbrains.anko.design.appBarLayout
 import toluog.campusbash.ViewBehavior.BottomNavigationBehavior
 import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, fragment, null)
                         .commit()
+                appbar.setExpanded(true)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_events -> {
@@ -60,11 +61,19 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
                         .commit()
+                appbar.setExpanded(true)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_profile -> {
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
+                appbar.setExpanded(false, true)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_search -> {
+                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
+                        .commit()
+                appbar.setExpanded(false, true)
                 return@OnNavigationItemSelectedListener true
             }
         }

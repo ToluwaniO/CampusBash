@@ -58,5 +58,7 @@
     <string name="currency">CURRENCY</string>
     <string name="select_currency">Select currency</string>
     <string name="visible">Visible</string>
+    <string name="search_for">Search for ...</string>
+    <string name="no_events">No events found</string>
 
 </resources>
