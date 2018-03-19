@@ -8,7 +8,8 @@
     android:maxHeight="40dp"
     android:minHeight="40dp"
     app:mcv_backgroundColor="@color/colorPrimary"
-    app:mcv_selectedBackgroundColor="@color/colorAccent"
+    app:mcv_selectable="true"
+    app:mcv_selectedBackgroundColor="@color/colorPrimaryDark"
     app:mcv_textColor="@android:color/white">
 
 </com.robertlevonyan.views.chip.Chip>
