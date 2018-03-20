@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.robertlevonyan.views.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/chip"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:maxHeight="40dp"
-    android:minHeight="40dp"
-    app:mcv_backgroundColor="@color/colorPrimary"
-    app:mcv_selectable="true"
-    app:mcv_selectedBackgroundColor="@color/colorPrimaryDark"
-    app:mcv_textColor="@android:color/white">
+    android:background="@drawable/chip_shape"
+    android:text="Chip"
+    android:textColor="@android:color/white"
+    android:textSize="12sp">
 
-</com.robertlevonyan.views.chip.Chip>
+</TextView>

@@ -3,9 +3,11 @@ package toluog.campusbash.view
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.content.res.ResourcesCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.util.ArrayMap
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
@@ -14,7 +16,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.robertlevonyan.views.chip.Chip
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.chip_layout.*
 import kotlinx.android.synthetic.main.no_events_layout.*
@@ -40,7 +41,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
     private val eventTypes = ArrayList<ChipData>()
     private val events = ArrayList<Any>()
     private var liveEvents: LiveData<List<Event>>? = null
-    private val queryMap = HashMap<String, Any?>()
+    private val queryMap = ArrayMap<String, Any?>()
     private lateinit var eventAdapter: EventAdapter
     private var date: Long? = null
 
@@ -73,11 +74,11 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
 
         date_chip_recycler.apply {
             adapter = ChipAdapter(days, 0)
-            layoutManager = LinearLayoutManager(rootView.context, LinearLayoutManager.HORIZONTAL, true)
+            layoutManager = LinearLayoutManager(rootView.context, LinearLayoutManager.HORIZONTAL, false)
         }
         type_chip_recycler.apply {
             adapter = ChipAdapter(eventTypes, 1)
-            layoutManager = LinearLayoutManager(rootView.context, LinearLayoutManager.HORIZONTAL, true)
+            layoutManager = LinearLayoutManager(rootView.context, LinearLayoutManager.HORIZONTAL, false)
         }
         eventAdapter = EventAdapter(events, rootView.context)
         event_recycler.adapter = eventAdapter
@@ -96,29 +97,40 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
     }
 
     private fun observeEvents() {
-        val type = queryMap["type"]
-        Log.d(TAG, "QUERY -> $queryMap")
-        liveEvents = if(type != null) {
-            viewModel.getEvents("%${queryMap["text"]}%", type as String, queryMap["time"] as Long?
-                    ?: System.currentTimeMillis())
+        val type = queryMap["type"] as String?
+        val time = queryMap["time"] as Long?
+        val text = if(queryMap.contains("text")) {
+            queryMap["text"] as String
         } else {
-            viewModel.getEvents("%${queryMap["text"]}%", queryMap["time"] as Long?
-                    ?: System.currentTimeMillis())
+            ""
+        }
+
+        if(text.isEmpty() && type == null && time == null) {
+            events.clear()
+            updateRecyclers()
+            if (events.size > 0) {
+                eventAdapter.notifyDataSetChanged()
+            }
+            return
+        }
+
+        Log.d(TAG, "QUERY -> $queryMap")
+
+        liveEvents = if(type != null) {
+            viewModel.getEvents("%$text%", type, time ?: System.currentTimeMillis())
+        } else {
+            viewModel.getEvents("%$text%", time ?: System.currentTimeMillis())
         }
         liveEvents?.observe(this, Observer {
             events.clear()
             if(it != null) {
                 Log.d(TAG, "query size -> ${it.size}")
                 events.addAll(it)
-                if(events.size > 0) {
-                    no_events.visibility = View.GONE
-                    event_recycler.visibility = View.VISIBLE
-                } else {
-                    no_events.visibility = View.VISIBLE
-                    event_recycler.visibility = View.GONE
-                }
             }
-            eventAdapter.notifyDataSetChanged()
+            updateRecyclers()
+            if (events.size > 0) {
+                eventAdapter.notifyDataSetChanged()
+            }
         })
     }
 
@@ -174,6 +186,16 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
         Log.d(TAG, "Date is ${Util.formatDateTime(cal)}")
     }
 
+    private fun updateRecyclers() {
+        if(events.size > 0) {
+            no_events.visibility = View.GONE
+            event_recycler.visibility = View.VISIBLE
+        } else {
+            no_events.visibility = View.VISIBLE
+            event_recycler.visibility = View.GONE
+        }
+    }
+
     data class ChipData(var title: String, var selected: Boolean)
 
     inner class ChipAdapter(private val chipData: List<ChipData>, val type: Int): RecyclerView.Adapter<ChipAdapter.ViewHolder>() {
@@ -191,18 +213,30 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
         inner class ViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView), LayoutContainer {
             fun bind(position: Int) {
                 val chipItem = chipData[position]
-                chip.chipText = chipItem.title
+                chip.text = chipItem.title
                 if(chipItem.selected) {
-                    chip.changeBackgroundColor(ResourcesCompat.getColor(resources, R.color.colorAccent,
-                            null))
+                    (chip.background as GradientDrawable).setColor(ContextCompat.getColor(rootView.context, R.color.colorPrimary))
+                } else {
+                    (chip.background as GradientDrawable).setColor(ContextCompat.getColor(rootView.context, R.color.colorPrimaryDark))
                 }
 
-                chip.setOnChipClickListener {
-                    chipItem.selected = true
-                    resetChips(chipData[position].title, type, chipData)
+                chip.setOnClickListener {
+                    if(chipItem.selected) {
+                        chipItem.selected = false
+                        if(type == 0) {
+                            queryMap.remove("time")
+                        } else {
+                            queryMap.remove("type")
+                        }
+                        notifyDataSetChanged()
+                    } else {
+                        chipItem.selected = true
+                        resetChips(chipData[position].title, type, chipData)
+                    }
                     observeEvents()
                     Log.d(TAG, "Chip clicked")
                 }
+
             }
 
 
