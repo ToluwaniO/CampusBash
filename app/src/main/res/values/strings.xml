@@ -60,5 +60,7 @@
     <string name="visible">Visible</string>
     <string name="search_for">Search for ...</string>
     <string name="no_events">No events found</string>
+    <string name="share">Share</string>
+    <string name="edit">Edit</string>
 
 </resources>

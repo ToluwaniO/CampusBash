@@ -30,6 +30,13 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         fbaseManager = FirebaseManager()
         viewModel = ViewModelProviders.of(this).get(CreateEventViewModel::class.java)
+        val bundle = intent.extras
+        if(bundle != null) {
+            val event = intent.extras[AppContract.MY_EVENT_BUNDLE] as Event
+            createEvent.arguments = Bundle().apply {
+                putParcelable(AppContract.MY_EVENT_BUNDLE, event)
+            }
+        }
         fragManager.beginTransaction().replace(R.id.fragment_frame, createEvent, AppContract.CREATE_EVENT_TAG)
                 .addToBackStack(null).commit()
     }
