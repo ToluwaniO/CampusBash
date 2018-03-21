@@ -25,7 +25,7 @@ class InterestAdapter(private val interests: ArrayList<String>, private val intr
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder?.bind(interests[position], intrstSet?.contains(interests[position])?: false,
+        holder.bind(interests[position], intrstSet?.contains(interests[position])?: false,
                 checkboxListener)
     }
 

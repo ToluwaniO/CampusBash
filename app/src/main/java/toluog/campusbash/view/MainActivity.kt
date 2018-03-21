@@ -18,12 +18,12 @@ import toluog.campusbash.utils.AppContract
 import com.firebase.ui.auth.ResultCodes
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
-import android.support.constraint.ConstraintLayout
 import android.support.design.widget.CoordinatorLayout
 import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import org.jetbrains.anko.act
+import org.jetbrains.anko.design.appBarLayout
 import toluog.campusbash.ViewBehavior.BottomNavigationBehavior
 import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
@@ -31,6 +31,12 @@ import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import kotlin.collections.ArrayList
+import toluog.campusbash.R.id.appbar
+import android.support.design.widget.AppBarLayout
+
+
+
+
 
 class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
 
@@ -53,6 +59,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, fragment, null)
                         .commit()
+                setAppBarState(true)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_events -> {
@@ -60,11 +67,19 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
                         .commit()
+                setAppBarState(true)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_profile -> {
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
+                setAppBarState(true)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_search -> {
+                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
+                        .commit()
+                setAppBarState(false)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -177,5 +192,20 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             }
         }
         main_uni_spinner.setSelection(uniPosition)
+    }
+
+    private  fun setAppBarState(enabled: Boolean) {
+        val params = fragment_frame.layoutParams as CoordinatorLayout.LayoutParams
+        if(enabled) {
+            appbar.setExpanded(true, true)
+            appbar.visibility = View.VISIBLE
+            params.behavior = AppBarLayout.ScrollingViewBehavior()
+
+        } else {
+            appbar.setExpanded(false, false)
+            appbar.visibility = View.GONE
+            params.behavior = null
+        }
+        fragment_frame.requestLayout()
     }
 }
