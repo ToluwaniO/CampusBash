@@ -25,6 +25,7 @@ import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.Util
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 /**
@@ -44,6 +45,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
     private val queryMap = ArrayMap<String, Any?>()
     private lateinit var eventAdapter: EventAdapter
     private var date: Long? = null
+    private var pickDate = false
 
     private val searchWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
@@ -125,7 +127,18 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
             events.clear()
             if(it != null) {
                 Log.d(TAG, "query size -> ${it.size}")
-                events.addAll(it)
+                it.forEach {event ->
+                    if(time != null) {
+                        val rangeB = TimeUnit.HOURS.toMillis(24)+time
+                        if (Util.dateRangeCheck(event.startTime, time, rangeB) &&
+                                Util.dateRangeCheck(event.endTime, time, rangeB)) {
+                            events.add(event)
+                        }
+                    }
+                    else {
+                        events.add(event)
+                    }
+                }
             }
             updateRecyclers()
             if (events.size > 0) {
@@ -156,6 +169,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
 
     private fun getDateFromString(selected: String) {
         val cal = Calendar.getInstance()
+
         when(selected) {
             "Today" -> date = System.currentTimeMillis()
             "Tomorrow" -> {
@@ -174,6 +188,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
                 date = cal.timeInMillis
             }
             "Pick a date" -> {
+                pickDate = true
                 val dialog = DatePickerFragment()
                 dialog.setOnDateSetListener(object : DatePickerFragment.DateSetListener{
                     override fun dateChanged(year: Int, month: Int, dayOfMonth: Int) {
@@ -215,7 +230,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
                 val chipItem = chipData[position]
                 chip.text = chipItem.title
                 if(chipItem.selected) {
-                    (chip.background as GradientDrawable).setColor(ContextCompat.getColor(rootView.context, R.color.colorPrimary))
+                    (chip.background as GradientDrawable).setColor(ContextCompat.getColor(rootView.context, R.color.dull_red))
                 } else {
                     (chip.background as GradientDrawable).setColor(ContextCompat.getColor(rootView.context, R.color.colorPrimaryDark))
                 }
@@ -231,9 +246,10 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
                         notifyDataSetChanged()
                     } else {
                         chipItem.selected = true
+                        pickDate = true
                         resetChips(chipData[position].title, type, chipData)
                     }
-                    observeEvents()
+                    if(pickDate)observeEvents()
                     Log.d(TAG, "Chip clicked")
                 }
 

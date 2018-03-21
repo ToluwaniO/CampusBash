@@ -239,6 +239,10 @@ class Util{
             return l
         }
 
+        fun dateRangeCheck(date: Long, rangeA: Long, rangeB: Long): Boolean {
+            return date in rangeA..rangeB
+        }
+
         fun ImageView.loadImage(url: String, context: Context){
             Glide.with(context).load(url).into(this)
         }

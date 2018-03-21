@@ -16,4 +16,6 @@
     <color name="black_overlay">#66000000</color>
     <color name="material_grey">#fafafa</color>
 
+    <color name="dull_red">#c64960</color>
+
 </resources>
