@@ -11,6 +11,7 @@ import android.text.TextUtils
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
 import kotlinx.android.synthetic.main.ticket_quantity_item_layout.*
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.longToast
 import toluog.campusbash.R
@@ -59,7 +60,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     }
 
     override fun onTicketClick(ticket: Ticket) {
-
+        alert(ticket.description, ticket.name).show()
     }
 
     private fun getData(): HashMap<String, Any> {
