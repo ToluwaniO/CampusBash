@@ -62,5 +62,6 @@
     <string name="no_events">No events found</string>
     <string name="share">Share</string>
     <string name="edit">Edit</string>
+    <string name="sold_out">Sold out</string>
 
 </resources>
