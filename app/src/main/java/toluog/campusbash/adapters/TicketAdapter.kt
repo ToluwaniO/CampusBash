@@ -2,10 +2,15 @@ package toluog.campusbash.adapters
 
 import android.content.Context
 import android.support.v4.content.ContextCompat
+import android.support.v4.util.ArrayMap
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.View
+import android.widget.EditText
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.ticket_quantity_item_layout.*
 import org.jetbrains.anko.textColor
@@ -18,6 +23,7 @@ import toluog.campusbash.model.Ticket
 class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context): RecyclerView.Adapter<TicketAdapter.ViewHolder>() {
 
     private val listener: OnTicketClickListener
+    private val queryMap = ArrayMap<String, Any>()
 
     init {
         listener = context as OnTicketClickListener
@@ -38,7 +44,10 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
         holder.bind(tickets[position], listener)
     }
 
-    class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView), LayoutContainer{
+    fun getPurchaseMap() = queryMap
+
+    inner class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),
+            LayoutContainer{
 
         fun bind(ticket: Ticket, listener: OnTicketClickListener){
             val quantityLeft = ticket.quantity - ticket.ticketsSold
@@ -63,6 +72,45 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
             }
 
             containerView.setOnClickListener { listener.onTicketClick(ticket) }
+            ticket_quantity.addTextChangedListener(TicketWatcher(ticket.name, quantityLeft,
+                    ticket_quantity, queryMap))
+        }
+
+    }
+
+    class TicketWatcher(var name: String, private var quantityLeft: Int, var view: EditText,
+                        private val queryMap: ArrayMap<String, Any>): TextWatcher {
+
+        private val TAG = TicketWatcher::class.java.simpleName
+
+        override fun afterTextChanged(s: Editable?) {
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            view.error = null
+            if(s != null) {
+                val quantity = if(s.isNotEmpty()) {
+                    s.toString().toInt()
+                } else {
+                    0
+                }
+                when {
+                    quantity > quantityLeft -> {
+                        view.error = "$quantityLeft available"
+                        queryMap.remove(name)
+                    }
+                    quantity > 0 -> queryMap[name] = quantity
+                    quantity == 0 -> queryMap.remove(name)
+                    else -> {
+                        view.error = "Quantity can not be negative"
+                        queryMap.remove(name)
+                    }
+                }
+            }
+            Log.d(TAG, "TextChanged -> $queryMap")
         }
 
     }

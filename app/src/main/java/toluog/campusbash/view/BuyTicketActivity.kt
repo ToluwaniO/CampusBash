@@ -4,9 +4,8 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.support.v4.util.ArrayMap
+import android.support.v7.widget.*
 import android.text.TextUtils
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
@@ -15,11 +14,13 @@ import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.longToast
 import toluog.campusbash.R
+import toluog.campusbash.R.drawable.ticket
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
+
 
 class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListener {
 
@@ -29,6 +30,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private val fbaseManager = FirebaseManager()
     private var event: Event? = null
     private val TAG = BuyTicketActivity::class.java.simpleName
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buy_ticket)
@@ -51,10 +53,12 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
 
     private fun updateUi(){
         adapter = TicketAdapter(tickets, this)
-        val layoutManager : RecyclerView.LayoutManager = GridLayoutManager(this, 1)
+        val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(this)
+        val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         tickets_recycler.layoutManager = layoutManager
         tickets_recycler.itemAnimator = DefaultItemAnimator()
         tickets_recycler.adapter = adapter
+        tickets_recycler.addItemDecoration(dividerItemDecoration)
 
         tickets_buy_button.setOnClickListener { buyTickets() }
     }
@@ -63,28 +67,17 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         alert(ticket.description, ticket.name).show()
     }
 
-    private fun getData(): HashMap<String, Any> {
-        val map = HashMap<String, Any>()
+    private fun getData(): ArrayMap<String, Any> {
+        val map: ArrayMap<String, Any> = adapter.getPurchaseMap()
         var totalQuantity = 0
         var totalPrice = 0.0
-        for (i in 0 until tickets.size){
-            val holder = tickets_recycler.findViewHolderForAdapterPosition(i) as TicketAdapter.ViewHolder?
-            if(holder != null){
-                val name = tickets[i].name
-                val quantityString = holder.ticket_quantity.text.toString()
-                val priceString = holder.ticket_price.text.toString().substring(1)
-                var quantity = 0
-                var price = priceString.toDouble()
-                if(!TextUtils.isEmpty(quantityString)){
-                    quantity = quantityString.toInt()
-                }
-                map.put(name, quantity)
-                totalQuantity += quantity
-                totalPrice += quantity * price
-            }
+        for (key in map.keys) {
+            val quantity = map[key] as Int
+            totalQuantity += quantity
+            totalPrice += getPriceFromName(key) * quantity
         }
-        map.put("quantity", totalQuantity)
-        map.put("total", totalPrice)
+        map["quantity"] = totalQuantity
+        map["total"] = totalPrice
         return map
     }
 
@@ -96,6 +89,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             finish()
         }?.addOnFailureListener {
             longToast("Could not purchase ticket")
+            Log.d(TAG, "Error saving data\nerror -> ${it.message}")
             finish()
         }
     }
@@ -124,5 +118,15 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
                 snackbar(container, "you're not signed in")
             }
         }
+    }
+
+    private fun getPriceFromName(name: String): Double {
+        var price = 0.0
+        for (t in tickets) {
+            if(t.name == name) {
+                price = t.price
+            }
+        }
+        return price
     }
 }
