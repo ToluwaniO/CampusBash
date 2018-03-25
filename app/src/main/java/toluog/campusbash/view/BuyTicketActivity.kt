@@ -6,15 +6,13 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.util.ArrayMap
 import android.support.v7.widget.*
-import android.text.TextUtils
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
-import kotlinx.android.synthetic.main.ticket_quantity_item_layout.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.longToast
 import toluog.campusbash.R
-import toluog.campusbash.R.drawable.ticket
+import toluog.campusbash.R.string.total
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
@@ -67,8 +65,14 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         alert(ticket.description, ticket.name).show()
     }
 
-    private fun getData(): ArrayMap<String, Any> {
+    override fun onTicketQuantityChanged(queryMap: ArrayMap<String, Any>) {
+        val total = getData()["total"] as Double
+        total_text.text = "$$total"
+    }
+
+    private fun getData(): HashMap<String, Any> {
         val map: ArrayMap<String, Any> = adapter.getPurchaseMap()
+        val purchaseMap = HashMap<String, Any>()
         var totalQuantity = 0
         var totalPrice = 0.0
         for (key in map.keys) {
@@ -76,9 +80,10 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             totalQuantity += quantity
             totalPrice += getPriceFromName(key) * quantity
         }
-        map["quantity"] = totalQuantity
-        map["total"] = totalPrice
-        return map
+        purchaseMap.put("tickets", map)
+        purchaseMap["quantity"] = totalQuantity
+        purchaseMap["total"] = totalPrice
+        return purchaseMap
     }
 
     private fun saveData(map: Map<String, Any>){
@@ -95,24 +100,16 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     }
 
     private fun buyTickets() {
-        val dataMap = getData()
-        val overallMap = HashMap<String, Any>()
-        if(dataMap["quantity"] == 0){
+        val overallMap = getData()
+        if(overallMap["quantity"] == 0){
             snackbar(container,"No ticket purchased")
         } else{
-            overallMap.put("tickets", dataMap)
-            overallMap.put("timeSpent", System.currentTimeMillis())
+            overallMap["timeSpent"] = System.currentTimeMillis()
 
             val uid = FirebaseManager.auth.currentUser?.uid
 
             if(uid != null) {
-                overallMap.put("buyerId", uid)
-                val quan = dataMap["quantity"]
-                val total = dataMap["total"]
-                if(quan != null) overallMap.put("quantity", quan)
-                if(total != null) overallMap.put("total", total)
-                dataMap.remove("quantity")
-                dataMap.remove("total")
+                overallMap["buyerId"] = uid
                 saveData(overallMap)
             } else {
                 snackbar(container, "you're not signed in")

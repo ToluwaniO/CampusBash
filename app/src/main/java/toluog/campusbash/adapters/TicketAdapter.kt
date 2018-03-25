@@ -31,6 +31,7 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
 
     interface OnTicketClickListener {
         fun onTicketClick(ticket: Ticket)
+        fun onTicketQuantityChanged(queryMap: ArrayMap<String, Any>)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder{
@@ -73,13 +74,13 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
 
             containerView.setOnClickListener { listener.onTicketClick(ticket) }
             ticket_quantity.addTextChangedListener(TicketWatcher(ticket.name, quantityLeft,
-                    ticket_quantity, queryMap))
+                    ticket_quantity, queryMap, listener))
         }
 
     }
 
     class TicketWatcher(var name: String, private var quantityLeft: Int, var view: EditText,
-                        private val queryMap: ArrayMap<String, Any>): TextWatcher {
+                        private val queryMap: ArrayMap<String, Any>, private val listener: OnTicketClickListener): TextWatcher {
 
         private val TAG = TicketWatcher::class.java.simpleName
 
@@ -109,6 +110,7 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
                         queryMap.remove(name)
                     }
                 }
+                listener.onTicketQuantityChanged(queryMap)
             }
             Log.d(TAG, "TextChanged -> $queryMap")
         }

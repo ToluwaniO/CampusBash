@@ -63,5 +63,6 @@
     <string name="share">Share</string>
     <string name="edit">Edit</string>
     <string name="sold_out">Sold out</string>
+    <string name="total">Total</string>
 
 </resources>

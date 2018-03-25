@@ -26,6 +26,9 @@ class AppContract{
         val CREATE_TICKETS_TAG = "view_tickets_fragment"
         val TICKETS_KEY = "tickets"
 
+        //BUNDLE TAGS
+        val TOKEN_ID = "tokenId"
+
         //ROOM KEYS
         const val EVENT_TABLE = "Events"
         const val UNIVERSITY_TABLE = "Universities"
