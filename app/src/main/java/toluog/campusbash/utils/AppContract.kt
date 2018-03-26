@@ -1,5 +1,6 @@
 package toluog.campusbash.utils
 
+import toluog.campusbash.BuildConfig
 import toluog.campusbash.model.Creator
 import toluog.campusbash.model.LatLng
 import toluog.campusbash.model.Ticket
@@ -57,6 +58,18 @@ class AppContract{
 
         //JOB TAGS
         val JOB_EVENT_DELETE = "delete_old_events"
+
+        val STRIPE_PUBLISHABLE_KEY = if(BuildConfig.DEBUG) {
+            "pk_test_T1L4D5dfsk4KTYB3XFsYf34N"
+        } else {
+            "pk_live_2wBuZFYCnwPtcg2Y7zOchl8I"
+        }
+
+        val STRIPE_SECRET_KEY = if(BuildConfig.DEBUG) {
+            "sk_test_GKykK0Y053Fya2nZMnN1JasG"
+        } else {
+            "sk_live_YgXzN3R5ZmE34E9lf3KBf59p"
+        }
 
     }
 }

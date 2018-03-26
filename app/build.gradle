@@ -18,20 +18,22 @@ android {
     }
     buildTypes {
         debug {
-            buildTypes.each {
-                it.buildConfigField 'String', 'STRIPE_PUBLISHABLE_KEY', stripePublishableKeyDev
-                it.buildConfigField 'String', 'STRIPE_SECRET_KEY', stripeSecretKeyDev
-            }
             applicationIdSuffix ".debug"
             debuggable true
+//            buildTypes.each {
+//                it.buildConfigField 'String', 'STRIPE_PUBLISHABLE_KEY', stripePublishableKeyDev
+//                it.buildConfigField 'String', 'STRIPE_SECRET_KEY', stripeSecretKeyDev
+//            }
+            println 'Debug build'
         }
         release {
-            buildTypes.each {
-                it.buildConfigField 'String', 'STRIPE_PUBLISHABLE_KEY', stripePublishableKeyProd
-                it.buildConfigField 'String', 'STRIPE_SECRET_KEY', stripeSecretKeyProd
-            }
+//            buildTypes.each {
+//                it.buildConfigField 'String', 'STRIPE_PUBLISHABLE_KEY', stripePublishableKeyProd
+//                it.buildConfigField 'String', 'STRIPE_SECRET_KEY', stripeSecretKeyProd
+//            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            println 'Release build'
         }
     }
 }
@@ -89,6 +91,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-maps:$play_services_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
     implementation "com.google.android.gms:play-services-places:$play_services_version"
+    compile "com.google.android.gms:play-services-wallet:$play_services_version"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
     implementation 'com.myhexaville:smart-image-picker:1.0.3'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
