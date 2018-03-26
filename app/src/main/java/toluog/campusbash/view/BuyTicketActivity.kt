@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_buy_ticket.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.longToast
+import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 import toluog.campusbash.R.string.total
 import toluog.campusbash.adapters.TicketAdapter
@@ -110,6 +111,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         if(currency != null) {
             purchaseMap["currency"] = currency
         }
+        purchaseMap["debug"] = BuildConfig.DEBUG
         purchaseMap["tickets"] = map
         purchaseMap["quantity"] = totalQuantity
         purchaseMap["total"] = totalPrice
