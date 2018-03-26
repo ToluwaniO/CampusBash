@@ -39,6 +39,7 @@ class CardPaymentActivity : AppCompatActivity() {
         currency = intent.extras.getString("currency")
 
         dialog = indeterminateProgressDialog(message = "Please wait…")
+        dialog.dismiss()
         googlePayAlert = alert("Do you want to use Google Pay?") {
             yesButton {
                 Log.d(TAG, "Yes clicked for Google Pay")
