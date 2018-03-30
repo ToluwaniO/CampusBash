@@ -7,6 +7,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.util.Log
 import com.google.android.gms.ads.formats.NativeAd
+import com.google.firebase.firestore.FirebaseFirestore
 import toluog.campusbash.data.Repository
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.AdManager
@@ -19,7 +20,7 @@ class EventsViewModel(app: Application) : AndroidViewModel(app) {
     private val events: MutableLiveData<ArrayList<Event>>? = null
     private val ads: ArrayList<NativeAd> = ArrayList()
     private val adsList = MutableLiveData<ArrayList<NativeAd>>()
-    private val repo: Repository = Repository(app.applicationContext)
+    private val repo: Repository = Repository(app.applicationContext, FirebaseFirestore.getInstance())
     private val TAG = EventsViewModel::class.java.simpleName
     private  val adManager: AdManager
 

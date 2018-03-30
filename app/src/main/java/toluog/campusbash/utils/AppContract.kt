@@ -71,5 +71,21 @@ class AppContract{
             "sk_live_YgXzN3R5ZmE34E9lf3KBf59p"
         }
 
+        val CLIENT_ID = if(BuildConfig.DEBUG) {
+            "ca_CZDCdiBIFm2webGK1uZavYZH0bcmFBgR"
+        } else {
+            ""
+        }
+
+        val STRIPE_OAUTH = "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=" +
+                "$CLIENT_ID&scope=read_write"
+        get() {
+            val user = FirebaseManager.getUser()
+            if(user != null) {
+                return "$field&uid=${user.uid}"
+            }
+            return field
+        }
+
     }
 }

@@ -10,4 +10,5 @@ import kotlinx.android.parcel.Parcelize
  */
 @SuppressLint("ParcelCreator")
 @Parcelize
-data class Creator(var name: String = "", var imageUrl: String = "", var uid: String = "") : Parcelable
+data class Creator(var name: String = "", var imageUrl: String = "", var uid: String = "",
+                   var stripeAccountId: String? = null) : Parcelable
