@@ -1,0 +1,49 @@
+package toluog.campusbash.adapters
+
+import android.support.v7.util.DiffUtil
+import com.google.android.gms.ads.formats.NativeAppInstallAd
+import com.google.android.gms.ads.formats.NativeContentAd
+import toluog.campusbash.model.Event
+
+class EventsDiffCallback(private val oldList: List<Any>, private val newList: List<Any>): DiffUtil.Callback() {
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val old = oldList[oldItemPosition]
+        val new = newList[newItemPosition]
+
+        return when {
+            old is Event && new is Event -> old.eventId == new.eventId
+            old is NativeAppInstallAd && new is NativeAppInstallAd -> {
+                old.headline == new.headline && old.body == new.body && old.icon == new.icon
+                && old.price == new.price && old.starRating == new.starRating && old.images[0] == new.images[0]
+                && old.callToAction == new.callToAction && old.store == new.store
+            }
+            old is NativeContentAd && new is NativeContentAd -> {
+                old.headline == new.headline && old.body == new.body && old.images[0] == new.images[0]
+                        && old.callToAction == new.callToAction
+            }
+            else -> false
+        }
+    }
+
+    override fun getOldListSize() = oldList.size
+
+    override fun getNewListSize() = newList.size
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val old = oldList[oldItemPosition]
+        val new = newList[newItemPosition]
+
+        return when {
+            old is Event && new is Event -> {
+                return old.placeholderImage?.url == new.placeholderImage?.url && old.eventName == new.eventName
+                && old.place.address == new.place.address && old.startTime == new.startTime
+            }
+            old is NativeAppInstallAd && new is NativeAppInstallAd -> old.headline == new.headline &&
+                    old.body == new.body
+            old is NativeContentAd && new is NativeContentAd -> old.headline == new.headline &&
+                    old.body == new.body
+            else -> false
+        }
+    }
+
+}

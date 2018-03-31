@@ -8,6 +8,7 @@ import android.arch.lifecycle.ViewModel
 import android.util.Log
 import com.google.android.gms.ads.formats.NativeAd
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import toluog.campusbash.data.Repository
 import toluog.campusbash.model.Event
@@ -24,6 +25,7 @@ class EventsViewModel(app: Application) : AndroidViewModel(app) {
     private val repo: Repository = Repository(app.applicationContext, FirebaseFirestore.getInstance())
     private val TAG = EventsViewModel::class.java.simpleName
     private  val adManager: AdManager
+    private var adsJob: Job? = null
 
     init {
         AdManager.initializeAds(app.applicationContext)
@@ -33,7 +35,7 @@ class EventsViewModel(app: Application) : AndroidViewModel(app) {
 
     fun loadAds() {
         Log.d(TAG, "loading ads...")
-        launch { adManager.loadAds() }
+        adsJob = launch { adManager.loadAds() }
     }
 
     fun getEvents(): LiveData<List<Event>>? {
@@ -59,4 +61,8 @@ class EventsViewModel(app: Application) : AndroidViewModel(app) {
         return adsList
     }
 
+    override fun onCleared() {
+        adsJob?.cancel()
+        super.onCleared()
+    }
 }
