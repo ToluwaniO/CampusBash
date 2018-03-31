@@ -95,6 +95,7 @@ class CreateEventFragment : Fragment(){
             viewModel.event = event
             updateUi()
         }
+        Util.hideKeyboard(act)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

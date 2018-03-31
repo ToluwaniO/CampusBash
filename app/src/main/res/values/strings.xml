@@ -64,5 +64,10 @@
     <string name="edit">Edit</string>
     <string name="sold_out">Sold out</string>
     <string name="total">Total</string>
+    <string name="stripe_message">You need to create a Stripe account to accept payments.</string>
+    <string name="create_stripe_account">Create Stripe account</string>
+    <string name="please_wait">Please wait</string>
+    <string name="stripe_account_created">Stripe account created</string>
+    <string name="stripe_account_failed">Failed to create Stripe account</string>
 
 </resources>

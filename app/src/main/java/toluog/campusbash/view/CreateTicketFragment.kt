@@ -12,10 +12,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import com.facebook.share.internal.GameRequestValidation.validate
 import toluog.campusbash.R
 import kotlinx.android.synthetic.main.create_ticket_layout.*
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.selector
+import org.jetbrains.anko.yesButton
+import toluog.campusbash.R.string.currency
 import toluog.campusbash.model.Ticket
+import toluog.campusbash.utils.FirebaseManager
 import java.lang.ClassCastException
 
 
@@ -35,9 +42,11 @@ class CreateTicketFragment: Fragment(){
     private val currencies = ArrayList<String>()
     private val currencySymbols = ArrayList<String>()
     private val ticketTypes = arrayListOf<String>("FREE", "PAID")
+    private var isStripeActivated = false
     private var currency = ""
     private var ticketType = ""
     private lateinit var typeAdapter: ArrayAdapter<String>
+    private val user = FirebaseManager.getUser()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.create_ticket_layout, container, false)
@@ -57,6 +66,17 @@ class CreateTicketFragment: Fragment(){
                 Log.d(TAG, "$x")
             }
         })
+
+        if(user != null) {
+            viewModel.getUser(user.uid).observe(activity!!, Observer {
+                if(it != null) {
+                    Log.d(TAG, "user -> $it")
+                    val id = it["stripeAccountId"] as String?
+                    isStripeActivated = id != null
+                }
+            })
+        }
+
         ticket_currency.setOnClickListener {
             selector("Select currency", currencies, { _, i ->
                 currency = currencySymbols[i]
@@ -117,10 +137,12 @@ class CreateTicketFragment: Fragment(){
             ticket?.isVisible = visible
             if(ticketType == "paid") ticket?.currency = this.currency
             else ticket?.currency = ""
-            if(viewModel.selectedTicket == null && ticket != null) {
+            if(viewModel.selectedTicket == null && ticket != null && isStripeActivated) {
                 viewModel.event.tickets.add(ticket)
+                callback.ticketComplete(ticket)
+            } else if(!isStripeActivated) {
+                setupStripe()
             }
-            callback.ticketComplete(ticket)
         }
     }
 
@@ -166,6 +188,18 @@ class CreateTicketFragment: Fragment(){
             type_spinner.setSelection(typeIndex)
             ticket_visibility.isChecked = ticket.isVisible
         }
+    }
+
+    private fun setupStripe() {
+        val dialog = alert("Set up stripe") {
+            yesButton {
+                startActivity(intentFor<StripeSetupActivity>())
+            }
+            noButton {
+                it.dismiss()
+            }
+        }
+        dialog.show()
     }
 
     override fun onAttach(context: Context?) {

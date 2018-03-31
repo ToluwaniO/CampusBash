@@ -75,7 +75,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
@@ -94,7 +93,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".view.CardPaymentActivity"></activity>
+        <activity android:name=".view.CardPaymentActivity" />
+        <activity android:name=".view.StripeSetupActivity"/>
     </application>
 
 </manifest>

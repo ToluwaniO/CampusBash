@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import toluog.campusbash.data.network.ServerResponse
 import toluog.campusbash.data.network.StripeAccountBody
 import toluog.campusbash.data.network.StripeServerClient
 import toluog.campusbash.model.Currency
@@ -56,7 +57,7 @@ class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
 
     fun getUnis(country: String): LiveData<List<University>>? {
         Log.d(TAG, "get unis called")
-        if(initializedUnis == false){
+        if(!initializedUnis){
             UniversityDataSource.initListener(context)
             initializedUnis = true
         }
@@ -67,7 +68,7 @@ class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
 
     fun getUser(uid: String) = GeneralDataSource.getUser(mFireStore, uid)
 
-    fun createStripeAccount(): LiveData<HashMap<String, Any>>? {
+    fun createStripeAccount(): LiveData<ServerResponse> {
         val user = FirebaseManager.getUser()
         if(!initializedStripeApi && user != null) {
             val body = StripeAccountBody(user.uid, user.email ?: "", "CA")
