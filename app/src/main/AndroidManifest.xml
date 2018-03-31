@@ -4,13 +4,13 @@
     package="toluog.campusbash">
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-
+        android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup">
         <activity
             android:name=".view.MainActivity"
             android:label="@string/app_name"
@@ -27,14 +27,16 @@
         <activity
             android:name=".view.ViewEventActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".view.MainActivity" >
+            android:parentActivityName=".view.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:host="campusbash-e0ca8.firebaseapp.com"/>
-                <data android:scheme="https"/>
-                <data android:scheme="http"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="campusbash-e0ca8.firebaseapp.com" />
+                <data android:scheme="https" />
+                <data android:scheme="http" />
             </intent-filter>
         </activity>
         <activity
@@ -73,6 +75,9 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
 
         <service
             android:name=".utils.MyJobService"
@@ -87,6 +92,9 @@
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".view.CardPaymentActivity" />
+        <activity android:name=".view.StripeSetupActivity"/>
     </application>
 
 </manifest>

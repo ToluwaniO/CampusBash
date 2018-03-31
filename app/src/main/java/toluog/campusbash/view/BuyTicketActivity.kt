@@ -1,20 +1,21 @@
 package toluog.campusbash.view
 
+import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.util.ArrayMap
 import android.support.v7.widget.*
-import android.text.TextUtils
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
-import kotlinx.android.synthetic.main.ticket_quantity_item_layout.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.longToast
+import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
-import toluog.campusbash.R.drawable.ticket
+import toluog.campusbash.R.string.total
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
@@ -30,6 +31,8 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private val fbaseManager = FirebaseManager()
     private var event: Event? = null
     private val TAG = BuyTicketActivity::class.java.simpleName
+    private val TOKEN_REQUEST = 3456
+    private var tokenId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,15 +63,43 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         tickets_recycler.adapter = adapter
         tickets_recycler.addItemDecoration(dividerItemDecoration)
 
-        tickets_buy_button.setOnClickListener { buyTickets() }
+        tickets_buy_button.setOnClickListener {
+            val purchase = getData()
+            val price = purchase["total"] as Double
+            val currency = purchase["currency"] as String?
+            if(price > 0 && currency != null) {
+                val cardPaymentIntent = Intent(this, CardPaymentActivity::class.java)
+                cardPaymentIntent.putExtras(Bundle().apply {
+                    putString("currency", currency)
+                })
+                startActivityForResult(cardPaymentIntent, TOKEN_REQUEST)
+            } else {
+                buyTickets(tokenId)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        if(requestCode == TOKEN_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                tokenId = data.extras.getString(AppContract.TOKEN_ID)
+                buyTickets(tokenId)
+            }
+        }
     }
 
     override fun onTicketClick(ticket: Ticket) {
         alert(ticket.description, ticket.name).show()
     }
 
-    private fun getData(): ArrayMap<String, Any> {
+    override fun onTicketQuantityChanged(queryMap: ArrayMap<String, Any>) {
+        val total = getData()["total"] as Double
+        total_text.text = "$$total"
+    }
+
+    private fun getData(): HashMap<String, Any> {
         val map: ArrayMap<String, Any> = adapter.getPurchaseMap()
+        val purchaseMap = HashMap<String, Any>()
         var totalQuantity = 0
         var totalPrice = 0.0
         for (key in map.keys) {
@@ -76,9 +107,15 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             totalQuantity += quantity
             totalPrice += getPriceFromName(key) * quantity
         }
-        map["quantity"] = totalQuantity
-        map["total"] = totalPrice
-        return map
+        val currency = getCurrency()
+        if(currency != null) {
+            purchaseMap["currency"] = currency
+        }
+        purchaseMap["debug"] = BuildConfig.DEBUG
+        purchaseMap["tickets"] = map
+        purchaseMap["quantity"] = totalQuantity
+        purchaseMap["total"] = totalPrice
+        return purchaseMap
     }
 
     private fun saveData(map: Map<String, Any>){
@@ -94,25 +131,20 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         }
     }
 
-    private fun buyTickets() {
-        val dataMap = getData()
-        val overallMap = HashMap<String, Any>()
-        if(dataMap["quantity"] == 0){
+    private fun  buyTickets(tokenId: String?) {
+        val overallMap = getData()
+        if(tokenId != null) overallMap["token"] = tokenId
+        if(overallMap["quantity"] == 0){
             snackbar(container,"No ticket purchased")
         } else{
-            overallMap.put("tickets", dataMap)
-            overallMap.put("timeSpent", System.currentTimeMillis())
+            overallMap["timeSpent"] = System.currentTimeMillis()
 
             val uid = FirebaseManager.auth.currentUser?.uid
+            val stripeId = event?.creator?.stripeAccountId
+            if(stripeId != null) overallMap["stripeAccountId"] = stripeId
 
             if(uid != null) {
-                overallMap.put("buyerId", uid)
-                val quan = dataMap["quantity"]
-                val total = dataMap["total"]
-                if(quan != null) overallMap.put("quantity", quan)
-                if(total != null) overallMap.put("total", total)
-                dataMap.remove("quantity")
-                dataMap.remove("total")
+                overallMap["buyerId"] = uid
                 saveData(overallMap)
             } else {
                 snackbar(container, "you're not signed in")
@@ -128,5 +160,15 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             }
         }
         return price
+    }
+
+    private fun getCurrency(): String? {
+        val tickets = event?.tickets
+        if(tickets != null) {
+            for (i in tickets) {
+                if(i.type == "paid") return i.currency
+            }
+        }
+        return null
     }
 }

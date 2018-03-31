@@ -20,10 +20,20 @@ android {
         debug {
             applicationIdSuffix ".debug"
             debuggable true
+//            buildTypes.each {
+//                it.buildConfigField 'String', 'STRIPE_PUBLISHABLE_KEY', stripePublishableKeyDev
+//                it.buildConfigField 'String', 'STRIPE_SECRET_KEY', stripeSecretKeyDev
+//            }
+            println 'Debug build'
         }
         release {
+//            buildTypes.each {
+//                it.buildConfigField 'String', 'STRIPE_PUBLISHABLE_KEY', stripePublishableKeyProd
+//                it.buildConfigField 'String', 'STRIPE_SECRET_KEY', stripeSecretKeyProd
+//            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            println 'Release build'
         }
     }
 }
@@ -32,6 +42,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:customtabs:27.1.0'
     implementation 'com.android.support:cardview-v7:27.1.0'
     implementation 'com.android.support:design:27.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -75,14 +86,23 @@ dependencies {
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation "org.jetbrains.anko:anko-design:$anko_version" // For SnackBars
 
+    implementation 'com.google.code.gson:gson:2.8.2'
+
+    //Square
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_logger_version"
+
     //Others
+    implementation "com.stripe:stripe-android:$stripe_version"
     implementation "com.google.android.gms:play-services-maps:$play_services_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
     implementation "com.google.android.gms:play-services-places:$play_services_version"
+    implementation "com.google.android.gms:play-services-wallet:$play_services_version"
     annotationProcessor "com.github.bumptech.glide:compiler:$glide_version"
     implementation 'com.myhexaville:smart-image-picker:1.0.3'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
-    implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.github.igalata:Bubble-Picker:v0.2.4'
 
     testImplementation 'junit:junit:4.12'

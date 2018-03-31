@@ -1,5 +1,6 @@
 package toluog.campusbash.utils
 
+import toluog.campusbash.BuildConfig
 import toluog.campusbash.model.Creator
 import toluog.campusbash.model.LatLng
 import toluog.campusbash.model.Ticket
@@ -26,6 +27,9 @@ class AppContract{
         val CREATE_TICKETS_TAG = "view_tickets_fragment"
         val TICKETS_KEY = "tickets"
 
+        //BUNDLE TAGS
+        val TOKEN_ID = "tokenId"
+
         //ROOM KEYS
         const val EVENT_TABLE = "Events"
         const val UNIVERSITY_TABLE = "Universities"
@@ -49,11 +53,20 @@ class AppContract{
 
         //RemoteConfig
         val configRefreshTime = 3600L
+        get() {
+            if(BuildConfig.DEBUG) return 0L
+            return field
+        }
 
         val PLACE_AUTOCOMPLETE_REQUEST_CODE = 48547
 
         //JOB TAGS
         val JOB_EVENT_DELETE = "delete_old_events"
 
+        val STRIPE_PUBLISHABLE_KEY = if(BuildConfig.DEBUG) {
+            "pk_test_T1L4D5dfsk4KTYB3XFsYf34N"
+        } else {
+            "pk_live_2wBuZFYCnwPtcg2Y7zOchl8I"
+        }
     }
 }

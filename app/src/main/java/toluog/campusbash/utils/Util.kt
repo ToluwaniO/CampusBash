@@ -20,6 +20,10 @@ import com.firebase.jobdispatcher.Constraint
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
 import toluog.campusbash.data.CurrencyDataSource
+import android.support.v4.content.ContextCompat.startActivity
+import android.content.Intent
+import android.net.Uri
+import toluog.campusbash.BuildConfig
 
 
 /**
@@ -242,6 +246,8 @@ class Util{
         fun dateRangeCheck(date: Long, rangeA: Long, rangeB: Long): Boolean {
             return date in rangeA..rangeB
         }
+
+        fun debugMode() = BuildConfig.DEBUG
 
         fun ImageView.loadImage(url: String, context: Context){
             Glide.with(context).load(url).into(this)

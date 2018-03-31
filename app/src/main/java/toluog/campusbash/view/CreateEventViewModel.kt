@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.ViewModel
 import android.net.Uri
 import com.google.android.gms.location.places.Place
+import com.google.firebase.firestore.FirebaseFirestore
 import toluog.campusbash.data.Repository
 import toluog.campusbash.model.Currency
 import toluog.campusbash.model.Event
@@ -15,7 +16,7 @@ import toluog.campusbash.model.Ticket
  */
 class CreateEventViewModel(app: Application) : AndroidViewModel(app){
 
-    private val repo = Repository(app.applicationContext)
+    private val repo = Repository(app.applicationContext, FirebaseFirestore.getInstance())
     var event = Event()
     var imageUri: Uri? = null
     var place: Place? = null
@@ -38,5 +39,7 @@ class CreateEventViewModel(app: Application) : AndroidViewModel(app){
     fun getCurrencies() = repo.getCurrencies()
 
     fun getUniversities(country: String) = repo.getUnis(country)
+
+    fun getUser(uid: String) = repo.getUser(uid)
 
 }

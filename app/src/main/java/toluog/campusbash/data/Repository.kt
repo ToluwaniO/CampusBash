@@ -4,22 +4,30 @@ import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import toluog.campusbash.data.network.ServerResponse
+import toluog.campusbash.data.network.StripeAccountBody
+import toluog.campusbash.data.network.StripeServerClient
 import toluog.campusbash.model.Currency
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.University
+import toluog.campusbash.utils.FirebaseManager
 
 /**
  * Created by oguns on 12/7/2017.
  */
-class Repository(c: Context){
+class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
     private val TAG = Repository::class.java.simpleName
     private val eventDataSource = EventDataSource()
     private val db: AppDatabase? = AppDatabase.getDbInstance(c)
     private val mFireStore = FirebaseFirestore.getInstance()
+    private lateinit var stripeApi: StripeServerClient
     private val context = c
     private var initializedEvents = false
     private var initializedUnis = false
+    private var initializedStripeApi = false
+
+
     fun getEvents() : LiveData<List<Event>>?{
         Log.d(TAG, "getEvents called")
         if(initializedEvents == false){
@@ -49,7 +57,7 @@ class Repository(c: Context){
 
     fun getUnis(country: String): LiveData<List<University>>? {
         Log.d(TAG, "get unis called")
-        if(initializedUnis == false){
+        if(!initializedUnis){
             UniversityDataSource.initListener(context)
             initializedUnis = true
         }
@@ -57,6 +65,18 @@ class Repository(c: Context){
     }
 
     fun getCurrencies() = db?.currencyDao()?.getCurrencies()
+
+    fun getUser(uid: String) = GeneralDataSource.getUser(mFireStore, uid)
+
+    fun createStripeAccount(): LiveData<ServerResponse> {
+        val user = FirebaseManager.getUser()
+        if(!initializedStripeApi && user != null) {
+            val body = StripeAccountBody(user.uid, user.email ?: "", "CA")
+            stripeApi = StripeServerClient(body)
+            initializedStripeApi = true
+        }
+        return stripeApi.createStripeAccount()
+    }
 
 
 }

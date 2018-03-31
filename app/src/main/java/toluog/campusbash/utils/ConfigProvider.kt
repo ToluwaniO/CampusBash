@@ -16,7 +16,7 @@ class ConfigProvider(val remoteConfig: FirebaseRemoteConfig) {
     private val TAG = ConfigProvider::class.java.simpleName
     private val defaults = mapOf(
             FeatureKey.MIN_EVENTS_FOR_ADS to 20,
-            FeatureKey.EVENTS_FRAGMENT_ADS_ENABLED to true,
+            FeatureKey.EVENTS_FRAGMENT_ADS_ENABLED to false,
             FeatureKey.EVENTS_FRAGMENT_ADS_MAX to 5
     )
 

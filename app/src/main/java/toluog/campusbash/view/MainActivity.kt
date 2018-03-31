@@ -34,10 +34,6 @@ import kotlin.collections.ArrayList
 import toluog.campusbash.R.id.appbar
 import android.support.design.widget.AppBarLayout
 
-
-
-
-
 class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
 
     private val TAG = MainActivity::class.java.simpleName
