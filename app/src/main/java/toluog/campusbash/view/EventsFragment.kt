@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import com.google.android.gms.ads.formats.NativeAd
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.events_layout.*
+import org.jetbrains.anko.coroutines.experimental.bg
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
@@ -33,7 +34,7 @@ class EventsFragment() : Fragment(){
     private var adapter: EventAdapter? = null
     private val events: ArrayList<Any> = ArrayList()
     private val ads = ArrayList<NativeAd>()
-    var eventSize = 0
+    private var eventSize = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.events_layout, container, false)
@@ -46,16 +47,21 @@ class EventsFragment() : Fragment(){
         viewModel.getEvents()?.observe(this, Observer { eventsList ->
             val user = FirebaseManager.getUser()
             events.clear()
-            eventsList?.let { eventSize = eventsList.size }
-            eventsList?.forEach {
-                if(myEvents) {
-                    if(it.creator.uid == user?.uid) events.add(it)
-                } else {
-                    events.add(it)
+            if(eventsList != null) {
+                eventSize = eventsList.size
+
+                eventsList.forEach {
+                    if(myEvents) {
+                        if(it.creator.uid == user?.uid) events.add(it)
+                    } else {
+                        events.add(it)
+                    }
                 }
             }
+
             copyAds(eventSize)
-            adapter?.notifyDataSetChanged()
+            event_recycler.stopScroll()
+            adapter?.notifyListChanged(events)
         })
 
         if(configProvider.isAdsEventsFragmentEnabled()) {
@@ -63,11 +69,10 @@ class EventsFragment() : Fragment(){
             viewModel.getAds().observe(this, Observer {
                 if (it != null){
                     ads.clear()
-                    it.forEach { ad ->
-                        ads.add(ad)
-                    }
+                    ads.addAll(it)
                     copyAds(eventSize)
-                    adapter?.notifyDataSetChanged()
+                    event_recycler.stopScroll()
+                    adapter?.notifyListChanged(events)
                 }
             })
         }
@@ -76,7 +81,7 @@ class EventsFragment() : Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = EventAdapter(events, rootView.context, myEvents)
+        adapter = EventAdapter(ArrayList<Any>(), rootView.context, myEvents)
         val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(rootView.context)
         event_recycler.layoutManager = layoutManager
         event_recycler.itemAnimator = DefaultItemAnimator()
@@ -86,6 +91,7 @@ class EventsFragment() : Fragment(){
     private fun copyAds(eventSize: Int) {
         if(eventSize < configProvider.minEventsToDisplayAds()
                 || ads.size < configProvider.eventsFragmentAdsMax()) return
+        Log.d(TAG, "Copying ads main list")
         clearAds()
         val offset = events.size / ads.size + 1
         var index = 2

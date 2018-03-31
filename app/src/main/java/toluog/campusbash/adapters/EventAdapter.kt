@@ -1,6 +1,7 @@
 package toluog.campusbash.adapters
 
 import android.content.Context
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -83,6 +84,13 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?, var myEven
     }
 
     override fun getItemCount() = events.size
+
+    fun notifyListChanged(newEvents: ArrayList<Any>) {
+        val diffResult = DiffUtil.calculateDiff(EventsDiffCallback(events, newEvents))
+        events.clear()
+        events.addAll(newEvents)
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     class EventViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
             LayoutContainer {
