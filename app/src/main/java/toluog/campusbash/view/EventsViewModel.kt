@@ -8,6 +8,7 @@ import android.arch.lifecycle.ViewModel
 import android.util.Log
 import com.google.android.gms.ads.formats.NativeAd
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.experimental.launch
 import toluog.campusbash.data.Repository
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.AdManager
@@ -32,7 +33,7 @@ class EventsViewModel(app: Application) : AndroidViewModel(app) {
 
     fun loadAds() {
         Log.d(TAG, "loading ads...")
-        adManager.loadAds()
+        launch { adManager.loadAds() }
     }
 
     fun getEvents(): LiveData<List<Event>>? {

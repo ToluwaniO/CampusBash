@@ -35,6 +35,7 @@ import com.bumptech.glide.Glide
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.support.v4.toast
+import toluog.campusbash.data.GeneralDataSource.Companion.user
 import toluog.campusbash.model.*
 import java.util.Calendar
 import kotlin.collections.ArrayList
@@ -61,6 +62,8 @@ class CreateEventFragment : Fragment(){
     private val universities = ArrayList<String>()
     var isSaved = false
     private var liveUniversities: LiveData<List<University>>? = null
+    private val user = FirebaseManager.getUser()
+    private var stripeAccountId: String? = null
 
 
     interface CreateEventFragmentInterface {
@@ -88,6 +91,15 @@ class CreateEventFragment : Fragment(){
                 universities.add(university.name)
             }
         })
+        if(user != null) {
+            viewModel.getUser(user.uid).observe(activity!!, Observer {
+                if(it != null) {
+                    Log.d(TAG, "user -> $it")
+                    val id = it["stripeAccountId"] as String?
+                    stripeAccountId = id
+                }
+            })
+        }
         updateUi(view.context)
         if(isSaved) updateUi()
         else if(bundle != null) {
@@ -290,6 +302,7 @@ class CreateEventFragment : Fragment(){
 
         val creator = FirebaseManager.getCreator()
         if (creator != null) event.creator = creator
+        event.creator.stripeAccountId = stripeAccountId
 
         val dialog = indeterminateProgressDialog(message = "", title = "Uploading Event")
         dialog.show()
@@ -305,6 +318,7 @@ class CreateEventFragment : Fragment(){
                 fbasemanager.addEvent(event)
                 snackbar(rootView!!, "Event saved")
                 mCallback?.eventSaved(event)
+                dialog.dismiss()
 
             }
         }
@@ -313,6 +327,7 @@ class CreateEventFragment : Fragment(){
             fbasemanager.addEvent(event)
             snackbar(rootView!!, "Event saved")
             mCallback?.eventSaved(event)
+            dialog.dismiss()
         }
     }
 

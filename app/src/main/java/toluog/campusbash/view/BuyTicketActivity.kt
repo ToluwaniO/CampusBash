@@ -140,6 +140,8 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             overallMap["timeSpent"] = System.currentTimeMillis()
 
             val uid = FirebaseManager.auth.currentUser?.uid
+            val stripeId = event?.creator?.stripeAccountId
+            if(stripeId != null) overallMap["stripeAccountId"] = stripeId
 
             if(uid != null) {
                 overallMap["buyerId"] = uid

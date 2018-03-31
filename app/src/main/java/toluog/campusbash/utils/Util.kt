@@ -23,6 +23,7 @@ import toluog.campusbash.data.CurrencyDataSource
 import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
 import android.net.Uri
+import toluog.campusbash.BuildConfig
 
 
 /**
@@ -246,11 +247,7 @@ class Util{
             return date in rangeA..rangeB
         }
 
-        fun createStripeAccount(context: Context) {
-            val uri = Uri.parse(AppContract.STRIPE_OAUTH)
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            context.startActivity(intent)
-        }
+        fun debugMode() = BuildConfig.DEBUG
 
         fun ImageView.loadImage(url: String, context: Context){
             Glide.with(context).load(url).into(this)

@@ -137,11 +137,17 @@ class CreateTicketFragment: Fragment(){
             ticket?.isVisible = visible
             if(ticketType == "paid") ticket?.currency = this.currency
             else ticket?.currency = ""
-            if(viewModel.selectedTicket == null && ticket != null && isStripeActivated) {
+            if(viewModel.selectedTicket == null && ticket != null && ticketType == "free") {
                 viewModel.event.tickets.add(ticket)
                 callback.ticketComplete(ticket)
-            } else if(!isStripeActivated) {
+            } else if(!isStripeActivated && ticketType == "paid") {
                 setupStripe()
+            } else if(viewModel.selectedTicket == null && ticket != null && ticketType == "paid") {
+                viewModel.event.tickets.add(ticket)
+                callback.ticketComplete(ticket)
+            } else if(viewModel.selectedTicket != null) {
+                viewModel.selectedTicket = null
+                callback.ticketComplete(ticket)
             }
         }
     }

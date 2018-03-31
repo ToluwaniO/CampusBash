@@ -14,6 +14,7 @@ import com.google.gson.GsonBuilder
 import kotlinx.coroutines.experimental.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import toluog.campusbash.utils.Util
 
 class StripeServerClient(private val body: StripeAccountBody) {
     private lateinit var httpClientAPI: StripeClientAPI
@@ -25,15 +26,16 @@ class StripeServerClient(private val body: StripeAccountBody) {
         val gson = GsonBuilder()
                 .setLenient()
                 .create()
-        val logging = HttpLoggingInterceptor()
+        val logging = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { message -> Log.d(TAG, message) })
         logging.level = HttpLoggingInterceptor.Level.BASIC
         val client = OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .build()
+        if(Util.debugMode()) {
+            client.addInterceptor(logging)
+        }
         return Retrofit.Builder()
                 .baseUrl(CAMPUSBASH_STRIPE_SERVER_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(client)
+                .client(client.build())
                 .build()
                 .create(StripeClientAPI::class.java)
     }
@@ -61,13 +63,6 @@ class StripeServerClient(private val body: StripeAccountBody) {
         }
 
         return result
-    }
-    private fun jsonToMap(response: String): HashMap<String, Any> {
-        val map = HashMap<String, Any>()
-        val root = JSONObject(response)
-        map["code"] = root["code"]
-        map["message"] = root["message"]
-        return map
     }
 
     interface StripeClientAPI {
