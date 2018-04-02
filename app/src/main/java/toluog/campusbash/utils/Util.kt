@@ -23,7 +23,11 @@ import toluog.campusbash.data.CurrencyDataSource
 import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
 import android.net.Uri
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import toluog.campusbash.BuildConfig
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlin.collections.HashMap
 
 
 /**
@@ -33,6 +37,7 @@ class Util{
     companion object {
 
         private val TAG = Util::class.java.simpleName
+        private val configProvider = ConfigProvider(FirebaseRemoteConfig.getInstance())
         private var mDispatcher: FirebaseJobDispatcher? = null
         private val shortMonthsCaps = arrayOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
                 "SEP", "OCT", "NOV", "DEC")
@@ -245,6 +250,34 @@ class Util{
 
         fun dateRangeCheck(date: Long, rangeA: Long, rangeB: Long): Boolean {
             return date in rangeA..rangeB
+        }
+
+        fun getFinalFee(ticketFee: Double): HashMap<String, Double> {
+            val map = HashMap<String, Double>()
+            var preTaxFee = (ticketFee + configProvider.stripeServiceFee())
+            preTaxFee /= (1- configProvider.campusbashTicketCut()/100 - configProvider.stripeTicketCut()/100)
+            val serviceFee = (configProvider.stripeTicketCut()+ configProvider.campusbashTicketCut())/100 * preTaxFee
+            val paymentFee = configProvider.stripeServiceFee()
+            val totalFee = preTaxFee + .13*preTaxFee
+            map[AppContract.PRE_TAX_FEE] = round(preTaxFee, 2)
+            map[AppContract.SERVICE_FEE] = round(serviceFee, 2)
+            map[AppContract.PAYMENT_FEE] = round(paymentFee, 2)
+            map[AppContract.TOTAL_FEE] = round(totalFee, 2)
+            return map
+        }
+
+        fun round(value: Double, places: Int): Double {
+            if (places < 0) throw IllegalArgumentException()
+
+            var bd = BigDecimal(value)
+            bd = bd.setScale(places, RoundingMode.DOWN)
+            var db = bd.toDouble().toString()
+            for (i in 0 until places) {
+                db += "0"
+            }
+            val sides = db.split(".")
+            val result = "${sides[0]}.${sides[1].subSequence(0,places)}"
+            return result.toDouble()
         }
 
         fun debugMode() = BuildConfig.DEBUG

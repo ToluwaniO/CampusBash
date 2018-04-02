@@ -5,7 +5,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.Editable
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +24,9 @@ import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.yesButton
 import toluog.campusbash.R.string.currency
 import toluog.campusbash.model.Ticket
+import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.Util
 import java.lang.ClassCastException
 
 
@@ -47,6 +51,26 @@ class CreateTicketFragment: Fragment(){
     private var ticketType = ""
     private lateinit var typeAdapter: ArrayAdapter<String>
     private val user = FirebaseManager.getUser()
+
+    private val priceTextWatcher = object : TextWatcher {
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if(s != null && s.toString().isNotEmpty()) {
+                val price = s.toString().toDouble()
+                updateBuyerTotal(price)
+            } else if(s != null) {
+                updateBuyerTotal(0.0)
+            }
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+        }
+
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.create_ticket_layout, container, false)
@@ -107,6 +131,7 @@ class CreateTicketFragment: Fragment(){
             }
         }
 
+        ticket_price.addTextChangedListener(priceTextWatcher)
         save_ticket.setOnClickListener { save() }
 
         if(viewModel.selectedTicket != null) {
@@ -206,6 +231,19 @@ class CreateTicketFragment: Fragment(){
             }
         }
         dialog.show()
+    }
+
+    private fun updateBuyerTotal(price: Double) {
+        if(price > 0) {
+            val priceMap = Util.getFinalFee(price)
+            buyer_total.text = getString(R.string.buyer_total, priceMap[AppContract.PRE_TAX_FEE].toString())
+            buyer_total.visibility = View.VISIBLE
+            see_breakdown.visibility = View.VISIBLE
+        } else {
+            buyer_total.text = ""
+            buyer_total.visibility = View.GONE
+            see_breakdown.visibility = View.GONE
+        }
     }
 
     override fun onAttach(context: Context?) {

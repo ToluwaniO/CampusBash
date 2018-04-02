@@ -68,5 +68,10 @@ class AppContract{
         } else {
             "pk_live_2wBuZFYCnwPtcg2Y7zOchl8I"
         }
+
+        val PAYMENT_FEE = "paymentFee"
+        val SERVICE_FEE = "serviceFee"
+        val PRE_TAX_FEE = "preTaxFee"
+        val TOTAL_FEE = "totalFee"
     }
 }
