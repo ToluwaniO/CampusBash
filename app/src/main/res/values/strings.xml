@@ -69,7 +69,13 @@
     <string name="please_wait">Please wait</string>
     <string name="stripe_account_created">Stripe account created</string>
     <string name="stripe_account_failed">Failed to create Stripe account</string>
-    <string name="buyer_total">Buyer total: %1$s</string>
+    <string name="buyer_total">Buyer total: $%s</string>
     <string name="see_breakdown">See breakdown</string>
+    <string name="price_breakdown">Price Breakdown</string>
+    <string name="ticket_fee">Ticket Fee</string>
+    <string name="price_value">%1s%2s</string>
+    <string name="service_fee">Service Fee</string>
+    <string name="payment_fee">Payment Fee</string>
+    <string name="total_fee">Total Fee</string>
 
 </resources>

@@ -252,32 +252,57 @@ class Util{
             return date in rangeA..rangeB
         }
 
-        fun getFinalFee(ticketFee: Double): HashMap<String, Double> {
-            val map = HashMap<String, Double>()
-            var preTaxFee = (ticketFee + configProvider.stripeServiceFee())
-            preTaxFee /= (1- configProvider.campusbashTicketCut()/100 - configProvider.stripeTicketCut()/100)
-            val serviceFee = (configProvider.stripeTicketCut()+ configProvider.campusbashTicketCut())/100 * preTaxFee
-            val paymentFee = configProvider.stripeServiceFee()
-            val totalFee = preTaxFee + .13*preTaxFee
-            map[AppContract.PRE_TAX_FEE] = round(preTaxFee, 2)
-            map[AppContract.SERVICE_FEE] = round(serviceFee, 2)
-            map[AppContract.PAYMENT_FEE] = round(paymentFee, 2)
-            map[AppContract.TOTAL_FEE] = round(totalFee, 2)
+        fun getFinalFee(ticketFee: Double): HashMap<String, BigDecimal> {
+            Log.d(TAG, "Ticket Fee -> (start) $ticketFee")
+            val map = HashMap<String, BigDecimal>()
+            var paymentFee = (configProvider.stripeTicketCut()+ configProvider.campusbashTicketCut())/100
+            val serviceFee = configProvider.stripeServiceFee() + configProvider.campusbashServiceFee()
+            var totalFee = ticketFee+serviceFee
+            totalFee /= (1-paymentFee)
+            paymentFee *= totalFee
+            map[AppContract.TICKET_FEE] = if(ticketFee > 0) {
+                Log.d(TAG, "Ticket Fee -> (end)")
+                round(ticketFee, 2)
+            } else {
+                BigDecimal("0")
+            }
+            map[AppContract.SERVICE_FEE] = if(ticketFee > 0) {
+                Log.d(TAG, "Service Fee -> (start) -> $$serviceFee")
+                Log.d(TAG, "Service Fee -> (end)")
+                round(serviceFee, 2)
+            } else {
+                BigDecimal("0")
+            }
+            map[AppContract.PAYMENT_FEE] = if(ticketFee > 0) {
+                Log.d(TAG, "Payment Fee -> (start) -> $$paymentFee")
+                Log.d(TAG, "Payment Fee -> (end)")
+                round(paymentFee, 2)
+            } else {
+                BigDecimal("0")
+            }
+            map[AppContract.TOTAL_FEE] = if(ticketFee > 0) {
+                Log.d(TAG, "Total Fee -> (start) -> $$totalFee")
+                Log.d(TAG, "Total Fee -> (end)")
+                round(totalFee, 2)
+            } else {
+                BigDecimal("0")
+            }
             return map
         }
 
-        fun round(value: Double, places: Int): Double {
+        fun round(value: Double, places: Int): BigDecimal {
             if (places < 0) throw IllegalArgumentException()
-
-            var bd = BigDecimal(value)
-            bd = bd.setScale(places, RoundingMode.DOWN)
-            var db = bd.toDouble().toString()
+            val bd = BigDecimal(value.toString())
+            bd.setScale(places, RoundingMode.DOWN)
+            var db = bd.toString()
             for (i in 0 until places) {
                 db += "0"
             }
             val sides = db.split(".")
             val result = "${sides[0]}.${sides[1].subSequence(0,places)}"
-            return result.toDouble()
+            val res = BigDecimal(result)
+            Log.d(TAG, "Final Fee -> $$res")
+            return res
         }
 
         fun debugMode() = BuildConfig.DEBUG

@@ -14,6 +14,7 @@ import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
+import java.math.BigDecimal
 
 class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEventFragmentInterface,
         CreateTicketFragment.TicketListener, ViewTicketsFragment.ViewTicketsListener {
@@ -59,6 +60,8 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
         fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
     }
 
+
+
     override fun ticketClicked(ticket: Ticket) {
         fragManager.beginTransaction().replace(R.id.fragment_frame, CreateTicketFragment()).commit()
     }
@@ -91,5 +94,13 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
             is ViewTicketsFragment -> fragManager.beginTransaction().replace(R.id.fragment_frame, createEvent, AppContract.CREATE_EVENT_TAG).commit()
             else -> finish()
         }
+    }
+
+    override fun showBreakdown(map: HashMap<String, BigDecimal>) {
+        val frag = PriceBreakDownDialogFragment()
+        frag.arguments = Bundle().apply {
+            putSerializable(AppContract.PRICE_BREAKDOWN, map)
+        }
+        frag.show(supportFragmentManager.beginTransaction(), AppContract.PRICE_BREAKDOWN)
     }
 }

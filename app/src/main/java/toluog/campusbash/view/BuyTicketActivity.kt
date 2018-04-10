@@ -15,12 +15,13 @@ import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.longToast
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
-import toluog.campusbash.R.string.total
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.Util
+import java.math.BigDecimal
 
 
 class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListener {
@@ -93,8 +94,13 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     }
 
     override fun onTicketQuantityChanged(queryMap: ArrayMap<String, Any>) {
+        Log.d(TAG, "Ticket quantity changed")
         val total = getData()["total"] as Double
-        total_text.text = "$$total"
+        val breakdown = Util.getFinalFee(total)
+        ticket_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.TICKET_FEE])
+        payment_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.PAYMENT_FEE])
+        service_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.SERVICE_FEE])
+        total_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.TOTAL_FEE])
     }
 
     private fun getData(): HashMap<String, Any> {
@@ -107,6 +113,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             totalQuantity += quantity
             totalPrice += getPriceFromName(key) * quantity
         }
+        val priceBreakDown = Util.getFinalFee(totalPrice)
         val currency = getCurrency()
         if(currency != null) {
             purchaseMap["currency"] = currency
@@ -114,7 +121,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         purchaseMap["debug"] = BuildConfig.DEBUG
         purchaseMap["tickets"] = map
         purchaseMap["quantity"] = totalQuantity
-        purchaseMap["total"] = totalPrice
+        purchaseMap["total"] = priceBreakDown[AppContract.TOTAL_FEE]?.toDouble() ?: 0.0
         return purchaseMap
     }
 

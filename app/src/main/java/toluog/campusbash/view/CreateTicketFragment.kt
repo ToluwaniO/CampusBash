@@ -28,7 +28,7 @@ import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import java.lang.ClassCastException
-
+import java.math.BigDecimal
 
 
 /**
@@ -38,6 +38,7 @@ class CreateTicketFragment: Fragment(){
 
     interface TicketListener{
         fun ticketComplete(ticket: Ticket?)
+        fun showBreakdown(map: HashMap<String, BigDecimal>)
     }
     private val TAG = CreateTicketFragment::class.java.simpleName
     private var rootView: View? = null
@@ -55,8 +56,13 @@ class CreateTicketFragment: Fragment(){
     private val priceTextWatcher = object : TextWatcher {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if(s != null && s.toString().isNotEmpty()) {
-                val price = s.toString().toDouble()
-                updateBuyerTotal(price)
+                if(s.toString().toDouble() <= 1000000.0) {
+                    val price = s.toString().toDouble()
+                    updateBuyerTotal(price)
+                } else {
+                    updateBuyerTotal(0.0)
+                }
+
             } else if(s != null) {
                 updateBuyerTotal(0.0)
             }
@@ -133,6 +139,9 @@ class CreateTicketFragment: Fragment(){
 
         ticket_price.addTextChangedListener(priceTextWatcher)
         save_ticket.setOnClickListener { save() }
+        see_breakdown.setOnClickListener {
+            callback.showBreakdown(Util.getFinalFee(ticket_price.text.toString().toDouble()))
+        }
 
         if(viewModel.selectedTicket != null) {
             updateView(viewModel.selectedTicket)
@@ -234,9 +243,9 @@ class CreateTicketFragment: Fragment(){
     }
 
     private fun updateBuyerTotal(price: Double) {
-        if(price > 0) {
+        if(price > 0.0) {
             val priceMap = Util.getFinalFee(price)
-            buyer_total.text = getString(R.string.buyer_total, priceMap[AppContract.PRE_TAX_FEE].toString())
+            buyer_total.text = getString(R.string.buyer_total, priceMap[AppContract.TOTAL_FEE].toString())
             buyer_total.visibility = View.VISIBLE
             see_breakdown.visibility = View.VISIBLE
         } else {

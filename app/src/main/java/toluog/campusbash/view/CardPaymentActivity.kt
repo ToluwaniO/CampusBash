@@ -74,20 +74,23 @@ class CardPaymentActivity : AppCompatActivity() {
         isReadyToPay()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             LOAD_PAYMENT_DATA_REQUEST_CODE -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
-                        val paymentData = PaymentData.getFromIntent(data)
-                        val cardInfo = paymentData?.cardInfo
-                        val address = paymentData?.shippingAddress
-                        val rawToken = paymentData?.paymentMethodToken?.token
-                        val stripeToken = Token.fromString(rawToken)
-                        if (stripeToken != null) {
-                            // This chargeToken function is a call to your own server, which should then connect
-                            // to Stripe's API to finish the charge.
-                            sendActivityResult(stripeToken.id)
+                        if(data != null) {
+                            val paymentData = PaymentData.getFromIntent(data)
+                            val cardInfo = paymentData?.cardInfo
+                            paymentData?.paymentMethodToken?.token
+                            val address = paymentData?.shippingAddress
+                            val rawToken = paymentData?.paymentMethodToken?.token
+                            val stripeToken = Token.fromString(rawToken)
+                            if (stripeToken != null) {
+                                // This chargeToken function is a call to your own server, which should then connect
+                                // to Stripe's API to finish the charge.
+                                sendActivityResult(stripeToken.id)
+                            }
                         }
                     }
                     AutoResolveHelper.RESULT_ERROR -> {

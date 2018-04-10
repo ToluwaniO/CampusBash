@@ -20,7 +20,8 @@ class ConfigProvider(val remoteConfig: FirebaseRemoteConfig) {
             FeatureKey.EVENTS_FRAGMENT_ADS_MAX to 5,
             FeatureKey.CAMPUSBASH_TICKET_CUT to 1,
             FeatureKey.STRIPE_TICKET_CUT to 2.9,
-            FeatureKey.STRIPE_SERVICE_FEE to 0.30
+            FeatureKey.STRIPE_SERVICE_FEE to 0.30,
+            FeatureKey.CAMPUSBASH_SERVICE_FEE to 0.10
     )
 
     init {
@@ -35,6 +36,8 @@ class ConfigProvider(val remoteConfig: FirebaseRemoteConfig) {
     fun minEventsToDisplayAds() = remoteConfig.getString(FeatureKey.MIN_EVENTS_FOR_ADS).toInt()
 
     fun campusbashTicketCut() = remoteConfig.getDouble(FeatureKey.CAMPUSBASH_TICKET_CUT)
+
+    fun campusbashServiceFee() = remoteConfig.getDouble(FeatureKey.CAMPUSBASH_SERVICE_FEE)
 
     fun stripeTicketCut() = remoteConfig.getDouble(FeatureKey.STRIPE_TICKET_CUT)
 

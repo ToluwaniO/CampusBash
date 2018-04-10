@@ -69,9 +69,12 @@ class AppContract{
             "pk_live_2wBuZFYCnwPtcg2Y7zOchl8I"
         }
 
+        val TICKET_FEE = "ticketFee"
         val PAYMENT_FEE = "paymentFee"
         val SERVICE_FEE = "serviceFee"
         val PRE_TAX_FEE = "preTaxFee"
         val TOTAL_FEE = "totalFee"
+
+        val PRICE_BREAKDOWN = "priceBreakdown"
     }
 }

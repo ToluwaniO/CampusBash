@@ -11,5 +11,6 @@ class FeatureKey {
         val CAMPUSBASH_TICKET_CUT = "campusbash_ticket_cut_percentage"
         val STRIPE_TICKET_CUT = "stripe_cut_percentage"
         val STRIPE_SERVICE_FEE = "stripe_service_fee"
+        val CAMPUSBASH_SERVICE_FEE = "campusbash_service_fee"
     }
 }
