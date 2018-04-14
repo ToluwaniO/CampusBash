@@ -1,6 +1,7 @@
 package toluog.campusbash.view
 
 import android.app.Activity
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.support.v4.util.ArrayMap
 import android.support.v7.widget.*
 import android.util.Log
+import android.view.View
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.snackbar
@@ -22,6 +24,7 @@ import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import java.math.BigDecimal
+import toluog.campusbash.utils.CampusBash
 
 
 class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListener {
@@ -34,6 +37,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private val TAG = BuyTicketActivity::class.java.simpleName
     private val TOKEN_REQUEST = 3456
     private var tokenId: String? = null
+    private var user: LiveData<Map<String, Any>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +57,11 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
                 adapter.notifyDataSetChanged()
             }
         })
+        user = viewModel.getUser()
+
+        val customerId = user?.value?.get("stripeCustomerId") as String?
+        CampusBash.initCustomerSession(customerId)
+
     }
 
     private fun updateUi(){
@@ -75,16 +84,19 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
                 })
                 startActivityForResult(cardPaymentIntent, TOKEN_REQUEST)
             } else {
-                buyTickets(tokenId)
+                buyTickets(tokenId, false)
             }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode == TOKEN_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                tokenId = data.extras.getString(AppContract.TOKEN_ID)
-                buyTickets(tokenId)
+                if(data != null) {
+                    tokenId = data.extras.getString(AppContract.TOKEN_ID)
+                    val newCard = data.extras.getBoolean(AppContract.NEW_CARD)
+                    buyTickets(tokenId, newCard)
+                }
             }
         }
     }
@@ -95,12 +107,18 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
 
     override fun onTicketQuantityChanged(queryMap: ArrayMap<String, Any>) {
         Log.d(TAG, "Ticket quantity changed")
-        val total = getData()["total"] as Double
-        val breakdown = Util.getFinalFee(total)
-        ticket_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.TICKET_FEE])
-        payment_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.PAYMENT_FEE])
-        service_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.SERVICE_FEE])
-        total_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.TOTAL_FEE])
+        val breakdown = getData()["breakdown"] as HashMap<String, Double>
+        Log.d(TAG, "Breakdown -> $breakdown")
+        val total = breakdown[AppContract.TOTAL_FEE]
+        if(total != null && total > 0) {
+            price_breakdown_layout.visibility = View.VISIBLE
+            ticket_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.TICKET_FEE])
+            payment_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.PAYMENT_FEE])
+            service_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.SERVICE_FEE])
+            total_fee_text.text = getString(R.string.price_value, "$", total)
+        } else {
+            price_breakdown_layout.visibility = View.GONE
+        }
     }
 
     private fun getData(): HashMap<String, Any> {
@@ -122,6 +140,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         purchaseMap["tickets"] = map
         purchaseMap["quantity"] = totalQuantity
         purchaseMap["total"] = priceBreakDown[AppContract.TOTAL_FEE]?.toDouble() ?: 0.0
+        purchaseMap["breakdown"] = convertBigDecimalToDoubleMap(priceBreakDown)
         return purchaseMap
     }
 
@@ -138,9 +157,16 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         }
     }
 
-    private fun  buyTickets(tokenId: String?) {
+    private fun  buyTickets(tokenId: String?, newCard: Boolean) {
         val overallMap = getData()
-        if(tokenId != null) overallMap["token"] = tokenId
+        val customerId = user?.value?.get("stripeCustomerId") as String?
+        if(tokenId != null) {
+            overallMap["token"] = tokenId
+            overallMap["newCard"] = newCard
+        }
+        if(customerId != null) {
+            overallMap["stripeCustomerId"] = customerId
+        }
         if(overallMap["quantity"] == 0){
             snackbar(container,"No ticket purchased")
         } else{
@@ -180,4 +206,17 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         }
         return null
     }
+
+    private fun convertBigDecimalToDoubleMap(map: HashMap<String, BigDecimal>): HashMap<String, Double> {
+        val temp = HashMap<String, Double>()
+        for (key in map.keys) {
+            val bd = map[key]
+            if(bd != null) {
+                temp[key] = bd.toDouble()
+            }
+        }
+        return temp
+    }
+
+
 }

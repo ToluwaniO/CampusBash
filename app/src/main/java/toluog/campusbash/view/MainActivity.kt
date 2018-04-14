@@ -3,7 +3,6 @@ package toluog.campusbash.view
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
-import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.arch.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,7 +22,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import org.jetbrains.anko.act
-import org.jetbrains.anko.design.appBarLayout
 import toluog.campusbash.ViewBehavior.BottomNavigationBehavior
 import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
@@ -31,8 +29,8 @@ import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import kotlin.collections.ArrayList
-import toluog.campusbash.R.id.appbar
 import android.support.design.widget.AppBarLayout
+import toluog.campusbash.utils.CampusBash
 
 class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
 
@@ -109,6 +107,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         super.onStart()
         if(FirebaseManager.isSignedIn()){
             Log.d(TAG, "user is signed in")
+            CampusBash.init(applicationContext)
         } else{
             Util.startSignInActivity(act)
         }

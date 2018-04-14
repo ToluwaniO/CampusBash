@@ -261,8 +261,9 @@ class Util{
             totalFee /= (1-paymentFee)
             paymentFee *= totalFee
             map[AppContract.TICKET_FEE] = if(ticketFee > 0) {
-                Log.d(TAG, "Ticket Fee -> (end)")
-                round(ticketFee, 2)
+                val r = round(ticketFee, 2)
+                Log.d(TAG, "Ticket Fee -> (end) $r")
+                r
             } else {
                 BigDecimal("0")
             }
@@ -287,6 +288,9 @@ class Util{
             } else {
                 BigDecimal("0")
             }
+            val cFee = configProvider.campusbashServiceFee() + ticketFee * configProvider.campusbashTicketCut()/100
+            map[AppContract.CAMPUSBASH_FEE] = BigDecimal("${round(cFee, 2)}")
+            Log.d(TAG, "Breakdown -> $map")
             return map
         }
 

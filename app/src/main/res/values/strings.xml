@@ -73,9 +73,12 @@
     <string name="see_breakdown">See breakdown</string>
     <string name="price_breakdown">Price Breakdown</string>
     <string name="ticket_fee">Ticket Fee</string>
-    <string name="price_value">%1s%2s</string>
+    <string name="price_value">%1s%2.2f</string>
     <string name="service_fee">Service Fee</string>
     <string name="payment_fee">Payment Fee</string>
     <string name="total_fee">Total Fee</string>
+    <string name="debit_card_digits">%1s ending with %2s</string>
+    <string name="no_card_found">No card found</string>
+    <string name="save">save</string>
 
 </resources>

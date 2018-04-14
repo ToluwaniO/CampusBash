@@ -27,12 +27,12 @@ class PriceBreakDownDialogFragment: DialogFragment() {
 
     private fun updateView() {
         ticket_fee.text = getString(R.string.price_value, "$",
-                priceBreakdown[AppContract.TICKET_FEE].toString())
+                priceBreakdown[AppContract.TICKET_FEE])
         service_fee.text = getString(R.string.price_value, "$",
-                priceBreakdown[AppContract.SERVICE_FEE].toString())
+                priceBreakdown[AppContract.SERVICE_FEE])
         payment_fee.text = getString(R.string.price_value, "$",
-                priceBreakdown[AppContract.PAYMENT_FEE].toString())
+                priceBreakdown[AppContract.PAYMENT_FEE])
         total_fee.text = getString(R.string.price_value, "$",
-                priceBreakdown[AppContract.PRE_TAX_FEE].toString())
+                priceBreakdown[AppContract.PRE_TAX_FEE])
     }
 }

@@ -22,7 +22,7 @@ class GeneralDataSource {
                     user.postValue(documentSnapshot.data)
                 }
                 if(err != null) {
-                    Log.d(TAG, "An error occured getting user\ne -> ${err.message}")
+                    Log.d(TAG, "An error occurred getting user\ne -> ${err.message}")
                 }
             })
             return user

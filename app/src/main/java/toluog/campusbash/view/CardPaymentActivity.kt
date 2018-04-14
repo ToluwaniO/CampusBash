@@ -6,7 +6,12 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import com.stripe.android.Stripe
 import com.stripe.android.TokenCallback
 import com.stripe.android.model.Card
@@ -19,8 +24,13 @@ import toluog.campusbash.utils.AppContract
 import java.lang.Exception
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
+import com.stripe.android.CustomerSession
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.credit_card_view.*
 import org.jetbrains.anko.*
+import toluog.campusbash.utils.CampusBash
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class CardPaymentActivity : AppCompatActivity() {
@@ -31,12 +41,26 @@ class CardPaymentActivity : AppCompatActivity() {
     private lateinit var paymentsClient: PaymentsClient
     private lateinit var googlePayAlert: AlertBuilder<AlertDialog>
     private lateinit var currency: String
+    private val cards = ArrayList<BashCard>()
+    private val adapter = CardAdapter()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_payment)
         currency = intent.extras.getString("currency")
+
+        if(CampusBash.stripeSessionStarted) {
+            Log.d(TAG, "Stripe session started")
+            CustomerSession.getInstance().cachedCustomer?.sources?.forEach {
+                val card = it.asCard()
+                if(card != null) {
+                    cards.add(BashCard(card))
+                }
+            }
+            Log.d(TAG, "Found ${cards.size} cached cards")
+            updateView()
+        }
 
         dialog = indeterminateProgressDialog(message = "Please wait…")
         dialog.dismiss()
@@ -63,15 +87,31 @@ class CardPaymentActivity : AppCompatActivity() {
                 Wallet.WalletOptions.Builder().setEnvironment(environment)
                         .build())
 
-        done_button.setOnClickListener {
-            val card = card_input_widget.card
-            if(card != null && validateCard(card)) {
-                dialog.show()
-                getToken(card)
-            }
+        card_recycler.adapter = adapter
+        val layoutManager = LinearLayoutManager(this)
+        card_recycler.layoutManager = layoutManager
+
+        add_card.setOnClickListener {
+            add_card_layout.visibility = View.VISIBLE
+            add_card.visibility = View.GONE
+            no_card_layout.visibility = View.GONE
+        }
+
+        save.setOnClickListener {
+            addCard()
         }
 
         isReadyToPay()
+    }
+
+    override fun onBackPressed() {
+        if(add_card_layout.visibility == View.VISIBLE) {
+            add_card_layout.visibility = View.GONE
+            add_card.visibility = View.VISIBLE
+            updateView()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -114,12 +154,12 @@ class CardPaymentActivity : AppCompatActivity() {
         return true
     }
 
-    private fun getToken(card: Card) {
+    private fun getToken(card: BashCard) {
         val stripe = Stripe(this, AppContract.STRIPE_PUBLISHABLE_KEY)
-        stripe.createToken(card, object : TokenCallback {
+        stripe.createToken(card.card, object : TokenCallback {
             override fun onSuccess(token: Token?) {
                 val id: String? = token?.id
-                sendActivityResult(id)
+                sendActivityResult(id, card.newCard)
             }
 
             override fun onError(error: Exception?) {
@@ -129,11 +169,12 @@ class CardPaymentActivity : AppCompatActivity() {
         })
     }
 
-    private fun sendActivityResult(tokenId: String?) {
+    private fun sendActivityResult(tokenId: String?, newCard: Boolean = false) {
         val intent = Intent()
         if(tokenId != null) {
             intent.putExtras(Bundle().apply {
                 putString(AppContract.TOKEN_ID, tokenId)
+                putBoolean(AppContract.NEW_CARD, newCard)
             })
             setResult(Activity.RESULT_OK, intent)
         } else {
@@ -194,5 +235,67 @@ class CardPaymentActivity : AppCompatActivity() {
 
         request.setPaymentMethodTokenizationParameters(createTokenizationParameters())
         return request.build()
+    }
+
+    private fun updateView() {
+        if(cards.size > 0) {
+            adapter.notifyDataSetChanged()
+            card_recycler.visibility = View.VISIBLE
+            no_card_layout.visibility = View.GONE
+        } else {
+            card_recycler.visibility = View.GONE
+            no_card_layout.visibility = View.VISIBLE
+        }
+    }
+
+    private fun addCard() {
+        val card = card_input_widget.card
+        if(card != null && card.validateCard()) {
+            cards.add(BashCard(card, true))
+        } else {
+            toast("Failed to add card")
+        }
+        add_card_layout.visibility = View.GONE
+        add_card.visibility = View.VISIBLE
+        updateView()
+    }
+
+    data class BashCard(var card: Card, var newCard: Boolean = false)
+
+    inner class CardAdapter: RecyclerView.Adapter<CardAdapter.ViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardAdapter.ViewHolder {
+            val view = LayoutInflater.from(this@CardPaymentActivity)
+                    .inflate(R.layout.credit_card_view, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun getItemCount() = cards.size
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.bind(cards[position])
+        }
+
+
+        inner class ViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
+                LayoutContainer {
+
+            fun bind(bCard: BashCard) {
+                val card = bCard.card
+                card_number.text = getString(R.string.debit_card_digits, card.brand, card.last4)
+                val logo = Card.BRAND_RESOURCE_MAP[card.brand]
+                val unknown = Card.BRAND_RESOURCE_MAP[Card.UNKNOWN]
+                if(logo != null) {
+                    logo_view.imageResource = logo
+                } else if(unknown != null) {
+                    logo_view.imageResource = unknown
+                }
+                containerView?.setOnClickListener {
+                    getToken(bCard)
+                }
+            }
+
+        }
+
     }
 }
