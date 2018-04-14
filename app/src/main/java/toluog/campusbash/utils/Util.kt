@@ -23,7 +23,11 @@ import toluog.campusbash.data.CurrencyDataSource
 import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
 import android.net.Uri
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import toluog.campusbash.BuildConfig
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlin.collections.HashMap
 
 
 /**
@@ -33,6 +37,7 @@ class Util{
     companion object {
 
         private val TAG = Util::class.java.simpleName
+        private val configProvider = ConfigProvider(FirebaseRemoteConfig.getInstance())
         private var mDispatcher: FirebaseJobDispatcher? = null
         private val shortMonthsCaps = arrayOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
                 "SEP", "OCT", "NOV", "DEC")
@@ -245,6 +250,63 @@ class Util{
 
         fun dateRangeCheck(date: Long, rangeA: Long, rangeB: Long): Boolean {
             return date in rangeA..rangeB
+        }
+
+        fun getFinalFee(ticketFee: Double): HashMap<String, BigDecimal> {
+            Log.d(TAG, "Ticket Fee -> (start) $ticketFee")
+            val map = HashMap<String, BigDecimal>()
+            var paymentFee = (configProvider.stripeTicketCut()+ configProvider.campusbashTicketCut())/100
+            val serviceFee = configProvider.stripeServiceFee() + configProvider.campusbashServiceFee()
+            var totalFee = ticketFee+serviceFee
+            totalFee /= (1-paymentFee)
+            paymentFee *= totalFee
+            map[AppContract.TICKET_FEE] = if(ticketFee > 0) {
+                val r = round(ticketFee, 2)
+                Log.d(TAG, "Ticket Fee -> (end) $r")
+                r
+            } else {
+                BigDecimal("0")
+            }
+            map[AppContract.SERVICE_FEE] = if(ticketFee > 0) {
+                Log.d(TAG, "Service Fee -> (start) -> $$serviceFee")
+                Log.d(TAG, "Service Fee -> (end)")
+                round(serviceFee, 2)
+            } else {
+                BigDecimal("0")
+            }
+            map[AppContract.PAYMENT_FEE] = if(ticketFee > 0) {
+                Log.d(TAG, "Payment Fee -> (start) -> $$paymentFee")
+                Log.d(TAG, "Payment Fee -> (end)")
+                round(paymentFee, 2)
+            } else {
+                BigDecimal("0")
+            }
+            map[AppContract.TOTAL_FEE] = if(ticketFee > 0) {
+                Log.d(TAG, "Total Fee -> (start) -> $$totalFee")
+                Log.d(TAG, "Total Fee -> (end)")
+                round(totalFee, 2)
+            } else {
+                BigDecimal("0")
+            }
+            val cFee = configProvider.campusbashServiceFee() + ticketFee * configProvider.campusbashTicketCut()/100
+            map[AppContract.CAMPUSBASH_FEE] = BigDecimal("${round(cFee, 2)}")
+            Log.d(TAG, "Breakdown -> $map")
+            return map
+        }
+
+        fun round(value: Double, places: Int): BigDecimal {
+            if (places < 0) throw IllegalArgumentException()
+            val bd = BigDecimal(value.toString())
+            bd.setScale(places, RoundingMode.DOWN)
+            var db = bd.toString()
+            for (i in 0 until places) {
+                db += "0"
+            }
+            val sides = db.split(".")
+            val result = "${sides[0]}.${sides[1].subSequence(0,places)}"
+            val res = BigDecimal(result)
+            Log.d(TAG, "Final Fee -> $$res")
+            return res
         }
 
         fun debugMode() = BuildConfig.DEBUG

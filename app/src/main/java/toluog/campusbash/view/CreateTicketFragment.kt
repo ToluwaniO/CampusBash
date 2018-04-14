@@ -5,7 +5,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.Editable
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -22,9 +24,11 @@ import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.yesButton
 import toluog.campusbash.R.string.currency
 import toluog.campusbash.model.Ticket
+import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.Util
 import java.lang.ClassCastException
-
+import java.math.BigDecimal
 
 
 /**
@@ -34,6 +38,7 @@ class CreateTicketFragment: Fragment(){
 
     interface TicketListener{
         fun ticketComplete(ticket: Ticket?)
+        fun showBreakdown(map: HashMap<String, BigDecimal>)
     }
     private val TAG = CreateTicketFragment::class.java.simpleName
     private var rootView: View? = null
@@ -47,6 +52,31 @@ class CreateTicketFragment: Fragment(){
     private var ticketType = ""
     private lateinit var typeAdapter: ArrayAdapter<String>
     private val user = FirebaseManager.getUser()
+
+    private val priceTextWatcher = object : TextWatcher {
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if(s != null && s.toString().isNotEmpty()) {
+                if(s.toString().toDouble() <= 1000000.0) {
+                    val price = s.toString().toDouble()
+                    updateBuyerTotal(price)
+                } else {
+                    updateBuyerTotal(0.0)
+                }
+
+            } else if(s != null) {
+                updateBuyerTotal(0.0)
+            }
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+        }
+
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.create_ticket_layout, container, false)
@@ -107,7 +137,11 @@ class CreateTicketFragment: Fragment(){
             }
         }
 
+        ticket_price.addTextChangedListener(priceTextWatcher)
         save_ticket.setOnClickListener { save() }
+        see_breakdown.setOnClickListener {
+            callback.showBreakdown(Util.getFinalFee(ticket_price.text.toString().toDouble()))
+        }
 
         if(viewModel.selectedTicket != null) {
             updateView(viewModel.selectedTicket)
@@ -206,6 +240,19 @@ class CreateTicketFragment: Fragment(){
             }
         }
         dialog.show()
+    }
+
+    private fun updateBuyerTotal(price: Double) {
+        if(price > 0.0) {
+            val priceMap = Util.getFinalFee(price)
+            buyer_total.text = getString(R.string.buyer_total, priceMap[AppContract.TOTAL_FEE].toString())
+            buyer_total.visibility = View.VISIBLE
+            see_breakdown.visibility = View.VISIBLE
+        } else {
+            buyer_total.text = ""
+            buyer_total.visibility = View.GONE
+            see_breakdown.visibility = View.GONE
+        }
     }
 
     override fun onAttach(context: Context?) {

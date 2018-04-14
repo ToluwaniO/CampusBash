@@ -71,11 +71,11 @@ class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
     fun createStripeAccount(): LiveData<ServerResponse> {
         val user = FirebaseManager.getUser()
         if(!initializedStripeApi && user != null) {
-            val body = StripeAccountBody(user.uid, user.email ?: "", "CA")
-            stripeApi = StripeServerClient(body)
+            stripeApi = StripeServerClient()
             initializedStripeApi = true
         }
-        return stripeApi.createStripeAccount()
+        val body = StripeAccountBody(user?.uid ?: "", user?.email ?: "", "CA")
+        return stripeApi.createStripeAccount(body)
     }
 
 

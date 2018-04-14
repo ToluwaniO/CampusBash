@@ -10,6 +10,7 @@ import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
+import com.stripe.android.CustomerSession
 import org.jetbrains.anko.toast
 import toluog.campusbash.model.Creator
 
@@ -73,7 +74,10 @@ class FirebaseManager(){
 
         fun getUser() = auth.currentUser
 
-        fun signOut() = auth.signOut()
+        fun signOut() {
+            auth.signOut()
+            CampusBash.endCustomerSession()
+        }
 
         fun getCreator(): Creator?{
             val user = auth.currentUser

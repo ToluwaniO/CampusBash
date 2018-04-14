@@ -29,6 +29,7 @@ class AppContract{
 
         //BUNDLE TAGS
         val TOKEN_ID = "tokenId"
+        val NEW_CARD = "newCard"
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"
@@ -64,9 +65,19 @@ class AppContract{
         val JOB_EVENT_DELETE = "delete_old_events"
 
         val STRIPE_PUBLISHABLE_KEY = if(BuildConfig.DEBUG) {
-            "pk_test_T1L4D5dfsk4KTYB3XFsYf34N"
+            "pk_test_CVyOXRhK6S5K0RlHkLzIiReJ"
         } else {
-            "pk_live_2wBuZFYCnwPtcg2Y7zOchl8I"
+            "pk_live_8mv4tYyz8VBXXjUSdmQmOtcD"
         }
+
+        val TICKET_FEE = "ticketFee"
+        val PAYMENT_FEE = "paymentFee"
+        val SERVICE_FEE = "serviceFee"
+        val PRE_TAX_FEE = "preTaxFee"
+        val TOTAL_FEE = "totalFee"
+        val CAMPUSBASH_CUT = "campusbashCut"
+        val CAMPUSBASH_FEE = "campusbashFee"
+
+        val PRICE_BREAKDOWN = "priceBreakdown"
     }
 }

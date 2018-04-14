@@ -69,5 +69,18 @@
     <string name="please_wait">Please wait</string>
     <string name="stripe_account_created">Stripe account created</string>
     <string name="stripe_account_failed">Failed to create Stripe account</string>
+    <string name="buyer_total">Buyer total: $%s</string>
+    <string name="see_breakdown">See breakdown</string>
+    <string name="price_breakdown">Price Breakdown</string>
+    <string name="ticket_fee">Ticket Fee</string>
+    <string name="price_value">%1s%2.2f</string>
+    <string name="service_fee">Service Fee</string>
+    <string name="payment_fee">Payment Fee</string>
+    <string name="total_fee">Total Fee</string>
+    <string name="debit_card_digits">%1s ending with %2s</string>
+    <string name="no_card_found">No card found</string>
+    <string name="save">save</string>
+    <string name="use_google_pay">Do you want to use Google Pay?</string>
+    <string name="could_not_validate_card">Could not validate this card</string>
 
 </resources>
