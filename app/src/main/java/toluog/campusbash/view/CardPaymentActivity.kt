@@ -29,6 +29,7 @@ import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.credit_card_view.*
 import org.jetbrains.anko.*
 import toluog.campusbash.utils.CampusBash
+import toluog.campusbash.utils.Util
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -37,12 +38,12 @@ class CardPaymentActivity : AppCompatActivity() {
 
     private val TAG = CardPaymentActivity::class.java.simpleName
     private val LOAD_PAYMENT_DATA_REQUEST_CODE = 3731
-    private lateinit var dialog: ProgressDialog
     private lateinit var paymentsClient: PaymentsClient
     private lateinit var googlePayAlert: AlertBuilder<AlertDialog>
     private lateinit var currency: String
     private val cards = ArrayList<BashCard>()
     private val adapter = CardAdapter()
+    private lateinit var pleaseWait: ProgressDialog
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,9 +63,9 @@ class CardPaymentActivity : AppCompatActivity() {
             updateView()
         }
 
-        dialog = indeterminateProgressDialog(message = "Please wait…")
-        dialog.dismiss()
-        googlePayAlert = alert("Do you want to use Google Pay?") {
+        pleaseWait = indeterminateProgressDialog(R.string.please_wait)
+        pleaseWait.dismiss()
+        googlePayAlert = alert(getString(R.string.use_google_pay)) {
             yesButton {
                 Log.d(TAG, "Yes clicked for Google Pay")
                 val request = createPaymentDataRequest()
@@ -98,6 +99,7 @@ class CardPaymentActivity : AppCompatActivity() {
         }
 
         save.setOnClickListener {
+            Util.hideKeyboard(this@CardPaymentActivity)
             addCard()
         }
 
@@ -143,18 +145,16 @@ class CardPaymentActivity : AppCompatActivity() {
         }
     }
 
-    private fun validateCard(cardToSave: Card?): Boolean {
-        if(cardToSave == null) {
-            snackbar(root_view, "Invalid card")
-            return false
-        } else if(!cardToSave.validateCard()) {
-            snackbar(root_view, "Invalid card")
+    private fun validateCard(cardToSave: Card): Boolean {
+        if(!cardToSave.validateCard()) {
+            snackbar(root_view, R.string.could_not_validate_card)
             return false
         }
         return true
     }
 
     private fun getToken(card: BashCard) {
+        pleaseWait.show()
         val stripe = Stripe(this, AppContract.STRIPE_PUBLISHABLE_KEY)
         stripe.createToken(card.card, object : TokenCallback {
             override fun onSuccess(token: Token?) {
@@ -178,10 +178,15 @@ class CardPaymentActivity : AppCompatActivity() {
             })
             setResult(Activity.RESULT_OK, intent)
         } else {
+            longToast(R.string.could_not_validate_card)
             setResult(Activity.RESULT_CANCELED, intent)
         }
-        dialog.dismiss()
         finish()
+    }
+
+    override fun onDestroy() {
+        pleaseWait.dismiss()
+        super.onDestroy()
     }
 
     private fun isReadyToPay() {
@@ -250,10 +255,10 @@ class CardPaymentActivity : AppCompatActivity() {
 
     private fun addCard() {
         val card = card_input_widget.card
-        if(card != null && card.validateCard()) {
+        if(card != null && validateCard(card)) {
             cards.add(BashCard(card, true))
-        } else {
-            toast("Failed to add card")
+        } else if(card == null) {
+            snackbar(root_view, R.string.could_not_validate_card)
         }
         add_card_layout.visibility = View.GONE
         add_card.visibility = View.VISIBLE

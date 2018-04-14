@@ -80,5 +80,7 @@
     <string name="debit_card_digits">%1s ending with %2s</string>
     <string name="no_card_found">No card found</string>
     <string name="save">save</string>
+    <string name="use_google_pay">Do you want to use Google Pay?</string>
+    <string name="could_not_validate_card">Could not validate this card</string>
 
 </resources>

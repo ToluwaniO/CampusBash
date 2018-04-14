@@ -1,6 +1,7 @@
 package toluog.campusbash.view
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -14,6 +15,7 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.snackbar
+import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.longToast
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
@@ -38,6 +40,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private val TOKEN_REQUEST = 3456
     private var tokenId: String? = null
     private var user: LiveData<Map<String, Any>>? = null
+    private lateinit var pleaseWait: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,10 +61,17 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             }
         })
         user = viewModel.getUser()
+        pleaseWait = indeterminateProgressDialog(R.string.please_wait)
+        pleaseWait.dismiss()
 
         val customerId = user?.value?.get("stripeCustomerId") as String?
         CampusBash.initCustomerSession(customerId)
 
+    }
+
+    override fun onDestroy() {
+        pleaseWait.dismiss()
+        super.onDestroy()
     }
 
     private fun updateUi(){
@@ -158,6 +168,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     }
 
     private fun  buyTickets(tokenId: String?, newCard: Boolean) {
+        pleaseWait.show()
         val overallMap = getData()
         val customerId = user?.value?.get("stripeCustomerId") as String?
         if(tokenId != null) {
@@ -182,6 +193,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
                 overallMap["buyerId"] = uid
                 saveData(overallMap)
             } else {
+                pleaseWait.dismiss()
                 snackbar(container, "you're not signed in")
             }
         }
