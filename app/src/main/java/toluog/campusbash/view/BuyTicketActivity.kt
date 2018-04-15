@@ -168,34 +168,38 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     }
 
     private fun  buyTickets(tokenId: String?, newCard: Boolean) {
-        pleaseWait.show()
         val overallMap = getData()
+        if(overallMap["quantity"] == 0){
+            snackbar(container,"No ticket purchased")
+        }
+        pleaseWait.show()
         val customerId = user?.value?.get("stripeCustomerId") as String?
+        val fcmToken = FirebaseManager.getFcmToken()
         if(tokenId != null) {
             overallMap["token"] = tokenId
             overallMap["newCard"] = newCard
         }
+        if(fcmToken != null) {
+            overallMap["fcmToken"] = fcmToken
+        }
         if(customerId != null) {
             overallMap["stripeCustomerId"] = customerId
         }
-        if(overallMap["quantity"] == 0){
-            snackbar(container,"No ticket purchased")
-        } else{
-            overallMap["timeSpent"] = System.currentTimeMillis()
 
-            val uid = FirebaseManager.auth.currentUser?.uid
-            val email = FirebaseManager.auth.currentUser?.email
-            val stripeId = event?.creator?.stripeAccountId
-            if(stripeId != null) overallMap["stripeAccountId"] = stripeId
-            if(email != null) overallMap["buyerEmail"] = email
+        overallMap["timeSpent"] = System.currentTimeMillis()
 
-            if(uid != null) {
-                overallMap["buyerId"] = uid
-                saveData(overallMap)
-            } else {
-                pleaseWait.dismiss()
-                snackbar(container, "you're not signed in")
-            }
+        val uid = FirebaseManager.auth.currentUser?.uid
+        val email = FirebaseManager.auth.currentUser?.email
+        val stripeId = event?.creator?.stripeAccountId
+        if(stripeId != null) overallMap["stripeAccountId"] = stripeId
+        if(email != null) overallMap["buyerEmail"] = email
+
+        if(uid != null) {
+            overallMap["buyerId"] = uid
+            saveData(overallMap)
+        } else {
+            pleaseWait.dismiss()
+            snackbar(container, "you're not signed in")
         }
     }
 

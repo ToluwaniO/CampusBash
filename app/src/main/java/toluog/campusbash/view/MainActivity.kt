@@ -30,6 +30,7 @@ import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import kotlin.collections.ArrayList
 import android.support.design.widget.AppBarLayout
+import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.CampusBash
 
 class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private lateinit var viewModel: MainActivityViewModel
     private val uniChar = ArrayList<CharSequence>()
     private val uniList = ArrayList<University>()
+    private val firebaseManager = lazy { FirebaseManager() }
     private lateinit var country: String
     private lateinit var university: String
 
@@ -108,6 +110,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         if(FirebaseManager.isSignedIn()){
             Log.d(TAG, "user is signed in")
             CampusBash.init(applicationContext)
+            doAsync { firebaseManager.value.updateFcmToken(applicationContext) }
         } else{
             Util.startSignInActivity(act)
         }
