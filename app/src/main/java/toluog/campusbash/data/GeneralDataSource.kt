@@ -18,7 +18,7 @@ class GeneralDataSource {
             Log.d(TAG, "getting user")
             userQuery = mFirestore.collection(FirestorePaths.USERS).document(uid)
             userQuery.addSnapshotListener({ documentSnapshot, err ->
-                if(documentSnapshot != null) {
+                if(documentSnapshot != null && documentSnapshot.exists()) {
                     user.postValue(documentSnapshot.data)
                 }
                 if(err != null) {

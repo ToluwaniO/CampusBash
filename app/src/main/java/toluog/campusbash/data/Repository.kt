@@ -30,8 +30,8 @@ class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
 
     fun getEvents() : LiveData<List<Event>>?{
         Log.d(TAG, "getEvents called")
-        if(initializedEvents == false){
-            EventDataSource.initListener(context)
+        if(!initializedEvents){
+            EventDataSource.initListener(FirebaseFirestore.getInstance(), context)
             initializedEvents = true
             Log.d(TAG, "datasource initialized")
         }

@@ -17,13 +17,13 @@ import toluog.campusbash.utils.AppContract
  */
 class CurrencyDataSource {
     companion object {
-        val mFireStore = FirebaseFirestore.getInstance()
-        val query = mFireStore.collection(AppContract.FIREBASE_CURRENCIES)
+
         var db: AppDatabase? = null
         val TAG = CurrencyDataSource::class.java.simpleName
 
-        fun initListener(context: Context){
+        fun initListener(mFirestore: FirebaseFirestore, context: Context){
             Log.d(TAG, "initListener")
+            val query = mFirestore.collection(AppContract.FIREBASE_CURRENCIES)
             db = AppDatabase.getDbInstance(context)
             val currDao = db?.currencyDao()
             query.addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
@@ -33,38 +33,47 @@ class CurrencyDataSource {
                 }
 
                 // Dispatch the event
-                for (change in value.getDocumentChanges()) {
-                    // Snapshot of the changed document
-                    Log.d(TAG, change.document.toString())
-                    val snapshot = change.document.toObject(Currency::class.java)
+               launch {
+                   for (change in value.documentChanges) {
+                       // Snapshot of the changed document
+                       if(change.document.exists()) {
+                           Log.d(TAG, change.document.toString())
+                           val snapshot = change.document.toObject(Currency::class.java)
 
-                    when (change.getType()) {
-                        DocumentChange.Type.ADDED -> {
-                            Log.d(TAG, "ChildAdded")
-                            launch { currDao?.insertCurrency(snapshot) }
-                        }
-                        DocumentChange.Type.MODIFIED -> {
-                            Log.d(TAG, "ChildModified")
-                            launch { currDao?.updateCurrency(snapshot) }
-                        }
-                        DocumentChange.Type.REMOVED -> {
-                            Log.d(TAG, "ChildRemoved")
-                            launch { currDao?.deleteCurrency(snapshot) }
-                        }
-                    }
-                }
+                           when (change.type) {
+                               DocumentChange.Type.ADDED -> {
+                                   Log.d(TAG, "ChildAdded")
+                                   currDao?.insertCurrency(snapshot)
+                               }
+                               DocumentChange.Type.MODIFIED -> {
+                                   Log.d(TAG, "ChildModified")
+                                   currDao?.updateCurrency(snapshot)
+                               }
+                               DocumentChange.Type.REMOVED -> {
+                                   Log.d(TAG, "ChildRemoved")
+                                   currDao?.deleteCurrency(snapshot)
+                               }
+                           }
+                       }
+                   }
+               }
             })
         }
 
-        fun downloadCurrencies(context: Context) {
+        fun downloadCurrencies(mFirestore: FirebaseFirestore, context: Context) {
             db = AppDatabase.getDbInstance(context)
             val currDao = db?.currencyDao()
+            val query = mFirestore.collection(AppContract.FIREBASE_CURRENCIES)
             query.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    for (document in task.result) {
-                        val snapshot = document.toObject(Currency::class.java)
-                        launch { currDao?.insertCurrency(snapshot) }
-                        Log.d(TAG, "$snapshot")
+                    launch {
+                        for (document in task.result) {
+                            if(document.exists()) {
+                                val snapshot = document.toObject(Currency::class.java)
+                                currDao?.insertCurrency(snapshot)
+                                Log.d(TAG, "$snapshot")
+                            }
+                        }
                     }
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.exception)
