@@ -41,12 +41,15 @@ class AppContract{
         val FIREBASE_UNIVERSITIES = "universities"
         val FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS = "event_placeholder_images"
         val FIREBASE_CURRENCIES = "currencies"
+        val FIREBASE_USERS = "users"
+        val FIREBASE_FCM_TOKEN = "fcmToken"
 
         //SHAREDPREFERENCES
-        val PREF_FIRST_OPEN_KEY = "first_open"
-        val PREF_COUNTRY_KEY = "pref_country"
-        val PREF_UNIVERSITY_KEY = "pref_university"
-        val PREF_EVENT_TYPES_KEY = "pref_event_type_set"
+        const val PREF_FIRST_OPEN_KEY = "first_open"
+        const val PREF_COUNTRY_KEY = "pref_country"
+        const val PREF_UNIVERSITY_KEY = "pref_university"
+        const val PREF_EVENT_TYPES_KEY = "pref_event_type_set"
+        const val PREF_FCM_TOKEN_UPDATED = "pref_fcm_token_updated"
 
         //ADS
         const val NUM_EVENTS_FRAGMENT_ADS = 5
@@ -79,5 +82,9 @@ class AppContract{
         val CAMPUSBASH_FEE = "campusbashFee"
 
         val PRICE_BREAKDOWN = "priceBreakdown"
+
+        //NOTIFICATIONS
+        const val UNKNOWN_NOTIFICATION = 0
+        const val PURCHASE_NOTIFICATION = 1
     }
 }

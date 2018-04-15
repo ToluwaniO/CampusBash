@@ -8,6 +8,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.stripe.android.CustomerSession
@@ -36,6 +37,32 @@ class FirebaseManager(){
             db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)?.set(event)
         }
         //db?.collection(AppContract.FIREBASE_EVENTS)?.add(event)
+    }
+
+    fun updateFcmToken(context: Context) {
+        val savedStatus = Util.getPrefInt(context, AppContract.PREF_FCM_TOKEN_UPDATED)
+        val token = FirebaseInstanceId.getInstance().token
+        if(token != null && savedStatus == 0) {
+            updateFcmToken(context, token)
+        }
+    }
+
+    private fun updateFcmToken(context: Context, token: String) {
+        Log.d(TAG, "Attempting to upload fcm token")
+        val uid = FirebaseManager.getUser()?.uid
+        if(uid != null) {
+            db?.collection(AppContract.FIREBASE_USERS)?.document(uid)
+                    ?.update(AppContract.FIREBASE_FCM_TOKEN, token)
+                    ?.addOnSuccessListener {
+                        Log.d(TAG, "Fcm token updated")
+                        Util.setPrefInt(context, AppContract.PREF_FCM_TOKEN_UPDATED, 1)
+                    }
+                    ?.addOnFailureListener {
+                        Log.d(TAG, "Couldn't save FCM token\ne -> ${it.message}")
+                    }
+        } else {
+            Log.d(TAG, "Can't update fcm token, user is not signed in")
+        }
     }
 
     fun deleteEvent(context: Context?, eventId: String) {
@@ -78,6 +105,8 @@ class FirebaseManager(){
             auth.signOut()
             CampusBash.endCustomerSession()
         }
+
+        fun getFcmToken() = FirebaseInstanceId.getInstance().token
 
         fun getCreator(): Creator?{
             val user = auth.currentUser

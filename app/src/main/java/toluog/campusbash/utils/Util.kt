@@ -169,14 +169,14 @@ class Util{
                     .setAvailableProviders(providers).build(), RC_SIGN_IN)
         }
 
-        fun getPrefInt(activity: Activity, key: String): Int {
+        fun getPrefInt(context: Context, key: String): Int {
             Log.d(TAG, "pref gotten")
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             return sharedPref.getInt(key,0)
         }
 
-        fun setPrefInt(activity: Activity, key: String, value: Int){
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
+        fun setPrefInt(context: Context, key: String, value: Int){
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             val editor = sharedPref.edit()
             editor.putInt(key, value)
             editor.commit()
