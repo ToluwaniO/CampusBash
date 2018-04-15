@@ -30,6 +30,7 @@ class AppContract{
         //BUNDLE TAGS
         val TOKEN_ID = "tokenId"
         val NEW_CARD = "newCard"
+        val MORE_TEXT = "moreText"
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"

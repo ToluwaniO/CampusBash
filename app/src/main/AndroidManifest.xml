@@ -86,21 +86,16 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
-
-        <service
-            android:name=".utils.MyFirebaseInstanceIDService">
+        <service android:name=".utils.MyFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
-        <service
-            android:name=".utils.MyMessagingService">
+        <service android:name=".utils.MyMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
 
         <receiver android:name=".utils.MyBootReceiver">
             <intent-filter>
@@ -109,7 +104,8 @@
         </receiver>
 
         <activity android:name=".view.CardPaymentActivity" />
-        <activity android:name=".view.StripeSetupActivity"/>
+        <activity android:name=".view.StripeSetupActivity" />
+        <activity android:name=".view.SeeMoreActivity"></activity>
     </application>
 
 </manifest>
