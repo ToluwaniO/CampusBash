@@ -22,11 +22,8 @@ import toluog.campusbash.R
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
-import toluog.campusbash.utils.AppContract
-import toluog.campusbash.utils.FirebaseManager
-import toluog.campusbash.utils.Util
+import toluog.campusbash.utils.*
 import java.math.BigDecimal
-import toluog.campusbash.utils.CampusBash
 
 
 class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListener {
@@ -158,11 +155,13 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         val task = fbaseManager.buyTicket(event, map)
 
         task?.addOnSuccessListener {
+            event?.let { ev -> Analytics.logTicketBought(ev) }
             longToast("Ticket purchased")
             finish()
         }?.addOnFailureListener {
+            event?.let { ev -> Analytics.logTicketBoughtFailed(ev) }
             longToast("Could not purchase ticket")
-            Log.d(TAG, "Error saving data\nerror -> ${it.message}")
+            Log.e(TAG, "Error saving data\nerror -> ${it.message}")
             finish()
         }
     }
