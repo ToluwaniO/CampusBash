@@ -19,6 +19,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.http.GET
 import retrofit2.http.QueryMap
+import toluog.campusbash.BuildConfig
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 
@@ -40,8 +41,13 @@ class StripeServerClient() {
         if(Util.debugMode()) {
             client.addInterceptor(logging)
         }
+        val url = if(BuildConfig.FLAVOR.equals("dev")) {
+            CAMPUSBASH_STRIPE_SERVER_URL_DEV
+        } else {
+            CAMPUSBASH_STRIPE_SERVER_URL
+        }
         return Retrofit.Builder()
-                .baseUrl(CAMPUSBASH_STRIPE_SERVER_URL)
+                .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client.build())
                 .build()
@@ -113,5 +119,6 @@ class StripeServerClient() {
 
     companion object {
         private const val CAMPUSBASH_STRIPE_SERVER_URL = "https://us-central1-campusbash-e0ca8.cloudfunctions.net/"
+        private const val CAMPUSBASH_STRIPE_SERVER_URL_DEV = "https://us-central1-campusbash-dev.cloudfunctions.net/"
     }
 }
