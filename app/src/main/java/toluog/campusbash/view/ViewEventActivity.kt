@@ -149,6 +149,14 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
             }
         }
+
+        see_more_button.setOnClickListener {
+            startActivity(intentFor<SeeMoreActivity>().putExtras(
+                    Bundle().apply {
+                        putString(AppContract.MORE_TEXT, event.description)
+                    }
+            ))
+        }
     }
 
     private fun share() {
