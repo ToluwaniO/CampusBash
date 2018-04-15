@@ -23,6 +23,7 @@ import toluog.campusbash.data.CurrencyDataSource
 import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
 import android.net.Uri
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import toluog.campusbash.BuildConfig
 import java.math.BigDecimal
@@ -210,7 +211,7 @@ class Util{
         }
 
         fun downloadCurrencies(context: Context) {
-            CurrencyDataSource.downloadCurrencies(context)
+            CurrencyDataSource.downloadCurrencies(FirebaseFirestore.getInstance(), context)
         }
 
         fun scheduleEventDeleteJob(context: Context) {
