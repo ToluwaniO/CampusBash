@@ -1,7 +1,10 @@
 package toluog.campusbash.view
 
+import android.app.Activity
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.FragmentActivity
 import android.util.Log
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.act
@@ -10,6 +13,10 @@ import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
+import com.firebase.ui.auth.ErrorCodes.NO_NETWORK
+import com.firebase.ui.auth.IdpResponse
+import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
+
 
 class FirstOpenActivity : AppCompatActivity(), PickUniversityFragment.PickUniversityListener,
 PickEventTypeFragment.PickEventTypeListener{
@@ -21,7 +28,6 @@ PickEventTypeFragment.PickEventTypeListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_first_open)
         Log.d(TAG, "Activity opened")
-        Util.downloadCurrencies(this)
     }
 
     override fun universitySelectionDone(country: String, name: String) {
@@ -60,6 +66,21 @@ PickEventTypeFragment.PickEventTypeListener{
             fragManager.popBackStack()
             fragManager.beginTransaction().replace(R.id.fragment_frame, PickUniversityFragment(), null).commit()
             count--
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+        if (requestCode == RC_SIGN_IN) {
+            val response = IdpResponse.fromResultIntent(data)
+
+            // Successfully signed in
+            if (resultCode == Activity.RESULT_OK) {
+                Util.downloadCurrencies(this)
+            } else {
+               Log.d(TAG, "Sign in failed")
+            }
         }
     }
 }

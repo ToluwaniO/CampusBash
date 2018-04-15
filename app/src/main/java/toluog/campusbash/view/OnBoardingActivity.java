@@ -9,6 +9,7 @@ import com.github.paolorotolo.appintro.AppIntro2;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 
 import toluog.campusbash.R;
+import toluog.campusbash.utils.Analytics;
 
 public class OnBoardingActivity extends AppIntro2 {
 
@@ -45,6 +46,7 @@ public class OnBoardingActivity extends AppIntro2 {
         super.onDonePressed(currentFragment);
         Intent intent = new Intent(OnBoardingActivity.this,FirstOpenActivity.class);
         startActivity(intent);
+        Analytics.INSTANCE.logOnBoardFinished();
     }
 
 

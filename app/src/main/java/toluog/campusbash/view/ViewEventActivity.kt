@@ -26,6 +26,7 @@ import android.util.Log
 import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
+import toluog.campusbash.utils.Analytics
 import toluog.campusbash.utils.FirebaseManager
 
 class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -70,10 +71,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                     Log.d(TAG, "getDynamicLink:onFailure", e)
                 }
 
-        event_get_ticket.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString(AppContract.MY_EVENT_BUNDLE, event?.eventId)
-            startActivity(intentFor<BuyTicketActivity>().putExtras(bundle)) }
+
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
@@ -115,7 +113,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         event_description.text = event.description
         Glide.with(this).load(event.creator.imageUrl).into(host_image)
         event_creator.text = "hosted by ${event.creator.name}"
-        event_time.text = "${Util.getPeriod(event.startTime, event.endTime)}"
+        event_time.text = Util.getPeriod(event.startTime, event.endTime)
         place_name.text = event.place.name
         address_text.text = event.place.address
 
@@ -156,6 +154,13 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                         putString(AppContract.MORE_TEXT, event.description)
                     }
             ))
+        }
+
+        event_get_ticket.setOnClickListener {
+            Analytics.logBuyTicketClicked(event)
+            val bundle = Bundle()
+            bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
+            startActivity(intentFor<BuyTicketActivity>().putExtras(bundle))
         }
     }
 

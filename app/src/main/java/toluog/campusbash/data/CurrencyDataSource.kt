@@ -61,6 +61,7 @@ class CurrencyDataSource {
         }
 
         fun downloadCurrencies(mFirestore: FirebaseFirestore, context: Context) {
+            Log.d(TAG, "Attempting to download currencies")
             db = AppDatabase.getDbInstance(context)
             val currDao = db?.currencyDao()
             val query = mFirestore.collection(AppContract.FIREBASE_CURRENCIES)

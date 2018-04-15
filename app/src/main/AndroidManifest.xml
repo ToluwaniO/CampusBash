@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="toluog.campusbash">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -78,6 +80,9 @@
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="6daeaa43afd30f3a3564d2aa76240fd763ab9a73" />
 
         <service
             android:name=".utils.MyJobService"

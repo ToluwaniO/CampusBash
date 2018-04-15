@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter
 import org.jetbrains.anko.intentFor
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
-import toluog.campusbash.utils.AppContract
 import com.firebase.ui.auth.ResultCodes
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
@@ -26,12 +25,14 @@ import toluog.campusbash.ViewBehavior.BottomNavigationBehavior
 import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
-import toluog.campusbash.utils.FirebaseManager
-import toluog.campusbash.utils.Util
 import kotlin.collections.ArrayList
 import android.support.design.widget.AppBarLayout
 import org.jetbrains.anko.doAsync
-import toluog.campusbash.utils.CampusBash
+import toluog.campusbash.utils.*
+import com.crashlytics.android.Crashlytics
+import io.fabric.sdk.android.Fabric
+
+
 
 class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
 
@@ -86,6 +87,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Analytics.init(applicationContext)
+        Fabric.with(this, Crashlytics())
         Util.cancelAllJobs(this)
         firstOpen()
 
@@ -153,6 +156,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     }
 
     override fun onItemClick(event: Event) {
+        Analytics.logEventSelected(event)
         val bundle = Bundle()
         bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
         startActivity(intentFor<ViewEventActivity>().putExtras(bundle))

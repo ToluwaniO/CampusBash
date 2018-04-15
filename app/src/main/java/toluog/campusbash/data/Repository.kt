@@ -12,6 +12,7 @@ import toluog.campusbash.utils.AppContract
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.Util
 
 /**
  * Created by oguns on 12/7/2017.
@@ -64,7 +65,10 @@ class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
         return db?.universityDao()?.getUniversities(country)
     }
 
-    fun getCurrencies() = db?.currencyDao()?.getCurrencies()
+    fun getCurrencies(): LiveData<List<Currency>>? {
+        Util.downloadCurrencies(context)
+        return db?.currencyDao()?.getCurrencies()
+    }
 
     fun getUser(uid: String) = GeneralDataSource.getUser(mFireStore, uid)
 
