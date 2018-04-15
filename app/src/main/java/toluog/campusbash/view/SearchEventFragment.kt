@@ -91,7 +91,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
 
     override fun dateChanged(year: Int, month: Int, dayOfMonth: Int) {
         val calendar = Calendar.getInstance()
-        calendar.set(year, month, dayOfMonth)
+        calendar.set(year, month, dayOfMonth, 0, 0, 0)
         date = calendar.timeInMillis
         queryMap["time"] = date
         Log.d(TAG, "Date is ${Util.formatDateTime(calendar)}")

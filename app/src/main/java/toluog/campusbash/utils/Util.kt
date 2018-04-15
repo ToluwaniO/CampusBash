@@ -179,7 +179,7 @@ class Util{
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             val editor = sharedPref.edit()
             editor.putInt(key, value)
-            editor.commit()
+            editor.apply()
             Log.d(TAG, "PREF [\"key\" : $value]")
         }
 
@@ -192,7 +192,7 @@ class Util{
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
             val editor = sharedPref.edit()
             editor.putString(key, value)
-            editor.commit()
+            editor.apply()
             Log.d(TAG, "PREF [\"$key\" : \"$value\"]")
         }
 
