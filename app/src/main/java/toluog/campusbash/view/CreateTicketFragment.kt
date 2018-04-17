@@ -56,7 +56,7 @@ class CreateTicketFragment: Fragment(){
     private val priceTextWatcher = object : TextWatcher {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             if(s != null && s.toString().isNotEmpty()) {
-                if(s.toString().toDouble() <= 1000000.0) {
+                if(s.toString().toDouble() < 950000.0) {
                     val price = s.toString().toDouble()
                     updateBuyerTotal(price)
                 } else {

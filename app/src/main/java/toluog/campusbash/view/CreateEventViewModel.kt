@@ -24,6 +24,12 @@ class CreateEventViewModel(app: Application) : AndroidViewModel(app){
 
     var selectedTicket: Ticket? = null
 
+    init {
+        val now = System.currentTimeMillis()
+        event.startTime = now
+        event.endTime = now
+    }
+
     fun select(ticket: Ticket) {
         selectedTicket = ticket
     }
