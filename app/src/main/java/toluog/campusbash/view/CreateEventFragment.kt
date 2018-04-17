@@ -32,6 +32,7 @@ import android.app.Activity.RESULT_CANCELED
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import com.bumptech.glide.Glide
+import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.support.v4.toast
@@ -265,6 +266,7 @@ class CreateEventFragment : Fragment(){
         if(place.name.isNotEmpty() && place.address.isNotEmpty()) {
             address_text.text = "${place.name} | ${place.address}"
         }
+        address_text.setTextColor(resources.getColor(android.R.color.black))
     }
 
     private fun save() {
@@ -275,37 +277,43 @@ class CreateEventFragment : Fragment(){
         val endTime = endCalendar.timeInMillis
         val uri = imageUri
         val tickets = mCallback?.getTicketList() ?: ArrayList<Ticket>()
-        if (tickets.size == 0) {
-            toast("You must add one ticket")
-            return
-        }
+
         Log.d(TAG, "$tickets")
         val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
 
-        if (TextUtils.isEmpty(title)) {
-            event_name.error = "Please enter name"
-            return
+        val event = viewModel.event.apply {
+            this.eventName = title
+            this.eventType = eventType
+            this.eventName = title
+            this.eventType = eventType
+            this.description = description
+            this.university = university
+            this.startTime = startTime
+            this.endTime = endTime
+            this.creator = AppContract.CREATOR
+            this.tickets = tickets
+            this.timeZone = Calendar.getInstance().timeZone.displayName
+            this.university = university
         }
 
-        val event = viewModel.event
-        event.eventName = title
-        event.eventType = eventType
-        event.description = description
-        event.university = university
-        event.startTime = startTime
-        event.endTime = endTime
-        event.creator = AppContract.CREATOR
-        event.tickets = tickets
-        event.timeZone = Calendar.getInstance().timeZone.displayName
-        event.university = university
         Log.d(TAG, "${event.tickets}")
 
         val creator = FirebaseManager.getCreator()
         if (creator != null) event.creator = creator
         event.creator.stripeAccountId = stripeAccountId
 
+        if(!validate(event)) {
+            Log.d(TAG, "Invalid event")
+            return
+        }
+
         val dialog = indeterminateProgressDialog(message = "", title = "Uploading Event")
         dialog.show()
+
+        if (tickets.size == 0) {
+            toast("You must add one ticket")
+            return
+        }
 
         if (uri != null) {
             Log.d(TAG, "uri is not null")
@@ -316,16 +324,15 @@ class CreateEventFragment : Fragment(){
                 }
                 event.placeholderImage = placeholder
                 fbasemanager.addEvent(event)
-                snackbar(rootView!!, "Event saved")
+                snackbar(rootView, "Event saved")
                 mCallback?.eventSaved(event)
                 dialog.dismiss()
-
             }
         }
         else{
             Log.d(TAG, "uri is null")
             fbasemanager.addEvent(event)
-            snackbar(rootView!!, "Event saved")
+            snackbar(rootView, "Event saved")
             mCallback?.eventSaved(event)
             dialog.dismiss()
         }
@@ -367,7 +374,10 @@ class CreateEventFragment : Fragment(){
             event_image.setImageURI(imageUri)
         }
         else {
-            Glide.with(this).load(event.placeholderImage?.url).into(event_image)
+            val link = event.placeholderImage?.url
+            if(link != null && link.isNotEmpty()) {
+                Glide.with(this).load(link).into(event_image)
+            }
         }
     }
 
@@ -379,5 +389,41 @@ class CreateEventFragment : Fragment(){
                 universities.add(university.name)
             }
         })
+    }
+
+    private fun validate(event: Event): Boolean {
+        Log.d(TAG, "validate() called")
+        var isValid = true
+
+        if(event.eventName.isEmpty()) {
+            event_name.error = "Field must be set"
+            isValid = false
+        }
+        if(event.description.isEmpty()) {
+            event_description.error = "Field must be set"
+            isValid = false
+        }
+        if(event.place.id.isEmpty()) {
+            address_text.text = getString(R.string.address_must_be_set)
+            address_text.setTextColor(resources.getColor(R.color.dull_red))
+            isValid = false
+            return isValid
+        }
+        if(event.startTime >= event.endTime) {
+            longSnackbar(rootView, R.string.end_date_greater_start_date).show()
+            isValid = false
+            return isValid
+        }
+        if(event.endTime <= System.currentTimeMillis()) {
+            longSnackbar(rootView, R.string.event_ended).show()
+            isValid = false
+            return isValid
+        }
+        if(event.university.isEmpty()) {
+            longSnackbar(rootView, R.string.university_must_be_set).show()
+            isValid = false
+            return isValid
+        }
+        return isValid
     }
 }
