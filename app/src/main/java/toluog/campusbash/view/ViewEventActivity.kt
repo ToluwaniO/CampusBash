@@ -167,6 +167,11 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun share() {
         val event = this.event
         if(event != null) {
+            val domain = if(BuildConfig.FLAVOR.equals("dev")) {
+                "m88p6.app.goo.gl"
+            } else {
+                "hx87a.app.goo.gl"
+            }
             val builder = Uri.Builder()
                     .scheme("https")
                     .authority("campusbash-e0ca8.firebaseapp.com")
@@ -176,13 +181,13 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d(TAG, url.toString())
             val dynamicLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
                     .setLink(url)
-                    .setDynamicLinkDomain("hx87a.app.goo.gl")
+                    .setDynamicLinkDomain(domain)
                     // Open links with this app on Android
                     .setAndroidParameters(DynamicLink.AndroidParameters.Builder().build())
                     .setSocialMetaTagParameters(DynamicLink.SocialMetaTagParameters.Builder()
                             .setTitle(event.eventName)
                             .setDescription(event.description)
-                            .setImageUrl(Uri.parse(event.placeholderImage?.url))
+                            .setImageUrl(Uri.parse(event.placeholderImage?.url ?: ""))
                             .build())
                     .buildDynamicLink()
             val dynamicLinkUri = dynamicLink.uri
