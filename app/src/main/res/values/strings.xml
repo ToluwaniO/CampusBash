@@ -86,5 +86,6 @@
     <string name="end_date_greater_start_date">End date must be after start date</string>
     <string name="university_must_be_set">University must be set</string>
     <string name="event_ended">This event has ended</string>
+    <string name="max_price_ticket">Max price is 950000</string>
 
 </resources>

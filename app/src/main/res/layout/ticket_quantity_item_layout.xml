@@ -35,14 +35,17 @@
 
     </LinearLayout>
 
-    <EditText
+    <TextView
         android:id="@+id/ticket_quantity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_margin="5dp"
         android:layout_weight="1"
+        android:background="?android:attr/selectableItemBackground"
         android:inputType="number"
-        android:text="" />
+        android:text="0"
+        android:textAlignment="center"
+        android:textSize="18sp" />
 
 </LinearLayout>

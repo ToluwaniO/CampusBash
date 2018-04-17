@@ -29,6 +29,9 @@ import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import java.lang.ClassCastException
 import java.math.BigDecimal
+import android.text.Spanned
+import android.text.InputFilter
+import java.util.regex.Pattern
 
 
 /**
@@ -55,8 +58,8 @@ class CreateTicketFragment: Fragment(){
 
     private val priceTextWatcher = object : TextWatcher {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            if(s != null && s.toString().isNotEmpty()) {
-                if(s.toString().toDouble() < 950000.0) {
+            if(s != null && s.toString().isNotEmpty() && !s.toString().endsWith(".")) {
+                if(s.toString().toDouble() <= 950000.0) {
                     val price = s.toString().toDouble()
                     updateBuyerTotal(price)
                 } else {
@@ -138,6 +141,7 @@ class CreateTicketFragment: Fragment(){
         }
 
         ticket_price.addTextChangedListener(priceTextWatcher)
+        ticket_price.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter(950000, 2))
         save_ticket.setOnClickListener { save() }
         see_breakdown.setOnClickListener {
             callback.showBreakdown(Util.getFinalFee(ticket_price.text.toString().toDouble()))
@@ -210,6 +214,10 @@ class CreateTicketFragment: Fragment(){
         } else if(ticketType == "paid" && price.toDouble() < 0){
             ticket_price.error = errSize
             status = false
+        } else if(ticketType == "paid" && price.toDouble() > 950000.0) {
+            ticket_price.setText("")
+            ticket_price.error = getString(R.string.max_price_ticket)
+            status = false
         }
         if(!currencies.contains(currency) && ticketType == "paid") {
             ticket_currency.error = "Choose currency"
@@ -262,5 +270,21 @@ class CreateTicketFragment: Fragment(){
         }catch (e: ClassCastException){
             Log.d(TAG, e.message)
         }
+    }
+
+    inner class DecimalDigitsInputFilter(val maxDigitsBeforeDecimalPoint: Int, val maxDigitsAfterDecimalPoint: Int) : InputFilter {
+
+        override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int): CharSequence? {
+            val builder = StringBuilder(dest)
+            builder.replace(dstart, dend, source
+                    .subSequence(start, end).toString())
+            return if (!builder.toString().matches(("(([1-9]{1})([0-9]{0," +
+                            (maxDigitsBeforeDecimalPoint - 1) + "})?)?(\\.[0-9]{0," +
+                            maxDigitsAfterDecimalPoint + "})?").toRegex())) {
+                if (source.isEmpty()) dest.subSequence(dstart, dend) else ""
+            } else null
+
+        }
+
     }
 }
