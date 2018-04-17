@@ -11,11 +11,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.ticket_quantity_item_layout.*
+import org.jetbrains.anko.selector
 import org.jetbrains.anko.textColor
 import toluog.campusbash.R
 import toluog.campusbash.model.Ticket
+import toluog.campusbash.utils.AppContract
+import toluog.campusbash.utils.Util
+import org.jetbrains.anko.support.v4.selector
+import toluog.campusbash.R.string.currency
 
 /**
  * Created by oguns on 12/25/2017.
@@ -35,7 +41,8 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder{
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.ticket_quantity_item_layout, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.ticket_quantity_item_layout,
+                parent, false)
         return ViewHolder(view)
     }
 
@@ -73,8 +80,33 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
             }
 
             containerView.setOnClickListener { listener.onTicketClick(ticket) }
-            ticket_quantity.addTextChangedListener(TicketWatcher(ticket.name, quantityLeft,
-                    ticket_quantity, queryMap, listener))
+//            ticket_quantity.addTextChangedListener(TicketWatcher(ticket.name, quantityLeft,
+//                    ticket_quantity, queryMap, listener))
+            val selectableQuantity = arrayListOf<String>()
+            val max = Math.min(10, quantityLeft)
+            for (i in 1..max) {
+                val breakdown = Util.getFinalFee(i * ticket.price)
+                val total = breakdown[AppContract.TOTAL_FEE]?.toDouble()
+                if(total != null && total <= 999999.0) {
+                    selectableQuantity.add("$i")
+                }
+            }
+
+            ticket_quantity.setOnClickListener {
+                context.selector(context.getString(R.string.select_currency),
+                        selectableQuantity, { _, i ->
+                    updateMap(selectableQuantity[i].toInt(), ticket.name)
+                    (it as TextView).text = selectableQuantity[i]
+                })
+            }
+        }
+
+        private fun updateMap(quantity: Int, name: String) {
+            when (quantity) {
+                0 -> queryMap.remove(name)
+                else -> queryMap[name] = quantity
+            }
+            listener.onTicketQuantityChanged(queryMap)
         }
 
     }
@@ -110,7 +142,7 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
                         queryMap.remove(name)
                     }
                 }
-                listener.onTicketQuantityChanged(queryMap)
+
             }
             Log.d(TAG, "TextChanged -> $queryMap")
         }

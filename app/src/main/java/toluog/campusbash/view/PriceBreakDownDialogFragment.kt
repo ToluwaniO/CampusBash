@@ -33,6 +33,6 @@ class PriceBreakDownDialogFragment: DialogFragment() {
         payment_fee.text = getString(R.string.price_value, "$",
                 priceBreakdown[AppContract.PAYMENT_FEE])
         total_fee.text = getString(R.string.price_value, "$",
-                priceBreakdown[AppContract.PRE_TAX_FEE])
+                priceBreakdown[AppContract.TOTAL_FEE])
     }
 }
