@@ -166,10 +166,11 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         }
     }
 
-    private fun  buyTickets(tokenId: String?, newCard: Boolean) {
+    private fun buyTickets(tokenId: String?, newCard: Boolean) {
         val overallMap = getData()
         if(overallMap["quantity"] == 0){
-            snackbar(container,"No ticket purchased")
+            snackbar(container,R.string.no_ticket_purchased)
+            return
         }
         pleaseWait.show()
         val customerId = user?.value?.get("stripeCustomerId") as String?
@@ -232,6 +233,5 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         }
         return temp
     }
-
 
 }
