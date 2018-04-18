@@ -307,14 +307,12 @@ class CreateEventFragment : Fragment(){
             return
         }
 
-        val dialog = indeterminateProgressDialog(message = "", title = "Uploading Event")
-        dialog.show()
-
         if (tickets.size == 0) {
             toast("You must add one ticket")
             return
         }
-
+        val dialog = indeterminateProgressDialog(message = "", title = "Uploading Event")
+        dialog.show()
         if (uri != null) {
             Log.d(TAG, "uri is not null")
             dialog.setMessage("Uploading media")
@@ -324,7 +322,7 @@ class CreateEventFragment : Fragment(){
                 }
                 event.placeholderImage = placeholder
                 fbasemanager.addEvent(event)
-                snackbar(rootView, "Event saved")
+                toast(R.string.event_saved)
                 mCallback?.eventSaved(event)
                 dialog.dismiss()
             }
@@ -332,7 +330,7 @@ class CreateEventFragment : Fragment(){
         else{
             Log.d(TAG, "uri is null")
             fbasemanager.addEvent(event)
-            snackbar(rootView, "Event saved")
+            toast(R.string.event_saved)
             mCallback?.eventSaved(event)
             dialog.dismiss()
         }
