@@ -7,7 +7,10 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.yesButton
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
@@ -92,7 +95,7 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
         when (frag) {
             is CreateTicketFragment -> fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
             is ViewTicketsFragment -> fragManager.beginTransaction().replace(R.id.fragment_frame, createEvent, AppContract.CREATE_EVENT_TAG).commit()
-            else -> finish()
+            else -> closeEventCreator()
         }
     }
 
@@ -102,5 +105,13 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
             putSerializable(AppContract.PRICE_BREAKDOWN, map)
         }
         frag.show(supportFragmentManager.beginTransaction(), AppContract.PRICE_BREAKDOWN)
+    }
+
+    private fun closeEventCreator() {
+        val dialog = alert(getString(R.string.sure_you_want_to_leave)) {
+            yesButton { finish() }
+            noButton { it.dismiss() }
+        }
+        dialog.show()
     }
 }

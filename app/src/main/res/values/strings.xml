@@ -89,6 +89,7 @@
     <string name="max_price_ticket">Max price is 950000</string>
     <string name="event_saved">Event saved</string>
     <string name="no_ticket_purchased">No ticket purchased</string>
+    <string name="sure_you_want_to_leave">Are you sure you want to leave?</string>
 
     <!--TRANSITION-->
     <string name="event_card_transition">Event card transition</string>
