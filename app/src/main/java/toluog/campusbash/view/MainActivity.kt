@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, fragment, null)
                         .commit()
-                setAppBarState(true)
+                setAppBarState(false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_events -> {
@@ -72,13 +72,13 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             R.id.navigation_profile -> {
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
-                setAppBarState(true)
+                setAppBarState(false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_search -> {
                 fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
                         .commit()
-                setAppBarState(false)
+                setAppBarState(null)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -201,17 +201,25 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         main_uni_spinner.setSelection(uniPosition)
     }
 
-    private  fun setAppBarState(enabled: Boolean) {
+    private  fun setAppBarState(enabled: Boolean?) {
         val params = fragment_frame.layoutParams as CoordinatorLayout.LayoutParams
-        if(enabled) {
-            appbar.setExpanded(true, true)
-            appbar.visibility = View.VISIBLE
-            params.behavior = AppBarLayout.ScrollingViewBehavior()
+        when {
+            enabled == null -> {
+                appbar.setExpanded(false, false)
+                appbar.visibility = View.GONE
+                params.behavior = null
+            }
+            enabled -> {
+                appbar.setExpanded(true, true)
+                appbar.visibility = View.VISIBLE
+                params.behavior = AppBarLayout.ScrollingViewBehavior()
 
-        } else {
-            appbar.setExpanded(false, false)
-            appbar.visibility = View.GONE
-            params.behavior = null
+            }
+            else -> {
+                appbar.setExpanded(false, true)
+                appbar.visibility = View.VISIBLE
+                params.behavior = AppBarLayout.ScrollingViewBehavior()
+            }
         }
         fragment_frame.requestLayout()
     }
