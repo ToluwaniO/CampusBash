@@ -38,7 +38,7 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?, var myEven
     }
 
     interface OnItemClickListener {
-        fun onItemClick(event: Event)
+        fun onItemClick(event: Event, view: View)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -106,7 +106,7 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?, var myEven
                 event_image.setImageResource(R.drawable.default_event_background)
             }
             Glide.with(context).load(event.creator.imageUrl).into(event_creator_image)
-            itemView.setOnClickListener { listener.onItemClick(event) }
+            itemView.setOnClickListener { listener.onItemClick(event, it) }
             if(myEvent) {
                 itemView.isLongClickable = true
                 itemView.setOnLongClickListener {

@@ -90,4 +90,7 @@
     <string name="event_saved">Event saved</string>
     <string name="no_ticket_purchased">No ticket purchased</string>
 
+    <!--TRANSITION-->
+    <string name="event_card_transition">Event card transition</string>
+
 </resources>
