@@ -2,19 +2,15 @@ package toluog.campusbash.view
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
+import android.support.v4.view.ViewCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.profile_fragment_layout.*
 import org.jetbrains.anko.support.v4.act
 import org.jetbrains.anko.support.v4.intentFor
 import toluog.campusbash.R
-import toluog.campusbash.R.id.*
-import toluog.campusbash.R.string.interests
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
@@ -36,7 +32,8 @@ class ProfileFragment(): Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        parent.isNestedScrollingEnabled = false
+        ViewCompat.setNestedScrollingEnabled(parent, false)
         val user = FirebaseManager.getUser()
         if(user != null) {
             Glide.with(rootView.context).load(user.photoUrl).into(profile_image)

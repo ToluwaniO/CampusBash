@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -81,6 +82,7 @@ class EventsFragment() : Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        ViewCompat.setNestedScrollingEnabled(event_recycler, !myEvents)
         adapter = EventAdapter(ArrayList<Any>(), rootView.context, myEvents)
         val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(rootView.context)
         event_recycler.layoutManager = layoutManager
