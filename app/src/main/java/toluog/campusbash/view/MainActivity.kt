@@ -27,6 +27,8 @@ import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import kotlin.collections.ArrayList
 import android.support.design.widget.AppBarLayout
+import android.support.v4.app.ActivityCompat
+import android.support.v4.app.ActivityOptionsCompat
 import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
@@ -155,11 +157,14 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     }
 
-    override fun onItemClick(event: Event) {
+    override fun onItemClick(event: Event, view: View) {
         Analytics.logEventSelected(event)
+        val transitionName = getString(R.string.event_card_transition)
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, view, transitionName)
         val bundle = Bundle()
         bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
-        startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
+        ActivityCompat.startActivity(this, intentFor<ViewEventActivity>().putExtras(bundle),
+                options.toBundle())
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

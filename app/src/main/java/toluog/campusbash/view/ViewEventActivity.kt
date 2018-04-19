@@ -92,7 +92,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
         when(id) {
-            android.R.id.home -> finish()
+            android.R.id.home -> onBackPressed()
             R.id.action_share -> share()
             R.id.action_edit -> {
                 val bundle = Bundle()
@@ -105,7 +105,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun updateUi(event: Event){
         if(event.placeholderImage == null || TextUtils.isEmpty(event.placeholderImage?.url)){
-
+            Glide.with(this).load(R.drawable.default_event_background).into(event_image)
         } else{
             Glide.with(this).load(event.placeholderImage?.url).into(event_image)
         }
