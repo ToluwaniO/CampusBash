@@ -2,13 +2,11 @@ package toluog.campusbash.view
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.yesButton
 import toluog.campusbash.R
@@ -62,8 +60,6 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
         Log.d(TAG, "${viewModel.event.tickets}")
         fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
     }
-
-
 
     override fun ticketClicked(ticket: Ticket) {
         fragManager.beginTransaction().replace(R.id.fragment_frame, CreateTicketFragment()).commit()

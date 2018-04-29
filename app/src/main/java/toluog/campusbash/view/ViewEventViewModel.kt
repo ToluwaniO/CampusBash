@@ -20,4 +20,5 @@ class ViewEventViewModel(app: Application): AndroidViewModel(app){
         return if(uid != null) repo.getUser(uid) else null
     }
 
+    fun getPlace(id: String) = repo.getPlace(id)
 }

@@ -36,6 +36,7 @@ class AppContract{
         const val EVENT_TABLE = "Events"
         const val UNIVERSITY_TABLE = "Universities"
         const val CURRENCY_TABLE = "Currencies"
+        const val PLACE_TABLE = "Places"
 
         //FIREBASE KEYS
         val FIREBASE_EVENTS = "events"
@@ -51,6 +52,7 @@ class AppContract{
         const val PREF_UNIVERSITY_KEY = "pref_university"
         const val PREF_EVENT_TYPES_KEY = "pref_event_type_set"
         const val PREF_FCM_TOKEN_UPDATED = "pref_fcm_token_updated"
+        const val PREF_FIRST_PLACE_ALARM = "pref_first_place_alarm"
 
         //ADS
         const val NUM_EVENTS_FRAGMENT_ADS = 5
@@ -67,6 +69,7 @@ class AppContract{
 
         //JOB TAGS
         val JOB_EVENT_DELETE = "delete_old_events"
+        val ALARM_DELETE_PLACES = "alarm_delete_places"
 
         val STRIPE_PUBLISHABLE_KEY = if(BuildConfig.DEBUG) {
             "pk_test_CVyOXRhK6S5K0RlHkLzIiReJ"

@@ -1,11 +1,13 @@
 package toluog.campusbash.utils
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.stripe.android.CustomerSession
+import org.jetbrains.anko.doAsync
 import toluog.campusbash.data.GeneralDataSource.Companion.user
 import toluog.campusbash.data.ProgressListener
 import toluog.campusbash.data.Repository
@@ -16,22 +18,32 @@ object CampusBash {
     private val TAG = CampusBash::class.java.simpleName
     private const val MAX_CUSTOMER_SESSION_RETRIES = 3
     private lateinit var user: LiveData<Map<String, Any>>
+    private var isInitialized = false
     private var customerSessionRetries = 0
     var stripeSessionStarted = false
     private set(value) {
         field = value
     }
 
+    @SuppressLint("RestrictedApi")
     fun init(c: Context) {
-        val repo = Repository(c, FirebaseFirestore.getInstance())
-        val uid = FirebaseManager.auth.uid
-        uid?.let {
-            user = repo.getUser(it)
-            user.observeForever {
-                it?.let {
-                    initCustomerSession(it["stripeCustomerId"] as String?)
+        if(!isInitialized) {
+            val repo = Repository(c, FirebaseFirestore.getInstance())
+            val uid = FirebaseManager.auth.uid
+            uid?.let {
+                user = repo.getUser(it)
+                user.observeForever {
+                    it?.let {
+                        initCustomerSession(it["stripeCustomerId"] as String?)
+                    }
                 }
             }
+
+            doAsync {
+                repo.deleteOldEvents()
+                DbManager.deleteInvalidPlaces(c)
+            }
+            isInitialized = true
         }
     }
 

@@ -1,5 +1,6 @@
 package toluog.campusbash.view
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -19,6 +20,7 @@ import org.jetbrains.anko.coroutines.experimental.bg
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
+import toluog.campusbash.model.Place
 import toluog.campusbash.utils.ConfigProvider
 import toluog.campusbash.utils.FirebaseManager
 
@@ -36,6 +38,7 @@ class EventsFragment() : Fragment(){
     private val events: ArrayList<Any> = ArrayList()
     private val ads = ArrayList<NativeAd>()
     private var eventSize = 0
+    private  var places: LiveData<List<Place>>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.events_layout, container, false)
@@ -64,6 +67,10 @@ class EventsFragment() : Fragment(){
             event_recycler.stopScroll()
             adapter?.notifyListChanged(events)
         })
+        places = viewModel.getPlaces()
+        places?.observe(this, Observer {
+
+        })
 
         if(configProvider.isAdsEventsFragmentEnabled()) {
             Log.d(TAG, "Observing ads")
@@ -83,7 +90,7 @@ class EventsFragment() : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ViewCompat.setNestedScrollingEnabled(event_recycler, !myEvents)
-        adapter = EventAdapter(ArrayList<Any>(), rootView.context, myEvents)
+        adapter = EventAdapter(ArrayList<Any>(), viewModel.getPlaces(), rootView.context, myEvents)
         val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(rootView.context)
         event_recycler.layoutManager = layoutManager
         event_recycler.itemAnimator = DefaultItemAnimator()

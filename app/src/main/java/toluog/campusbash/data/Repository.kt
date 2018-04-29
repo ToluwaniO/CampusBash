@@ -4,12 +4,15 @@ import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.experimental.launch
+import org.jetbrains.anko.doAsync
 import toluog.campusbash.data.network.ServerResponse
 import toluog.campusbash.data.network.StripeAccountBody
 import toluog.campusbash.data.network.StripeServerClient
 import toluog.campusbash.model.Currency
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.Place
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
@@ -72,6 +75,10 @@ class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
 
     fun getUser(uid: String) = GeneralDataSource.getUser(mFireStore, uid)
 
+    fun getPlaces() = db?.placeDao()?.getPlaces()
+
+    fun getPlace(id: String) = db?.placeDao()?.getPlace(id)
+
     fun createStripeAccount(): LiveData<ServerResponse> {
         val user = FirebaseManager.getUser()
         if(!initializedStripeApi && user != null) {
@@ -82,5 +89,12 @@ class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
         return stripeApi.createStripeAccount(body)
     }
 
+    fun savePlace(place: Place) {
+        doAsync { db?.placeDao()?.insertPlace(place) }
+    }
+
+    fun deleteOldEvents() {
+        db?.eventDao()?.deleteEvents(System.currentTimeMillis())
+    }
 
 }

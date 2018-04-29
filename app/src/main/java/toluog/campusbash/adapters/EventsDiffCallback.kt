@@ -4,6 +4,7 @@ import android.support.v7.util.DiffUtil
 import com.google.android.gms.ads.formats.NativeAppInstallAd
 import com.google.android.gms.ads.formats.NativeContentAd
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.Place
 
 class EventsDiffCallback(private val oldList: List<Any>, private val newList: List<Any>): DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -35,8 +36,9 @@ class EventsDiffCallback(private val oldList: List<Any>, private val newList: Li
 
         return when {
             old is Event && new is Event -> {
-                return old.placeholderImage?.url == new.placeholderImage?.url && old.eventName == new.eventName
-                && old.place.address == new.place.address && old.startTime == new.startTime
+                return old.placeholderImage?.url == new.placeholderImage?.url &&
+                        old.eventName == new.eventName && old.startTime == new.startTime &&
+                        old.address == new.address
             }
             old is NativeAppInstallAd && new is NativeAppInstallAd -> old.headline == new.headline &&
                     old.body == new.body

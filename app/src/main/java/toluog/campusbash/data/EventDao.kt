@@ -25,27 +25,34 @@ public interface EventDao{
     @Update
     fun updateEvent(event: Event)
 
-    @Query("SELECT * FROM ${AppContract.EVENT_TABLE} WHERE eventId LIKE :id LIMIT 1")
+    @Query("SELECT * FROM $TABLE WHERE eventId LIKE :id LIMIT 1")
     fun getEvent(id: String): LiveData<Event>
 
-    @Query("Select * FROM ${AppContract.EVENT_TABLE}")
+    @Query("Select * FROM $TABLE")
     fun getEvents():LiveData<List<Event>>
 
-    @Query("SELECT * FROM ${AppContract.EVENT_TABLE} WHERE endTime > :date")
+    @Query("Select * FROM $TABLE")
+    fun getStaticEvents():List<Event>?
+
+    @Query("SELECT * FROM $TABLE WHERE endTime > :date")
     fun getEvents(date: Long): LiveData<List<Event>>
 
-    @Query("SELECT * FROM ${AppContract.EVENT_TABLE} WHERE eventName LIKE :name AND startTime >= :time")
+    @Query("SELECT * FROM $TABLE WHERE eventName LIKE :name AND startTime >= :time")
     fun getEventsWithQuery(name: String, time: Long): LiveData<List<Event>>
 
-    @Query("SELECT * FROM ${AppContract.EVENT_TABLE} WHERE eventName LIKE :name AND eventType LIKE :type AND startTime >= :time")
+    @Query("SELECT * FROM $TABLE WHERE eventName LIKE :name AND eventType LIKE :type AND startTime >= :time")
     fun getEventsWithQueryAndType(name: String, type: String, time: Long): LiveData<List<Event>>
 
     @Delete()
     fun deleteEvent(event: Event)
 
-    @Query("DELETE FROM ${AppContract.EVENT_TABLE} WHERE endTime < :date")
+    @Query("DELETE FROM $TABLE WHERE endTime < :date")
     fun deleteEvents(date: Long)
 
-    @Query("DELETE FROM ${AppContract.EVENT_TABLE}")
+    @Query("DELETE FROM $TABLE")
     fun nukeTable()
+
+    companion object {
+        private const val TABLE = AppContract.EVENT_TABLE
+    }
 }

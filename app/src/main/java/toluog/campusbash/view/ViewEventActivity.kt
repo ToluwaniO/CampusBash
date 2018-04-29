@@ -23,9 +23,11 @@ import com.google.firebase.dynamiclinks.DynamicLink
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import android.content.Intent
 import android.util.Log
+import android.view.View
 import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
+import toluog.campusbash.model.Place
 import toluog.campusbash.utils.Analytics
 import toluog.campusbash.utils.FirebaseManager
 
@@ -33,6 +35,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var eventId: String
     private var event: Event? = null
+    private var place: Place? = null
     private var mMap: GoogleMap? = null
     private val TAG = ViewEventActivity::class.java.simpleName
     private var liveEvent: LiveData<Event>? = null
@@ -70,16 +73,14 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                 .addOnFailureListener(this) { e ->
                     Log.d(TAG, "getDynamicLink:onFailure", e)
                 }
-
-
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
         mMap = googleMap
-        val ev = event
+        val pl = place
 
-        if(ev != null) {
-            updateLocation(ev)
+        if(pl != null) {
+            updateLocation(pl)
         }
     }
 
@@ -114,8 +115,6 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         Glide.with(this).load(event.creator.imageUrl).into(host_image)
         event_creator.text = "hosted by ${event.creator.name}"
         event_time.text = Util.getPeriod(event.startTime, event.endTime)
-        place_name.text = event.place.name
-        address_text.text = event.place.address
 
         when {
             event.tickets.size == 1 -> {
@@ -227,13 +226,16 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             setMenuButtons()
             if(event != null) {
                 updateUi(event)
-                updateLocation(event)
+                observePlace(event.placeId)
             }
         })
     }
 
-    private fun updateLocation(event: Event) {
-        val latLng = LatLng(event.place.latLng.lat, event.place.latLng.lon)
+    private fun updateLocation(place: Place) {
+        location_layout.visibility = View.VISIBLE
+        place_name.text = place.name
+        address_text.text = place.address
+        val latLng = LatLng(place.latLng.lat, place.latLng.lon)
         mMap?.addMarker(MarkerOptions().position(latLng))
         mMap?.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         val cameraPosition = CameraPosition.Builder()
@@ -252,5 +254,14 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                 edit.isVisible = false
             }
         }
+    }
+
+    private fun observePlace(id: String) {
+        viewModel.getPlace(id)?.observe(this, Observer {
+            place = it
+            if(it != null) {
+                updateLocation(it)
+            }
+        })
     }
 }
