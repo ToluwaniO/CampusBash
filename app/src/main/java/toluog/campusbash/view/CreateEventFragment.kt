@@ -29,6 +29,7 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete
 import toluog.campusbash.utils.AppContract.Companion.PLACE_AUTOCOMPLETE_REQUEST_CODE
 import com.google.android.gms.location.places.Place
 import android.app.Activity.RESULT_CANCELED
+import android.app.ProgressDialog
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import com.bumptech.glide.Glide
@@ -259,14 +260,16 @@ class CreateEventFragment : Fragment(){
     }
 
     private fun updateLocation(place: Place) {
-        viewModel.event.place.latLng = LatLng(place.latLng.latitude, place.latLng.longitude)
-        viewModel.event.place.address = place.address.toString()
-        viewModel.event.place.name = place.name.toString()
-        viewModel.event.place.id = place.id
+        viewModel.place = Place()
+        viewModel.place?.latLng = LatLng(place.latLng.latitude, place.latLng.longitude)
+        viewModel.place?.address = place.address.toString()
+        viewModel.place?.name = place.name.toString()
+        viewModel.place?.id = place.id
         if(place.name.isNotEmpty() && place.address.isNotEmpty()) {
             address_text.text = "${place.name} | ${place.address}"
         }
         address_text.setTextColor(resources.getColor(android.R.color.black))
+        viewModel.event.placeId = place.id
     }
 
     private fun save() {
@@ -321,19 +324,21 @@ class CreateEventFragment : Fragment(){
                     Media(taskSnapshot.downloadUrl.toString(), it, "image")
                 }
                 event.placeholderImage = placeholder
-                fbasemanager.addEvent(event)
-                toast(R.string.event_saved)
-                mCallback?.eventSaved(event)
-                dialog.dismiss()
+                completeSave(dialog, event)
             }
         }
         else{
             Log.d(TAG, "uri is null")
-            fbasemanager.addEvent(event)
-            toast(R.string.event_saved)
-            mCallback?.eventSaved(event)
-            dialog.dismiss()
+            completeSave(dialog, event)
         }
+    }
+
+    private fun completeSave(dialog: ProgressDialog, event: Event) {
+        fbasemanager.addEvent(event)
+        toast(R.string.event_saved)
+        viewModel.savePlace()
+        mCallback?.eventSaved(event)
+        dialog.dismiss()
     }
 
     override fun onAttach(context: Context?) {
@@ -363,8 +368,8 @@ class CreateEventFragment : Fragment(){
         event_end_date.text = Util.formatDate(endCalendar)
         event_end_time.text = Util.formatTime(endCalendar)
         event_description.setText(event.description)
-        val place = viewModel.event.place
-        if(place.name.isNotEmpty() && place.address.isNotEmpty()) {
+        val place = viewModel.place
+        if(place != null && place.id.isNotEmpty()) {
             address_text.text = "${place.name} | ${place.address}"
         }
         if(viewModel.imageUri != null){
@@ -401,7 +406,7 @@ class CreateEventFragment : Fragment(){
             event_description.error = "Field must be set"
             isValid = false
         }
-        if(event.place.id.isEmpty()) {
+        if(event.placeId.isEmpty()) {
             address_text.text = getString(R.string.address_must_be_set)
             address_text.setTextColor(resources.getColor(R.color.dull_red))
             isValid = false

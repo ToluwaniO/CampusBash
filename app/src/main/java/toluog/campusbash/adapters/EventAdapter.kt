@@ -1,5 +1,6 @@
 package toluog.campusbash.adapters
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
@@ -19,13 +20,15 @@ import toluog.campusbash.R
 import toluog.campusbash.ViewHolder.NativeAppInstallAdViewHolder
 import toluog.campusbash.ViewHolder.NativeContentAdViewHolder
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.Place
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 
 /**
  * Created by oguns on 12/15/2017.
  */
-class EventAdapter(var events: ArrayList<Any>, var context: Context?, var myEvents: Boolean = false): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class EventAdapter(var events: ArrayList<Any>, var places: LiveData<List<Place>>?, var context: Context?,
+                   var myEvents: Boolean = false): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     private val listener: OnItemClickListener
     private val EVENT_VIEW_TYPE = 0
@@ -64,7 +67,8 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?, var myEven
         Log.d(TAG, "VIEW TYPE is ${viewType}")
 
         when(viewType) {
-            EVENT_VIEW_TYPE -> (holder as EventViewHolder?)?.bind(item as Event, listener, context, myEvents)
+            EVENT_VIEW_TYPE -> (holder as EventViewHolder?)?.bind(item as Event, places?.value ?: emptyList(),
+                    listener, context, myEvents)
             NATIVE_APP_INSTALL_AD_VIEW_TYPE -> (holder as NativeAppInstallAdViewHolder?)
                     ?.bind(item as NativeAppInstallAd)
             NATIVE_CONTENT_AD_VIEW_TYPE -> (holder as NativeContentAdViewHolder?)
@@ -95,9 +99,15 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?, var myEven
     class EventViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
             LayoutContainer {
 
-        fun bind(event: Event, listener: OnItemClickListener, context: Context?, myEvent: Boolean){
+        fun bind(event: Event, places: List<Place>, listener: OnItemClickListener, context: Context?, myEvent: Boolean){
             event_title.text = event.eventName
-            event_address.text = event.place.address
+            //event_address.text = event.place.address
+            val place = findPlace(event.placeId, places)
+            if(place != null) {
+                event_address.text = place.address
+            } else {
+                event_address.visibility = View.GONE
+            }
             event_day.text = Util.getDay(event.startTime)
             event_month.text = Util.getShortMonth(event.startTime)
             if(event.placeholderImage != null){
@@ -126,6 +136,12 @@ class EventAdapter(var events: ArrayList<Any>, var context: Context?, var myEven
                     it.dismiss()
                 }
             }?.show()
+        }
+
+        private fun findPlace(id: String, places: List<Place>): Place? {
+            val index = places.map { it.id }.indexOf(id)
+            if(index >= 0) return places[index]
+            return null
         }
     }
 

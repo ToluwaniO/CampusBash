@@ -82,7 +82,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
             adapter = ChipAdapter(eventTypes, 1)
             layoutManager = LinearLayoutManager(rootView.context, LinearLayoutManager.HORIZONTAL, false)
         }
-        eventAdapter = EventAdapter(events, rootView.context)
+        eventAdapter = EventAdapter(events, viewModel.getPlaces(), rootView.context)
         event_recycler.adapter = eventAdapter
         event_recycler.layoutManager = LinearLayoutManager(rootView.context)
 

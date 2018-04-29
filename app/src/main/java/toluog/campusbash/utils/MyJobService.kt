@@ -21,7 +21,7 @@ class MyJobService: JobService() {
     }
 
     override fun onStopJob(params: JobParameters?): Boolean {
-        Log.d(TAG, "Job stopped!");
+        Log.d(TAG, "Job stopped!")
         return false
     }
 

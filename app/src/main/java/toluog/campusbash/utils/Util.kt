@@ -184,8 +184,8 @@ class Util{
             Log.d(TAG, "PREF [\"key\" : $value]")
         }
 
-        fun getPrefString(activity: Activity, key: String): String {
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
+        fun getPrefString(context: Context, key: String): String {
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             return sharedPref.getString(key,"")
         }
 
@@ -320,5 +320,4 @@ class Util{
             Glide.with(context).load(url).into(this)
         }
     }
-
 }

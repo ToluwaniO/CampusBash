@@ -2,13 +2,11 @@ package toluog.campusbash.view
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.ViewModel
 import android.net.Uri
-import com.google.android.gms.location.places.Place
 import com.google.firebase.firestore.FirebaseFirestore
 import toluog.campusbash.data.Repository
-import toluog.campusbash.model.Currency
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.Place
 import toluog.campusbash.model.Ticket
 
 /**
@@ -47,5 +45,10 @@ class CreateEventViewModel(app: Application) : AndroidViewModel(app){
     fun getUniversities(country: String) = repo.getUnis(country)
 
     fun getUser(uid: String) = repo.getUser(uid)
+
+    fun savePlace() {
+        val p = place
+        if(p != null) repo.savePlace(p)
+    }
 
 }

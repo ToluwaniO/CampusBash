@@ -12,6 +12,7 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import toluog.campusbash.data.Repository
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.Place
 import toluog.campusbash.utils.AdManager
 
 /**
@@ -19,7 +20,8 @@ import toluog.campusbash.utils.AdManager
  */
 class EventsViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val events: MutableLiveData<ArrayList<Event>>? = null
+    private var events: LiveData<List<Event>>? = null
+    private var places: LiveData<List<Place>>? = null
     private val ads: ArrayList<NativeAd> = ArrayList()
     private val adsList = MutableLiveData<ArrayList<NativeAd>>()
     private val repo: Repository = Repository(app.applicationContext, FirebaseFirestore.getInstance())
@@ -31,6 +33,12 @@ class EventsViewModel(app: Application) : AndroidViewModel(app) {
         AdManager.initializeAds(app.applicationContext)
         adsList.value = ads
         adManager = AdManager(app.applicationContext, adsList)
+        init()
+    }
+
+    fun init() {
+        places = repo.getPlaces()
+        events = repo.getEvents()
     }
 
     fun loadAds() {
@@ -40,7 +48,7 @@ class EventsViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getEvents(): LiveData<List<Event>>? {
         Log.d(TAG, "getEvents called")
-        return repo.getEvents()
+        return events
     }
 
     fun getEvents(name: String, type: String, time: Long): LiveData<List<Event>>? {
@@ -51,6 +59,10 @@ class EventsViewModel(app: Application) : AndroidViewModel(app) {
     fun getEvents(name: String, time: Long): LiveData<List<Event>>? {
         Log.d(TAG, "getEvents called")
         return repo.getEventsWithQuery(name, time)
+    }
+
+    fun getPlaces(): LiveData<List<Place>>? {
+        return places
     }
 
     fun getAds(): MutableLiveData<ArrayList<NativeAd>> {
