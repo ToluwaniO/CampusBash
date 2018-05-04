@@ -18,7 +18,7 @@ import toluog.campusbash.R
 import toluog.campusbash.model.Ticket
 import java.lang.ClassCastException
 import android.support.v7.widget.DividerItemDecoration
-
+import toluog.campusbash.utils.AppContract
 
 
 /**
@@ -119,12 +119,12 @@ class ViewTicketsFragment: Fragment() {
 
             fun bind(ticket: Ticket) {
                 name.text = ticket.name
-                if(ticket.type == "free") {
-                    price.text = "Free"
-                } else if(ticket.type == "paid") {
-                    price.text = "${ticket.currency}${ticket.price}"
+                if(ticket.type == AppContract.TYPE_FREE) {
+                    price.text = getString(R.string.free_caps)
+                } else if(ticket.type == AppContract.TYPE_PAID) {
+                    price.text = getString(R.string.price_currency_value, ticket.currency, ticket.price)
                 }
-                quantity.text = "${ticket.quantity} tickets"
+                quantity.text = getString(R.string.ticket_quantity_with_params, ticket.quantity)
 
                 delete.setOnClickListener {
                     tickets.removeAt(adapterPosition)

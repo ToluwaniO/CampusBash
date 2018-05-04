@@ -46,7 +46,7 @@ class PickUniversityFragment(): Fragment(){
 
 
         country_text.setOnClickListener {
-            selector("Select country", countries, { dialogInterface, i ->
+            selector(getString(R.string.select_country), countries, { dialogInterface, i ->
                 country_text.text = countries[i]
                 country = countries[i]
                 viewModel?.getUniversities(countries[i])?.observe(this, Observer {
@@ -60,7 +60,7 @@ class PickUniversityFragment(): Fragment(){
 
         university_text.setOnClickListener {
             Log.d(TAG, "UNIVERSITIES -> ${universities.size}")
-            selector("Select university", universities, { dialogInterface, i ->
+            selector(getString(R.string.select_university), universities, { dialogInterface, i ->
                 university_text.text = universities[i]
                 university = universities[i]
             })

@@ -57,7 +57,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                 .getDynamicLink(intent)
                 .addOnSuccessListener(this) { pendingDynamicLinkData ->
                     // Get deep link from result (may be null if no link is found)
-                    var deepLink: Uri? = null
+                    val deepLink: Uri?
                     if (pendingDynamicLinkData != null && bundle.getString(AppContract.MY_EVENT_BUNDLE) == null) {
                         deepLink = pendingDynamicLinkData.link
                         eventId = deepLink.getQueryParameter("eventId")
@@ -113,16 +113,16 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         event_title.text = event.eventName
         event_description.text = event.description
         Glide.with(this).load(event.creator.imageUrl).into(host_image)
-        event_creator.text = "hosted by ${event.creator.name}"
+        event_creator.text = getString(R.string.hosted_by_x, event.creator.name)
         event_time.text = Util.getPeriod(event.startTime, event.endTime)
 
         when {
             event.tickets.size == 1 -> {
                 val ticket = event.tickets[0]
-                if(ticket.type == "free") {
+                if(ticket.type == AppContract.TYPE_FREE) {
                     ticket_text.text = this.getString(R.string.free_event)
                 } else {
-                    ticket_text.text = "One ticket type available for $${ticket.price}"
+                    ticket_text.text = getString(R.string.one_ticket_price, ticket.price)
                 }
             }
             else -> {
@@ -139,9 +139,10 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
                 if(event.tickets.any { it.price == 0.0 && it.isVisible }) {
-                    ticket_text.text = "FREE - $currency$max"
+                    ticket_text.text = getString(R.string.free_to_x, "$currency$max")
                 } else {
-                    ticket_text.text = "$currency$min - $currency$max"
+                    ticket_text.text = getString(R.string.x_to_y, "$currency$min", 
+                            "$currency$max")
                 }
 
             }
@@ -167,13 +168,13 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         val event = this.event
         if(event != null) {
             val domain = if(BuildConfig.FLAVOR.equals("dev")) {
-                "m88p6.app.goo.gl"
+                DEBUG_DYNAMIC_LINK
             } else {
-                "hx87a.app.goo.gl"
+                PROD_DYNAMIC_URL
             }
             val builder = Uri.Builder()
                     .scheme("https")
-                    .authority("campusbash-e0ca8.firebaseapp.com")
+                    .authority(CAMPUSBASH_LINK)
                     .path("/")
                     .appendQueryParameter("eventId", eventId)
             val url = builder.build()
@@ -212,7 +213,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                         startActivity(Intent.createChooser(shareIntent, "Share link using"))
                     } else {
                         Log.d(TAG, "An error occurred getting the shortLink\n${task.exception?.message}")
-                        toast("An error occurred")
+                        toast(R.string.error_occurred)
                     }
                 }
 
@@ -263,5 +264,11 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                 updateLocation(it)
             }
         })
+    }
+    
+    companion object {
+        private const val DEBUG_DYNAMIC_LINK = "m88p6.app.goo.gl"
+        private const val PROD_DYNAMIC_URL = "hx87a.app.goo.gl"
+        private const val CAMPUSBASH_LINK = "campusbash-e0ca8.firebaseapp.com"
     }
 }

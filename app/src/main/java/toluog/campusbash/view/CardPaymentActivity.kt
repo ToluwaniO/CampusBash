@@ -49,7 +49,7 @@ class CardPaymentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_payment)
-        currency = intent.extras.getString("currency")
+        currency = intent.extras.getString(AppContract.CURRENCY)
 
         if(CampusBash.stripeSessionStarted) {
             Log.d(TAG, "Stripe session started")
@@ -123,9 +123,9 @@ class CardPaymentActivity : AppCompatActivity() {
                     Activity.RESULT_OK -> {
                         if(data != null) {
                             val paymentData = PaymentData.getFromIntent(data)
-                            val cardInfo = paymentData?.cardInfo
+                            //val cardInfo = paymentData?.cardInfo
                             paymentData?.paymentMethodToken?.token
-                            val address = paymentData?.shippingAddress
+                            //val address = paymentData?.shippingAddress
                             val rawToken = paymentData?.paymentMethodToken?.token
                             val stripeToken = Token.fromString(rawToken)
                             if (stripeToken != null) {
@@ -208,7 +208,7 @@ class CardPaymentActivity : AppCompatActivity() {
                 }
             } catch (exception: ApiException) {
                 Log.d(TAG, "Google pay error occurred\ne -> ${exception.message}")
-                snackbar(root_view, "An error occurred by Google Pay")
+                snackbar(root_view, R.string.error_occurred_g_pay)
             }
         }
     }

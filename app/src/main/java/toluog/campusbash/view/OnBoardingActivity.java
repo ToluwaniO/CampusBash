@@ -16,6 +16,7 @@ public class OnBoardingActivity extends AppIntro2 {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         addSlide(AppIntroFragment.newInstance("Welcome to Campus Bash",
                 getString(R.string.Description1Onboarding),
                 R.drawable.mug,getResources().getColor(R.color.colorPrimary)));

@@ -113,7 +113,7 @@ class PickEventTypeFragment(): Fragment() {
             override fun onBubbleDeselected(item: PickerItem) {
                 selectedTypes.remove(item.title)
                 Log.d(TAG, "Just removed ${item.title}")
-                number_selected_view.text = "${selectedTypes.size} items selected"
+                number_selected_view.text = getString(R.string.x_items_selected, selectedTypes.size)
             }
 
             override fun onBubbleSelected(item: PickerItem) {
@@ -121,7 +121,7 @@ class PickEventTypeFragment(): Fragment() {
                 if(type != null){
                     selectedTypes.add(type)
                     Log.d(TAG, "Just added $type")
-                    number_selected_view.text = "${selectedTypes.size} items selected"
+                    number_selected_view.text = getString(R.string.x_items_selected, selectedTypes.size)
                 }
             }
         }
