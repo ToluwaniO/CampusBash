@@ -90,7 +90,29 @@
     <string name="event_saved">Event saved</string>
     <string name="no_ticket_purchased">No ticket purchased</string>
     <string name="sure_you_want_to_leave">Are you sure you want to leave?</string>
-
+    <string name="uploading_event">Uploading event</string>
+    <string name="uploading_media">Uploading media</string>
+    <string name="must_add_1_ticket">You must add one ticket</string>
+    <string name="not_signed_in">You\'re not signed in</string>
+    <string name="ticket_purchased">Ticket purchased</string>
+    <string name="could_not_purchase_ticket">Ticket purchased</string>
+    <string name="error_occurred">An error occured</string>
+    <string name="error_occurred_g_pay">An error occurred with Google Pay</string>
+    <string name="could_not_get_location">Could not get location</string>
+    <string name="place_name_address">%1s | %2s</string>
+    <string name="field_must_be_set">Field must be set</string>
+    <string name="field_cant_be_empty">Field can\'t be empty</string>
+    <string name="field_must_be_greater_zero">Field must be greater than zero</string>
+    <string name="set_up_stripe">Setup stripe</string>
+    <string name="welcome_to_cbash">Welcome to CampusBash</string>
+    <string name="x_items_selected">%1d items selected</string>
+    <string name="hosted_by_x">hosted by %1s</string>
+    <string name="one_ticket_price">%1.2f</string>
+    <string name="free_to_x">Free - %1s</string>
+    <string name="x_to_y">%1s - %2s</string>
+    <string name="price_currency_value">%1s%2.2f</string>
+    <string name="ticket_quantity_with_params">%1d tickets</string>
+    <string name="free_caps">Free</string>
     <!--TRANSITION-->
     <string name="event_card_transition">Event card transition</string>
 

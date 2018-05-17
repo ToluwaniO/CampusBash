@@ -40,7 +40,7 @@ class CardInputDialogFragment: DialogFragment() {
         try {
             callback = context as CardInputListener?
         } catch (e: ClassCastException) {
-            Log.d(TAG, "e -> ${e?.message}")
+            Log.d(TAG, "e -> ${e.message}")
         }
     }
 

@@ -61,7 +61,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         pleaseWait = indeterminateProgressDialog(R.string.please_wait)
         pleaseWait.dismiss()
 
-        val customerId = user?.value?.get("stripeCustomerId") as String?
+        val customerId = user?.value?.get(AppContract.STRIPE_CUSTOMER_ID) as String?
         CampusBash.initCustomerSession(customerId)
 
     }
@@ -82,12 +82,12 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
 
         tickets_buy_button.setOnClickListener {
             val purchase = getData()
-            val price = purchase["total"] as Double
-            val currency = purchase["currency"] as String?
+            val price = purchase[AppContract.TOTAL] as Double
+            val currency = purchase[AppContract.CURRENCY] as String?
             if(price > 0 && currency != null) {
                 val cardPaymentIntent = Intent(this, CardPaymentActivity::class.java)
                 cardPaymentIntent.putExtras(Bundle().apply {
-                    putString("currency", currency)
+                    putString(AppContract.CURRENCY, currency)
                 })
                 startActivityForResult(cardPaymentIntent, TOKEN_REQUEST)
             } else {
@@ -141,13 +141,13 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         val priceBreakDown = Util.getFinalFee(totalPrice)
         val currency = getCurrency()
         if(currency != null) {
-            purchaseMap["currency"] = currency
+            purchaseMap[AppContract.CURRENCY] = currency
         }
-        purchaseMap["debug"] = BuildConfig.DEBUG
-        purchaseMap["tickets"] = map
-        purchaseMap["quantity"] = totalQuantity
-        purchaseMap["total"] = priceBreakDown[AppContract.TOTAL_FEE]?.toDouble() ?: 0.0
-        purchaseMap["breakdown"] = convertBigDecimalToDoubleMap(priceBreakDown)
+        purchaseMap[AppContract.DEBUG] = BuildConfig.DEBUG
+        purchaseMap[AppContract.TICKETS] = map
+        purchaseMap[AppContract.QUANTITY] = totalQuantity
+        purchaseMap[AppContract.TOTAL] = priceBreakDown[AppContract.TOTAL_FEE]?.toDouble() ?: 0.0
+        purchaseMap[AppContract.BREAKDOWN] = convertBigDecimalToDoubleMap(priceBreakDown)
         return purchaseMap
     }
 
@@ -156,11 +156,11 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
 
         task?.addOnSuccessListener {
             event?.let { ev -> Analytics.logTicketBought(ev) }
-            longToast("Ticket purchased")
+            longToast(R.string.ticket_purchased)
             finish()
         }?.addOnFailureListener {
             event?.let { ev -> Analytics.logTicketBoughtFailed(ev) }
-            longToast("Could not purchase ticket")
+            longToast(R.string.could_not_purchase_ticket)
             Log.e(TAG, "Error saving data\nerror -> ${it.message}")
             finish()
         }
@@ -168,38 +168,38 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
 
     private fun buyTickets(tokenId: String?, newCard: Boolean) {
         val overallMap = getData()
-        if(overallMap["quantity"] == 0){
+        if(overallMap[AppContract.QUANTITY] == 0){
             snackbar(container,R.string.no_ticket_purchased)
             return
         }
         pleaseWait.show()
-        val customerId = user?.value?.get("stripeCustomerId") as String?
+        val customerId = user?.value?.get(AppContract.STRIPE_CUSTOMER_ID) as String?
         val fcmToken = FirebaseManager.getFcmToken()
         if(tokenId != null) {
-            overallMap["token"] = tokenId
-            overallMap["newCard"] = newCard
+            overallMap[AppContract.TOKEN] = tokenId
+            overallMap[AppContract.NEW_CARD] = newCard
         }
         if(fcmToken != null) {
-            overallMap["fcmToken"] = fcmToken
+            overallMap[AppContract.FCM_TOKEN] = fcmToken
         }
         if(customerId != null) {
-            overallMap["stripeCustomerId"] = customerId
+            overallMap[AppContract.STRIPE_CUSTOMER_ID] = customerId
         }
 
-        overallMap["timeSpent"] = System.currentTimeMillis()
+        overallMap[AppContract.TIME_SPENT] = System.currentTimeMillis()
 
         val uid = FirebaseManager.auth.currentUser?.uid
         val email = FirebaseManager.auth.currentUser?.email
         val stripeId = event?.creator?.stripeAccountId
-        if(stripeId != null) overallMap["stripeAccountId"] = stripeId
-        if(email != null) overallMap["buyerEmail"] = email
+        if(stripeId != null) overallMap[AppContract.STRIPE_ACCOUNT_ID] = stripeId
+        if(email != null) overallMap[AppContract.BUYER_EMAIL] = email
 
         if(uid != null) {
-            overallMap["buyerId"] = uid
+            overallMap[AppContract.BUYER_ID] = uid
             saveData(overallMap)
         } else {
             pleaseWait.dismiss()
-            snackbar(container, "you're not signed in")
+            snackbar(container, R.string.not_signed_in)
         }
     }
 
@@ -217,7 +217,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         val tickets = event?.tickets
         if(tickets != null) {
             for (i in tickets) {
-                if(i.type == "paid") return i.currency
+                if(i.type == AppContract.TYPE_PAID) return i.currency
             }
         }
         return null

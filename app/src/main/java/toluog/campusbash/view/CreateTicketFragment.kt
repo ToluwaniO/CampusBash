@@ -104,16 +104,16 @@ class CreateTicketFragment: Fragment(){
             viewModel.getUser(user.uid).observe(activity!!, Observer {
                 if(it != null) {
                     Log.d(TAG, "user -> $it")
-                    val id = it["stripeAccountId"] as String?
+                    val id = it[AppContract.STRIPE_ACCOUNT_ID] as String?
                     isStripeActivated = id != null
                 }
             })
         }
 
         ticket_currency.setOnClickListener {
-            selector("Select currency", currencies, { _, i ->
+            selector(getString(R.string.select_currency), currencies, { _, i ->
                 currency = currencySymbols[i]
-                ticket_currency.text = "${currencies[i]}"
+                ticket_currency.text = currencies[i]
                 ticket_currency.error = null
             })
         }
@@ -124,7 +124,7 @@ class CreateTicketFragment: Fragment(){
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 ticketType = ticketTypes[position].toLowerCase()
 
-                if (ticketType == "free") {
+                if (ticketType == AppContract.TYPE_FREE) {
                     ticket_price.visibility = View.GONE
                     ticket_currency_title.visibility = View.GONE
                     ticket_currency.visibility = View.GONE
@@ -170,17 +170,17 @@ class CreateTicketFragment: Fragment(){
             ticket?.name = name
             ticket?.description = description
             ticket?.quantity = quantity.toInt()
-            if(ticketType == "paid") ticket?.price = price.toDouble()
+            if(ticketType == AppContract.TYPE_PAID) ticket?.price = price.toDouble()
             ticket?.type = ticketType
             ticket?.isVisible = visible
-            if(ticketType == "paid") ticket?.currency = this.currency
+            if(ticketType == AppContract.TYPE_PAID) ticket?.currency = this.currency
             else ticket?.currency = ""
-            if(viewModel.selectedTicket == null && ticket != null && ticketType == "free") {
+            if(viewModel.selectedTicket == null && ticket != null && ticketType == AppContract.TYPE_FREE) {
                 viewModel.event.tickets.add(ticket)
                 callback.ticketComplete(ticket)
-            } else if(!isStripeActivated && ticketType == "paid") {
+            } else if(!isStripeActivated && ticketType == AppContract.TYPE_PAID) {
                 setupStripe()
-            } else if(viewModel.selectedTicket == null && ticket != null && ticketType == "paid") {
+            } else if(viewModel.selectedTicket == null && ticket != null && ticketType == AppContract.TYPE_PAID) {
                 viewModel.event.tickets.add(ticket)
                 callback.ticketComplete(ticket)
             } else if(viewModel.selectedTicket != null) {
@@ -192,8 +192,8 @@ class CreateTicketFragment: Fragment(){
 
     private fun validate(name: String, description: String, quantity: String, price: String, currency: String): Boolean{
         var status = true
-        val errMessage = "Field can't be empty"
-        val errSize = "Field must be greater than zero"
+        val errMessage = getString(R.string.field_cant_be_empty)
+        val errSize = getString(R.string.field_must_be_greater_zero)
         if(name.isEmpty()){
             ticket_name.error = errMessage
             status = false
@@ -208,19 +208,19 @@ class CreateTicketFragment: Fragment(){
         } else if(quantity.toInt() < 0){
             ticket_quantity.error = errSize
         }
-        if (price.isEmpty() && ticketType == "paid"){
+        if (price.isEmpty() && ticketType == AppContract.TYPE_PAID){
             ticket_price.error = errMessage
             status = false
-        } else if(ticketType == "paid" && price.toDouble() < 0){
+        } else if(ticketType == AppContract.TYPE_PAID && price.toDouble() < 0){
             ticket_price.error = errSize
             status = false
-        } else if(ticketType == "paid" && price.toDouble() > 950000.0) {
+        } else if(ticketType == AppContract.TYPE_PAID && price.toDouble() > 950000.0) {
             ticket_price.setText("")
             ticket_price.error = getString(R.string.max_price_ticket)
             status = false
         }
-        if(!currencies.contains(currency) && ticketType == "paid") {
-            ticket_currency.error = "Choose currency"
+        if(!currencies.contains(currency) && ticketType == AppContract.TYPE_PAID) {
+            ticket_currency.error = getString(R.string.select_currency)
             status = false
         }
         return status
@@ -239,7 +239,7 @@ class CreateTicketFragment: Fragment(){
     }
 
     private fun setupStripe() {
-        val dialog = alert("Set up stripe") {
+        val dialog = alert(R.string.set_up_stripe) {
             yesButton {
                 startActivity(intentFor<StripeSetupActivity>())
             }

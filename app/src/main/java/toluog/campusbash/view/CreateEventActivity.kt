@@ -23,7 +23,7 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
     private val TAG = CreateEventActivity::class.java.simpleName
     private val fragManager = supportFragmentManager
     private lateinit var fbaseManager: FirebaseManager
-    private val createEvent = CreateEventFragment()
+    private val createEvent =  CreateEventFragment()
     private lateinit var viewModel: CreateEventViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {

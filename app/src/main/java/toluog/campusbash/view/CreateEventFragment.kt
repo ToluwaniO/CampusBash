@@ -97,7 +97,7 @@ class CreateEventFragment : Fragment(){
             viewModel.getUser(user.uid).observe(activity!!, Observer {
                 if(it != null) {
                     Log.d(TAG, "user -> $it")
-                    val id = it["stripeAccountId"] as String?
+                    val id = it[STRIPE_ACCOUNT_ID] as String?
                     stripeAccountId = id
                 }
             })
@@ -117,16 +117,20 @@ class CreateEventFragment : Fragment(){
         imagePicker?.handleActivityResult(resultCode,requestCode, data)
 
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                val place = PlaceAutocomplete.getPlace(activity?.applicationContext, data)
-                updateLocation(place)
-                Log.i(TAG, "Place: " + place.name)
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                val status = PlaceAutocomplete.getStatus(activity?.applicationContext, data)
-                toast("Could not get location")
-                Log.i(TAG, status.statusMessage)
-            } else if (resultCode == RESULT_CANCELED) {
+            when (resultCode) {
+                RESULT_OK -> {
+                    val place = PlaceAutocomplete.getPlace(activity?.applicationContext, data)
+                    updateLocation(place)
+                    Log.i(TAG, "Place: " + place.name)
+                }
+                PlaceAutocomplete.RESULT_ERROR -> {
+                    val status = PlaceAutocomplete.getStatus(activity?.applicationContext, data)
+                    toast(R.string.could_not_get_location)
+                    Log.i(TAG, status.statusMessage)
+                }
+                RESULT_CANCELED -> {
 
+                }
             }
         }
     }
@@ -192,7 +196,7 @@ class CreateEventFragment : Fragment(){
         }
 
         event_country_layout.setOnClickListener {
-            selector("Select country", countries, { _, i ->
+            selector(getString(R.string.select_country), countries, { _, i ->
                 country = countries[i]
                 event_country.text = country
                 startObserver(country)
@@ -200,7 +204,7 @@ class CreateEventFragment : Fragment(){
         }
 
         event_university_layout.setOnClickListener {
-            selector("Select university", universities, { _, i ->
+            selector(getString(R.string.select_university), universities, { _, i ->
                 university = universities[i]
                 event_university.text = university
             })
@@ -266,7 +270,7 @@ class CreateEventFragment : Fragment(){
         viewModel.place?.name = place.name.toString()
         viewModel.place?.id = place.id
         if(place.name.isNotEmpty() && place.address.isNotEmpty()) {
-            address_text.text = "${place.name} | ${place.address}"
+            address_text.text = getString(R.string.place_name_address, place.name, place.address)
         }
         address_text.setTextColor(resources.getColor(android.R.color.black))
         viewModel.event.placeId = place.id
@@ -311,17 +315,17 @@ class CreateEventFragment : Fragment(){
         }
 
         if (tickets.size == 0) {
-            toast("You must add one ticket")
+            toast(R.string.must_add_1_ticket)
             return
         }
-        val dialog = indeterminateProgressDialog(message = "", title = "Uploading Event")
+        val dialog = indeterminateProgressDialog(message = "", title = getString(R.string.uploading_event))
         dialog.show()
         if (uri != null) {
             Log.d(TAG, "uri is not null")
-            dialog.setMessage("Uploading media")
+            dialog.setMessage(getString(R.string.uploading_media))
             fbasemanager.uploadEventImage(uri)?.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
                 val placeholder = taskSnapshot?.storage?.path?.let{
-                    Media(taskSnapshot.downloadUrl.toString(), it, "image")
+                    Media(taskSnapshot.downloadUrl.toString(), it, MEDIA_TYPE_IMAGE)
                 }
                 event.placeholderImage = placeholder
                 completeSave(dialog, event)
@@ -343,7 +347,6 @@ class CreateEventFragment : Fragment(){
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-
         try{
             mCallback = context as CreateEventFragmentInterface
         }
@@ -370,7 +373,7 @@ class CreateEventFragment : Fragment(){
         event_description.setText(event.description)
         val place = viewModel.place
         if(place != null && place.id.isNotEmpty()) {
-            address_text.text = "${place.name} | ${place.address}"
+            address_text.text = getString(R.string.place_name_address, place.name, place.address)
         }
         if(viewModel.imageUri != null){
             imageUri = viewModel.imageUri
@@ -399,11 +402,11 @@ class CreateEventFragment : Fragment(){
         var isValid = true
 
         if(event.eventName.isEmpty()) {
-            event_name.error = "Field must be set"
+            event_name.error = getString(R.string.field_must_be_set)
             isValid = false
         }
         if(event.description.isEmpty()) {
-            event_description.error = "Field must be set"
+            event_description.error = getString(R.string.field_must_be_set)
             isValid = false
         }
         if(event.placeId.isEmpty()) {
@@ -428,5 +431,10 @@ class CreateEventFragment : Fragment(){
             return isValid
         }
         return isValid
+    }
+
+    companion object {
+        private const val STRIPE_ACCOUNT_ID = "stripeAccountId"
+        private const val MEDIA_TYPE_IMAGE = "image"
     }
 }

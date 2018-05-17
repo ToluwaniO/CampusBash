@@ -20,7 +20,6 @@ class AppContract{
         val STANTON_ADDRESS = "9A7, 100 University Private, Ottawa, ON K1N 6N5"
         val STANTON_COORD = LatLng(45.4221, 75.6848)
         val CREATOR = Creator("Toluwani Ogunsanya", "frfgbruf", "ifjihjri")
-        val TICKETS = arrayOf(Ticket())
 
         //FRAGMENT TAGS
         val CREATE_EVENT_TAG = "createevent"
@@ -90,5 +89,22 @@ class AppContract{
         //NOTIFICATIONS
         const val UNKNOWN_NOTIFICATION = 0
         const val PURCHASE_NOTIFICATION = 1
+
+        //PURCHASE KEYS
+        const val STRIPE_ACCOUNT_ID = "stripeAccountId"
+        const val TYPE_PAID = "paid"
+        const val TYPE_FREE = "free"
+        const val BUYER_ID = "buyerId"
+        const val BUYER_EMAIL = "buyerEmail"
+        const val STRIPE_CUSTOMER_ID = "stripeCustomerId"
+        const val FCM_TOKEN = "fcmToken"
+        const val TOKEN = "token"
+        const val QUANTITY = "quantity"
+        const val BREAKDOWN = "breakdown"
+        const val TOTAL = "total"
+        const val TICKETS = "tickets"
+        const val CURRENCY = "currency"
+        const val DEBUG = "debug"
+        const val TIME_SPENT = "timeSpent"
     }
 }
