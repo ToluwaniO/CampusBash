@@ -3,7 +3,7 @@
 buildscript {
     ext{
         //dependencies
-        kotlin_version = '1.2.30'
+        kotlin_version = '1.2.41'
         fb_ui_version = '3.3.0'
         fcb_sdk_version = '4.27.0'
         fbase_version = '12.0.1'
@@ -12,8 +12,8 @@ buildscript {
         glide_version = '4.3.1'
         rxjava_version = '2.1.7'
         rxand_version = '2.0.1'
-        arch_version = '1.1.0'
-        arch_room_version = '1.0.0'
+        arch_version = '1.1.1'
+        arch_room_version = '1.1.0'
         arch_life_runtime_version = '1.1.0'
         test_runner_version = '1.0.1'
         espresso_core_version = '3.0.1'
@@ -30,7 +30,7 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.1'
+        classpath 'com.android.tools.build:gradle:3.2.0-alpha15'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.firebase:firebase-plugins:1.1.5'
         classpath 'io.fabric.tools:gradle:1.25.1'

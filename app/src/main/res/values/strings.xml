@@ -22,7 +22,7 @@
     <string name="whats_happening">What\'s happening in</string>
     <string name="Description1Onboarding">Campus Bash helps you find and host the hottest parties and events on your campus</string>
     <string name="Description2Onboarding">Take the work out of getting lit and just focus on getting lit</string>
-    <string name="Description3Onboarding">Hosting parties are hard, lets make it dead easy. Trusssttt us...</string>
+    <string name="Description3Onboarding">Hosting parties are hard, lets make it dead easy. Trust us…</string>
     <string name="title_activity_onboard_sign_in">OnboardSignInActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
@@ -58,7 +58,7 @@
     <string name="currency">CURRENCY</string>
     <string name="select_currency">Select currency</string>
     <string name="visible">Visible</string>
-    <string name="search_for">Search for ...</string>
+    <string name="search_for">Search for …</string>
     <string name="no_events">No events found</string>
     <string name="share">Share</string>
     <string name="edit">Edit</string>
@@ -96,7 +96,7 @@
     <string name="not_signed_in">You\'re not signed in</string>
     <string name="ticket_purchased">Ticket purchased</string>
     <string name="could_not_purchase_ticket">Ticket purchased</string>
-    <string name="error_occurred">An error occured</string>
+    <string name="error_occurred">An error occurred</string>
     <string name="error_occurred_g_pay">An error occurred with Google Pay</string>
     <string name="could_not_get_location">Could not get location</string>
     <string name="place_name_address">%1s | %2s</string>
@@ -115,5 +115,19 @@
     <string name="free_caps">Free</string>
     <!--TRANSITION-->
     <string name="event_card_transition">Event card transition</string>
+    <string name="what_type_of_event">What type of event is this?</string>
+    <string name="select_type">Select type</string>
+    <string name="when_it_starts">When does it start?</string>
+    <string name="when_it_ends">When does it end?</string>
+    <string name="where_its_happening">Where is it happening?</string>
+    <string name="got_any_tickets">Got any tickets?</string>
+    <string name="search_an_address">Search an address</string>
+    <string name="add_tickets">Add tickets</string>
+    <string name="got_tickets">Got any tickets?</string>
+    <string name="where_is_closest_uni">Where is the closest university?</string>
+    <string name="ticket_name_entry">Enter ticket name</string>
+    <string name="ticket_desc_entry">Enter ticket description</string>
+    <string name="ticket_quantity_entry">Enter ticket quantity</string>
+    <string name="ticket_price_entry">Enter ticket price</string>
 
 </resources>

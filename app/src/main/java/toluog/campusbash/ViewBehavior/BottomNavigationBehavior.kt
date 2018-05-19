@@ -18,8 +18,8 @@ class BottomNavigationBehavior:
     }
     constructor():super()
 
-    override fun layoutDependsOn(parent: CoordinatorLayout?, child: BottomNavigationView?,
-                                 dependency: View?): Boolean {
+    override fun layoutDependsOn(parent: CoordinatorLayout, child: BottomNavigationView,
+                                 dependency: View): Boolean {
         return super.layoutDependsOn(parent, child, dependency)
     }
 

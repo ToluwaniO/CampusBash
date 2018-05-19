@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import com.myhexaville.smartimagepicker.ImagePicker
-import toluog.campusbash.utils.FirebaseManager
 import android.app.Activity.RESULT_OK
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
@@ -20,8 +19,6 @@ import kotlinx.android.synthetic.main.create_event_layout.*
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.act
 import toluog.campusbash.R
-import toluog.campusbash.utils.AppContract
-import toluog.campusbash.utils.Util
 import java.lang.ClassCastException
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
 import com.google.android.gms.common.GooglePlayServicesRepairableException
@@ -32,6 +29,7 @@ import android.app.Activity.RESULT_CANCELED
 import android.app.ProgressDialog
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
+import android.widget.ImageView
 import com.bumptech.glide.Glide
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
@@ -39,6 +37,8 @@ import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.support.v4.toast
 import toluog.campusbash.data.GeneralDataSource.Companion.user
 import toluog.campusbash.model.*
+import toluog.campusbash.utils.*
+import toluog.campusbash.utils.AppContract.Companion.STRIPE_ACCOUNT_ID
 import java.util.Calendar
 import kotlin.collections.ArrayList
 
@@ -52,7 +52,6 @@ class CreateEventFragment : Fragment(){
     private val startCalendar = Calendar.getInstance()
     private val endCalendar = Calendar.getInstance()
     private var imagePicker: ImagePicker? = null
-    private lateinit var adapter: ArrayAdapter<CharSequence>
     private var imageUri: Uri? = null
     private lateinit var fbasemanager: FirebaseManager
     private var mCallback: CreateEventFragmentInterface? = null
@@ -140,29 +139,24 @@ class CreateEventFragment : Fragment(){
         imagePicker?.handlePermission(requestCode, grantResults)
     }
 
-    private fun updateUi(context: Context?){
-        event_country.text = country
-        event_university.text = university
-        adapter = ArrayAdapter.createFromResource(context,
-                R.array.party_types, android.R.layout.simple_spinner_item)
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        event_type_spinner.adapter = adapter
-
-        imagePicker = ImagePicker(activity /*activity non null*/,
-                this@CreateEventFragment /*fragment nullable*/,
-                { /*on image picked*/ imageUri ->
-                    this.imageUri = imageUri
-                    viewModel.imageUri = imageUri
-                    event_image.setImageURI(imageUri) })
+    private fun updateUi(context: Context){
+        val types = context.resources.getStringArray(R.array.party_types).toList()
+        event_university.updateTextSelector(university, android.R.color.black)
+        
+        imagePicker = ImagePicker(activity, this@CreateEventFragment, { imageUri ->
+            this.imageUri = imageUri
+            viewModel.imageUri = imageUri
+            event_image.scaleType = ImageView.ScaleType.FIT_XY
+            event_image.setImageURI(imageUri)
+        })
 
         event_save_button.setOnClickListener { save() }
 
-        event_add_ticket_button.setOnClickListener { mCallback?.createTicket() }
+        event_tickets.setOnClickListener { mCallback?.createTicket() }
 
         event_image.setOnClickListener { imagePicker?.choosePicture(true) }
 
-        event_address_layout.setOnClickListener {
+        event_address.setOnClickListener {
             try {
                 val intent = PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
                         .build(activity)
@@ -172,7 +166,6 @@ class CreateEventFragment : Fragment(){
             } catch (e: GooglePlayServicesNotAvailableException) {
                 Log.d(TAG, e.message)
             }
-
         }
 
         event_start_date.setOnClickListener {
@@ -195,18 +188,16 @@ class CreateEventFragment : Fragment(){
             callTimeDialog()
         }
 
-        event_country_layout.setOnClickListener {
-            selector(getString(R.string.select_country), countries, { _, i ->
-                country = countries[i]
-                event_country.text = country
-                startObserver(country)
+        event_university.setOnClickListener {
+            selector(getString(R.string.select_university), universities, { _, i ->
+                university = universities[i]
+                event_university.updateTextSelector(university, android.R.color.black)
             })
         }
 
-        event_university_layout.setOnClickListener {
-            selector(getString(R.string.select_university), universities, { _, i ->
-                university = universities[i]
-                event_university.text = university
+        event_type.setOnClickListener {
+            selector(getString(R.string.select_type), types, { _, i ->
+                event_type.updateTextSelector(types[i], android.R.color.black)
             })
         }
     }
@@ -218,8 +209,7 @@ class CreateEventFragment : Fragment(){
             startCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             event_start_date.text = Util.formatDate(startCalendar)
             viewModel.event.startTime = startCalendar.timeInMillis
-        }
-        else{
+        } else{
             endCalendar.set(Calendar.DAY_OF_YEAR, year)
             endCalendar.set(Calendar.MONTH, month)
             endCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
@@ -234,8 +224,7 @@ class CreateEventFragment : Fragment(){
             startCalendar.set(Calendar.MINUTE, minute)
             event_start_time.text = Util.formatTime(startCalendar)
             viewModel.event.startTime = startCalendar.timeInMillis
-        }
-        else{
+        } else{
             endCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             endCalendar.set(Calendar.MINUTE, minute)
             event_end_time.text = Util.formatTime(endCalendar)
@@ -270,16 +259,16 @@ class CreateEventFragment : Fragment(){
         viewModel.place?.name = place.name.toString()
         viewModel.place?.id = place.id
         if(place.name.isNotEmpty() && place.address.isNotEmpty()) {
-            address_text.text = getString(R.string.place_name_address, place.name, place.address)
+            event_address.updateTextSelector(getString(R.string.place_name_address, place.name,
+                    place.address), android.R.color.black)
         }
-        address_text.setTextColor(resources.getColor(android.R.color.black))
         viewModel.event.placeId = place.id
     }
 
     private fun save() {
         val title = event_name.text.toString().trim()
         val description = event_description.text.toString().trim()
-        val eventType = adapter.getItem(event_type_spinner.selectedItemPosition).toString()
+        val eventType = event_type.text.toString()
         val startTime = startCalendar.timeInMillis
         val endTime = endCalendar.timeInMillis
         val uri = imageUri
@@ -349,8 +338,7 @@ class CreateEventFragment : Fragment(){
         super.onAttach(context)
         try{
             mCallback = context as CreateEventFragmentInterface
-        }
-        catch (e: ClassCastException){
+        } catch (e: ClassCastException){
             Log.d(TAG, e.message)
         }
     }
@@ -365,24 +353,28 @@ class CreateEventFragment : Fragment(){
         startCalendar.timeInMillis = event.startTime
         endCalendar.timeInMillis = event.endTime
         event_name.setText(event.eventName)
-        event_type_spinner.setSelection(adapter.getPosition(event.eventType))
         event_start_date.text = Util.formatDate(startCalendar)
         event_start_time.text = Util.formatTime(startCalendar)
         event_end_date.text = Util.formatDate(endCalendar)
         event_end_time.text = Util.formatTime(endCalendar)
         event_description.setText(event.description)
+
+        if(event.eventType.isNotBlank()) {
+            event_type.text = event.eventType
+        }
+
         val place = viewModel.place
         if(place != null && place.id.isNotEmpty()) {
-            address_text.text = getString(R.string.place_name_address, place.name, place.address)
+            event_address.text = getString(R.string.place_name_address, place.name, place.address)
         }
         if(viewModel.imageUri != null){
-            imageUri = viewModel.imageUri
-            event_image.setImageURI(imageUri)
-        }
-        else {
+            event_image.loadImage(imageUri)
+            event_image.scaleType = ImageView.ScaleType.FIT_XY
+        } else {
             val link = event.placeholderImage?.url
             if(link != null && link.isNotEmpty()) {
-                Glide.with(this).load(link).into(event_image)
+                event_image.loadImage(link)
+                event_image.scaleType = ImageView.ScaleType.FIT_XY
             }
         }
     }
@@ -410,8 +402,8 @@ class CreateEventFragment : Fragment(){
             isValid = false
         }
         if(event.placeId.isEmpty()) {
-            address_text.text = getString(R.string.address_must_be_set)
-            address_text.setTextColor(resources.getColor(R.color.dull_red))
+            event_address.text = getString(R.string.address_must_be_set)
+            event_address.setTextColor(resources.getColor(R.color.dull_red))
             isValid = false
             return isValid
         }
