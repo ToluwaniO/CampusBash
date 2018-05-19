@@ -164,7 +164,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
         } else {
             queryMap["type"] = title
         }
-        recycler.adapter.notifyDataSetChanged()
+        recycler.adapter?.notifyDataSetChanged()
     }
 
     private fun getDateFromString(selected: String) {
@@ -225,7 +225,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
             holder.bind(position)
         }
 
-        inner class ViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView), LayoutContainer {
+        inner class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView), LayoutContainer {
             fun bind(position: Int) {
                 val chipItem = chipData[position]
                 chip.text = chipItem.title

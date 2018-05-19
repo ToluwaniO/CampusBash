@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.native_ad_view.*
 /**
  * Created by oguns on 1/28/2018.
  */
-class NativeContentAdViewHolder(override val containerView: View?) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+class NativeContentAdViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
 
     fun bind(ad: NativeContentAd) {
         contentad_headline.text = ad.headline

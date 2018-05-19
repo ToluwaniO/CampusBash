@@ -96,7 +96,7 @@ class EventAdapter(var events: ArrayList<Any>, var places: LiveData<List<Place>>
         diffResult.dispatchUpdatesTo(this)
     }
 
-    class EventViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
+    class EventViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),
             LayoutContainer {
 
         fun bind(event: Event, places: List<Place>, listener: OnItemClickListener, context: Context?, myEvent: Boolean){

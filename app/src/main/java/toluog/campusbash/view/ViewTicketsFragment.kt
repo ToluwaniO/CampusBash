@@ -114,7 +114,7 @@ class ViewTicketsFragment: Fragment() {
         }
 
 
-        inner class ViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView)
+        inner class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView)
                 , LayoutContainer {
 
             fun bind(ticket: Ticket) {

@@ -125,11 +125,11 @@ class CreateTicketFragment: Fragment(){
                 ticketType = ticketTypes[position].toLowerCase()
 
                 if (ticketType == AppContract.TYPE_FREE) {
-                    ticket_price.visibility = View.GONE
+                    price_holder.visibility = View.GONE
                     ticket_currency_title.visibility = View.GONE
                     ticket_currency.visibility = View.GONE
                 } else {
-                    ticket_price.visibility = View.VISIBLE
+                    price_holder.visibility = View.VISIBLE
                     ticket_currency_title.visibility = View.VISIBLE
                     ticket_currency.visibility = View.VISIBLE
                 }

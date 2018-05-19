@@ -282,7 +282,7 @@ class CardPaymentActivity : AppCompatActivity() {
         }
 
 
-        inner class ViewHolder(override val containerView: View?): RecyclerView.ViewHolder(containerView),
+        inner class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),
                 LayoutContainer {
 
             fun bind(bCard: BashCard) {
