@@ -31,10 +31,13 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.crashlytics.android.Crashlytics
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.support.v4.toast
+import toluog.campusbash.R.id.*
+import toluog.campusbash.R.string.address
 import toluog.campusbash.data.GeneralDataSource.Companion.user
 import toluog.campusbash.model.*
 import toluog.campusbash.utils.*
@@ -52,7 +55,6 @@ class CreateEventFragment : Fragment(){
     private val startCalendar = Calendar.getInstance()
     private val endCalendar = Calendar.getInstance()
     private var imagePicker: ImagePicker? = null
-    private var imageUri: Uri? = null
     private lateinit var fbasemanager: FirebaseManager
     private var mCallback: CreateEventFragmentInterface? = null
     private var type = 0
@@ -78,7 +80,7 @@ class CreateEventFragment : Fragment(){
         fbasemanager = FirebaseManager()
         viewModel = ViewModelProviders.of(activity!!).get(CreateEventViewModel::class.java)
         country = Util.getPrefString(activity!!, AppContract.PREF_COUNTRY_KEY)
-        university = Util.getPrefString(activity!!, AppContract.PREF_UNIVERSITY_KEY)
+        viewModel.event.university = Util.getPrefString(activity!!, AppContract.PREF_UNIVERSITY_KEY)
 
         return rootView
     }
@@ -141,10 +143,28 @@ class CreateEventFragment : Fragment(){
 
     private fun updateUi(context: Context){
         val types = context.resources.getStringArray(R.array.party_types).toList()
-        event_university.updateTextSelector(university, android.R.color.black)
+        val place = viewModel.place
+
+        if(viewModel.event.university.isNotBlank()) {
+            event_university.updateTextSelector(viewModel.event.university, android.R.color.black)
+        }
+
+        if(viewModel.event.eventType.isNotBlank()) {
+            event_type.updateTextSelector(viewModel.event.eventType, android.R.color.black)
+        }
+
+        if(place != null) {
+            event_address.updateTextSelector(place.address, android.R.color.black)
+        }
+
+        if(viewModel.event.tickets.size == 1) {
+            event_tickets.updateTextSelector(getString(R.string.ticket_quantity_one), android.R.color.black)
+        } else if(viewModel.event.tickets.size > 1) {
+            event_tickets.updateTextSelector(getString(R.string.ticket_quantity_with_params,
+                    viewModel.event.tickets.size), android.R.color.black)
+        }
         
         imagePicker = ImagePicker(activity, this@CreateEventFragment, { imageUri ->
-            this.imageUri = imageUri
             viewModel.imageUri = imageUri
             event_image.scaleType = ImageView.ScaleType.FIT_XY
             event_image.setImageURI(imageUri)
@@ -163,8 +183,10 @@ class CreateEventFragment : Fragment(){
                 startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE)
             } catch (e: GooglePlayServicesRepairableException) {
                 Log.d(TAG, e.message)
+                Crashlytics.logException(e)
             } catch (e: GooglePlayServicesNotAvailableException) {
                 Log.d(TAG, e.message)
+                Crashlytics.logException(e)
             }
         }
 
@@ -190,14 +212,15 @@ class CreateEventFragment : Fragment(){
 
         event_university.setOnClickListener {
             selector(getString(R.string.select_university), universities, { _, i ->
-                university = universities[i]
-                event_university.updateTextSelector(university, android.R.color.black)
+                viewModel.event.university = universities[i]
+                event_university.updateTextSelector(viewModel.event.university, android.R.color.black)
             })
         }
 
         event_type.setOnClickListener {
             selector(getString(R.string.select_type), types, { _, i ->
                 event_type.updateTextSelector(types[i], android.R.color.black)
+                viewModel.event.eventType = types[i]
             })
         }
     }
@@ -266,33 +289,9 @@ class CreateEventFragment : Fragment(){
     }
 
     private fun save() {
-        val title = event_name.text.toString().trim()
-        val description = event_description.text.toString().trim()
-        val eventType = event_type.text.toString()
-        val startTime = startCalendar.timeInMillis
-        val endTime = endCalendar.timeInMillis
-        val uri = imageUri
-        val tickets = mCallback?.getTicketList() ?: ArrayList<Ticket>()
-
-        Log.d(TAG, "$tickets")
-        val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
-
-        val event = viewModel.event.apply {
-            this.eventName = title
-            this.eventType = eventType
-            this.eventName = title
-            this.eventType = eventType
-            this.description = description
-            this.university = university
-            this.startTime = startTime
-            this.endTime = endTime
-            this.creator = AppContract.CREATOR
-            this.tickets = tickets
-            this.timeZone = Calendar.getInstance().timeZone.displayName
-            this.university = university
-        }
-
-        Log.d(TAG, "${event.tickets}")
+        convertViewToEvent()
+        val event = viewModel.event
+        val uri = viewModel.imageUri
 
         val creator = FirebaseManager.getCreator()
         if (creator != null) event.creator = creator
@@ -303,7 +302,7 @@ class CreateEventFragment : Fragment(){
             return
         }
 
-        if (tickets.size == 0) {
+        if (event.tickets.size == 0) {
             toast(R.string.must_add_1_ticket)
             return
         }
@@ -368,7 +367,7 @@ class CreateEventFragment : Fragment(){
             event_address.text = getString(R.string.place_name_address, place.name, place.address)
         }
         if(viewModel.imageUri != null){
-            event_image.loadImage(imageUri)
+            event_image.loadImage(viewModel.imageUri)
             event_image.scaleType = ImageView.ScaleType.FIT_XY
         } else {
             val link = event.placeholderImage?.url
@@ -377,6 +376,35 @@ class CreateEventFragment : Fragment(){
                 event_image.scaleType = ImageView.ScaleType.FIT_XY
             }
         }
+    }
+
+    private fun convertViewToEvent() {
+        val title = event_name.text.toString().trim()
+        val description = event_description.text.toString().trim()
+        val eventType = event_type.text.toString()
+        val startTime = startCalendar.timeInMillis
+        val endTime = endCalendar.timeInMillis
+        val tickets = mCallback?.getTicketList() ?: ArrayList<Ticket>()
+
+        Log.d(TAG, "$tickets")
+        val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
+
+        val event = viewModel.event.apply {
+            this.eventName = title
+            this.eventType = eventType
+            this.eventName = title
+            this.eventType = eventType
+            this.description = description
+            this.university = university
+            this.startTime = startTime
+            this.endTime = endTime
+            this.creator = AppContract.CREATOR
+            this.tickets = tickets
+            this.timeZone = Calendar.getInstance().timeZone.displayName
+            this.university = university
+        }
+
+        Log.d(TAG, "${event.tickets}")
     }
 
     private fun startObserver(country: String) {

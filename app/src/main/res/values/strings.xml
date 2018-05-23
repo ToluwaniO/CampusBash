@@ -111,6 +111,7 @@
     <string name="free_to_x">Free - %1s</string>
     <string name="x_to_y">%1s - %2s</string>
     <string name="price_currency_value">%1s%2.2f</string>
+    <string name="ticket_quantity_one">1 ticket</string>
     <string name="ticket_quantity_with_params">%1d tickets</string>
     <string name="free_caps">Free</string>
     <!--TRANSITION-->
