@@ -12,9 +12,8 @@ import toluog.campusbash.model.Ticket
 /**
  * Created by oguns on 12/13/2017.
  */
-class CreateEventViewModel(app: Application) : AndroidViewModel(app){
+class CreateEventViewModel(app: Application) : GeneralViewModel(app){
 
-    private val repo = Repository(app.applicationContext, FirebaseFirestore.getInstance())
     var event = Event()
     var imageUri: Uri? = null
     var place: Place? = null

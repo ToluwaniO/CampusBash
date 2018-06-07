@@ -10,8 +10,7 @@ import toluog.campusbash.utils.FirebaseManager
 /**
  * Created by oguns on 12/23/2017.
  */
-class ViewEventViewModel(app: Application): AndroidViewModel(app){
-    val repo = Repository(app.applicationContext, FirebaseFirestore.getInstance())
+class ViewEventViewModel(app: Application): GeneralViewModel(app){
 
     fun getEvent(eventId: String) = repo.getEvent(eventId)
 

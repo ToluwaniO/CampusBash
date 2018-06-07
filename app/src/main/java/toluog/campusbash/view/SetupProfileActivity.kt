@@ -16,7 +16,6 @@ import toluog.campusbash.utils.FirebaseManager
 class SetupProfileActivity : AppCompatActivity() {
 
     private lateinit var imagePicker: ImagePicker
-    private var profileChanged = false
     private val fbManager = FirebaseManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {

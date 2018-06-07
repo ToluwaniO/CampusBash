@@ -11,8 +11,7 @@ import toluog.campusbash.model.University
 /**
  * Created by oguns on 12/28/2017.
  */
-class FirstOpenViewModel(app: Application): AndroidViewModel(app){
-    val repo = Repository(app.applicationContext, FirebaseFirestore.getInstance())
+class FirstOpenViewModel(app: Application): GeneralViewModel(app){
 
     fun getUniversities(country: String) = repo.getUnis(country)
 

@@ -11,211 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--<TextView-->
-        <!--android:id="@+id/textView2"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:text="@string/ticket_name"-->
-        <!--android:textColor="@android:color/black"-->
-        <!--android:textSize="14sp"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--<EditText-->
-        <!--android:id="@+id/ticket_name"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:hint="Ticket Name"-->
-        <!--android:inputType="textPersonName"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView2" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView4"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:text="@string/ticket_description"-->
-        <!--android:textColor="@android:color/black"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/ticket_name" />-->
-
-        <!--<EditText-->
-        <!--android:id="@+id/ticket_description"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:ems="10"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:hint="Ticket Description"-->
-        <!--android:inputType="textMultiLine|textPersonName"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView4" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView5"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:text="@string/ticket_quantity"-->
-        <!--android:textColor="@android:color/black"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/ticket_description" />-->
-
-        <!--<EditText-->
-        <!--android:id="@+id/ticket_quantity"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:ems="10"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:hint="Ticket Quantity"-->
-        <!--android:inputType="number"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView5" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView6"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:text="@string/ticket_price"-->
-        <!--android:textColor="@android:color/black"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/ticket_quantity" />-->
-
-        <!--<Spinner-->
-        <!--android:id="@+id/type_spinner"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView6" />-->
-
-        <!--<EditText-->
-        <!--android:id="@+id/ticket_price"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:ems="10"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:hint="Ticket Price"-->
-        <!--android:inputType="numberDecimal"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/type_spinner" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/buyer_total"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="2dp"-->
-        <!--android:text="@string/buyer_total"-->
-        <!--android:visibility="gone"-->
-        <!--app:layout_constraintBottom_toTopOf="@+id/ticket_currency_title"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/ticket_price" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/see_breakdown"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="2dp"-->
-        <!--android:background="?android:attr/selectableItemBackground"-->
-        <!--android:text="@string/see_breakdown"-->
-        <!--android:visibility="gone"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/buyer_total"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/buyer_total"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/buyer_total" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/ticket_currency_title"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:text="@string/currency"-->
-        <!--android:textColor="@android:color/black"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/buyer_total" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/ticket_currency"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:background="?android:attr/selectableItemBackground"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:text="@string/select_currency"-->
-        <!--android:textSize="20sp"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/ticket_currency_title" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView9"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:fontFamily="@font/roboto_light"-->
-        <!--android:text="@string/visible"-->
-        <!--android:textColor="@android:color/black"-->
-        <!--android:textSize="18sp"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/ticket_currency" />-->
-
-        <!--<Switch-->
-        <!--android:id="@+id/ticket_visibility"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginRight="16dp"-->
-        <!--android:checked="true"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/textView9"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/textView9" />-->
-
-        <!--<Button-->
-        <!--android:id="@+id/save_ticket"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_margin="5dp"-->
-        <!--android:layout_marginTop="24dp"-->
-        <!--android:background="@color/colorAccent"-->
-        <!--android:text="SAVE TICKET"-->
-        <!--android:textColor="@android:color/white"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView9" />-->
-
         <android.support.design.widget.TextInputLayout
             android:id="@+id/textInputLayout2"
             android:layout_width="0dp"
@@ -225,7 +20,8 @@
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlineBox">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/ticket_name"
@@ -244,7 +40,8 @@
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlineBox">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/ticket_description"
@@ -260,6 +57,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlineBox"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout4">
@@ -268,7 +66,8 @@
                 android:id="@+id/ticket_quantity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/ticket_quantity_entry" />
+                android:hint="@string/ticket_quantity_entry"
+                android:inputType="number" />
         </android.support.design.widget.TextInputLayout>
 
         <TextView
@@ -293,21 +92,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-        <!--<EditText-->
-            <!--android:id="@+id/ticket_price"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginEnd="16dp"-->
-            <!--android:layout_marginStart="16dp"-->
-            <!--android:layout_marginTop="16dp"-->
-            <!--android:ems="10"-->
-            <!--android:fontFamily="@font/roboto_light"-->
-            <!--android:hint="Ticket Price"-->
-            <!--android:inputType="numberDecimal"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toBottomOf="@+id/type_spinner" />-->
-
         <android.support.design.widget.TextInputLayout
             android:id="@+id/price_holder"
             android:layout_width="0dp"
@@ -315,6 +99,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlineBox"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/type_spinner">
@@ -324,7 +109,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_light"
-                android:hint="@string/ticket_price_entry" />
+                android:hint="@string/ticket_price_entry"
+                android:inputType="numberDecimal" />
 
         </android.support.design.widget.TextInputLayout>
 

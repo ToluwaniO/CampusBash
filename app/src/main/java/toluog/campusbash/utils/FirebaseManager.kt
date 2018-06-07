@@ -108,7 +108,7 @@ class FirebaseManager(){
 
             imagesRef?.putFile(uri)?.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
                 if(taskSnapshot != null) {
-                    updateProfileField("photoUrl", taskSnapshot.downloadUrl?.toString() ?: "", user)
+                    updateProfileField(AppContract.FIREBASE_USER_PHOTO_URL, taskSnapshot.downloadUrl?.toString() ?: "", user)
                 }
             }
         }

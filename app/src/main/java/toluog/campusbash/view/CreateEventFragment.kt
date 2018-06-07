@@ -51,13 +51,11 @@ class CreateEventFragment : Fragment(){
     private var type = 0
     private lateinit var viewModel: CreateEventViewModel
     private lateinit var country: String
-    private lateinit var university: String
     private lateinit var countries: List<String>
     private val universities = ArrayList<String>()
     var isSaved = false
-    private var liveUniversities: LiveData<List<University>>? = null
     private val user = FirebaseManager.getUser()
-    private var stripeAccountId: String? = null
+    private val creator = Creator()
 
 
     interface CreateEventFragmentInterface {
@@ -79,18 +77,19 @@ class CreateEventFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val bundle = arguments
         countries = resources.getStringArray(R.array.countries).asList()
+
         viewModel.getUniversities(country)?.observe(this, Observer {
             universities.clear()
             it?.forEach {university ->
                 universities.add(university.name)
             }
         })
+
         if(user != null) {
             viewModel.getUser(user.uid).observe(activity!!, Observer {
                 if(it != null) {
                     Log.d(TAG, "user -> $it")
-                    val id = it[STRIPE_ACCOUNT_ID] as String?
-                    stripeAccountId = id
+                    updateCreator(it)
                 }
             })
         }
@@ -113,7 +112,7 @@ class CreateEventFragment : Fragment(){
                 RESULT_OK -> {
                     val place = PlaceAutocomplete.getPlace(activity?.applicationContext, data)
                     updateLocation(place)
-                    Log.i(TAG, "Place: " + place.name)
+                    Log.i(TAG, "Place: ${place.name}")
                 }
                 PlaceAutocomplete.RESULT_ERROR -> {
                     val status = PlaceAutocomplete.getStatus(activity?.applicationContext, data)
@@ -284,9 +283,7 @@ class CreateEventFragment : Fragment(){
         val event = viewModel.event
         val uri = viewModel.imageUri
 
-        val creator = FirebaseManager.getCreator()
-        if (creator != null) event.creator = creator
-        event.creator.stripeAccountId = stripeAccountId
+        event.creator = creator
 
         if(!validate(event)) {
             Log.d(TAG, "Invalid event")
@@ -398,16 +395,6 @@ class CreateEventFragment : Fragment(){
         Log.d(TAG, "${event.tickets}")
     }
 
-    private fun startObserver(country: String) {
-        liveUniversities = viewModel.getUniversities(country)
-        liveUniversities?.observe(this, Observer {
-            universities.clear()
-            it?.forEach { university ->
-                universities.add(university.name)
-            }
-        })
-    }
-
     private fun validate(event: Event): Boolean {
         Log.d(TAG, "validate() called")
         var isValid = true
@@ -442,6 +429,13 @@ class CreateEventFragment : Fragment(){
             return isValid
         }
         return isValid
+    }
+
+    private fun updateCreator(cr: Map<String, Any>) {
+        creator.imageUrl = cr[AppContract.FIREBASE_USER_PHOTO_URL] as String? ?: ""
+        creator.name = cr[AppContract.FIREBASE_USER_USERNAME] as String? ?: ""
+        creator.stripeAccountId = cr[AppContract.STRIPE_ACCOUNT_ID] as String? ?: ""
+        creator.uid = cr[AppContract.FIREBASE_USER_UID] as String? ?: ""
     }
 
     companion object {
