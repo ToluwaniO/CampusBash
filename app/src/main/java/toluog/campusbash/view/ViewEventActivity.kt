@@ -17,8 +17,6 @@ import kotlinx.android.synthetic.main.activity_view_event.*
 import org.jetbrains.anko.intentFor
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
-import toluog.campusbash.utils.AppContract
-import toluog.campusbash.utils.Util
 import com.google.firebase.dynamiclinks.DynamicLink
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import android.content.Intent
@@ -28,8 +26,7 @@ import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
 import toluog.campusbash.model.Place
-import toluog.campusbash.utils.Analytics
-import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.*
 
 class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -108,11 +105,11 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         if(event.placeholderImage == null || TextUtils.isEmpty(event.placeholderImage?.url)){
             Glide.with(this).load(R.drawable.default_event_background).into(event_image)
         } else{
-            Glide.with(this).load(event.placeholderImage?.url).into(event_image)
+            event_image.loadImage(event.placeholderImage?.url)
         }
         event_title.text = event.eventName
         event_description.text = event.description
-        Glide.with(this).load(event.creator.imageUrl).into(host_image)
+        host_image.loadImage(event.creator.imageUrl)
         event_creator.text = getString(R.string.hosted_by_x, event.creator.name)
         event_time.text = Util.getPeriod(event.startTime, event.endTime)
 

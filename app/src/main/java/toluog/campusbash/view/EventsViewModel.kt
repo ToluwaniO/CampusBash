@@ -18,13 +18,12 @@ import toluog.campusbash.utils.AdManager
 /**
  * Created by oguns on 12/13/2017.
  */
-class EventsViewModel(app: Application) : AndroidViewModel(app) {
+class EventsViewModel(app: Application) : GeneralViewModel(app) {
 
     private var events: LiveData<List<Event>>? = null
     private var places: LiveData<List<Place>>? = null
     private val ads: ArrayList<NativeAd> = ArrayList()
     private val adsList = MutableLiveData<ArrayList<NativeAd>>()
-    private val repo: Repository = Repository(app.applicationContext, FirebaseFirestore.getInstance())
     private val TAG = EventsViewModel::class.java.simpleName
     private  val adManager: AdManager
     private var adsJob: Job? = null

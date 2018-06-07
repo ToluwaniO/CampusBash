@@ -39,8 +39,13 @@ class AppContract{
 
         //FIREBASE KEYS
         val FIREBASE_EVENTS = "events"
+        val FIREBASE_USER_USERNAME = "userName"
+        val FIREBASE_USER_UID = "uid"
+        val FIREBASE_USER_SUMMARY = "summary"
+        val FIREBASE_USER_PHOTO_URL = "photoUrl"
         val FIREBASE_UNIVERSITIES = "universities"
         val FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS = "event_placeholder_images"
+        val FIREBASESTORAGE_PROFILE_PHOTOS = "user_profile_photos"
         val FIREBASE_CURRENCIES = "currencies"
         val FIREBASE_USERS = "users"
         val FIREBASE_FCM_TOKEN = "fcmToken"

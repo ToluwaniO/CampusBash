@@ -4,14 +4,15 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
-import com.stripe.android.CustomerSession
 import org.jetbrains.anko.toast
 import toluog.campusbash.model.Creator
 
@@ -78,12 +79,39 @@ class FirebaseManager(){
     fun uploadEventImage(uri: Uri): UploadTask? {
         // Create a storage reference from our app
         val storageRef = storage?.reference
+        val user = getUser()
 
-        // Create a reference to "mountains.jpg"
-        val imagesRef = storageRef?.child(AppContract.FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS)
-                ?.child("${uri.lastPathSegment}${System.currentTimeMillis()}")
+        if(user != null) {
+            // Create a reference to "mountains.jpg"
+            val imagesRef = storageRef?.child(AppContract.FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS)
+                    ?.child(user.uid)
+                    ?.child("${uri.lastPathSegment}${System.currentTimeMillis()}")
 
-        return imagesRef?.putFile(uri)
+            return imagesRef?.putFile(uri)
+        }
+        return null
+    }
+
+    fun updateProfileField(key: String, value: String, user: FirebaseUser) {
+        db?.collection(AppContract.FIREBASE_USERS)?.document(user.uid)?.update(key, value)
+    }
+
+    fun uploadProfilePhoto(uri: Uri) {
+        // Create a storage reference from our app
+        val storageRef = storage?.reference
+        val user = getUser()
+
+        if(user != null) {
+            // Create a reference to "mountains.jpg"
+            val imagesRef = storageRef?.child(AppContract.FIREBASESTORAGE_PROFILE_PHOTOS)
+                    ?.child(user.uid)
+
+            imagesRef?.putFile(uri)?.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
+                if(taskSnapshot != null) {
+                    updateProfileField(AppContract.FIREBASE_USER_PHOTO_URL, taskSnapshot.downloadUrl?.toString() ?: "", user)
+                }
+            }
+        }
     }
 
     fun buyTicket(event: Event?, map: Map<String, Any>): Task<Void>?{

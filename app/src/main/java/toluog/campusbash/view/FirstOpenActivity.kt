@@ -41,7 +41,7 @@ PickEventTypeFragment.PickEventTypeListener{
         Util.setPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY, selected)
         Log.d(TAG, "EventSet $selected")
         Util.setPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY, 1)
-        startActivity(intentFor<MainActivity>())
+        startActivity(intentFor<SetupProfileActivity>())
         finish()
     }
 

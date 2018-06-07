@@ -9,13 +9,11 @@ import toluog.campusbash.data.Repository
 /**
  * Created by oguns on 12/7/2017.
  */
-class MainActivityViewModel(app: Application) : AndroidViewModel(app){
+class MainActivityViewModel(app: Application) : GeneralViewModel(app){
 
-    val repo: Repository
     val db: AppDatabase?
 
     init {
-        repo = Repository(app.applicationContext, FirebaseFirestore.getInstance())
         db = AppDatabase.getDbInstance(app.applicationContext)
     }
 
