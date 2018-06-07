@@ -1,22 +1,18 @@
 package toluog.campusbash.view
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
 import com.myhexaville.smartimagepicker.ImagePicker
 import android.app.Activity.RESULT_OK
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.support.v4.app.Fragment
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.create_event_layout.*
-import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.act
 import toluog.campusbash.R
 import java.lang.ClassCastException
@@ -30,18 +26,13 @@ import android.app.ProgressDialog
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.widget.ImageView
-import com.bumptech.glide.Glide
 import com.crashlytics.android.Crashlytics
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.support.v4.toast
-import toluog.campusbash.R.id.*
-import toluog.campusbash.R.string.address
-import toluog.campusbash.data.GeneralDataSource.Companion.user
 import toluog.campusbash.model.*
 import toluog.campusbash.utils.*
-import toluog.campusbash.utils.AppContract.Companion.STRIPE_ACCOUNT_ID
 import java.util.Calendar
 import kotlin.collections.ArrayList
 
