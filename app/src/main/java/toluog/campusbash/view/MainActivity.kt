@@ -16,6 +16,7 @@ import toluog.campusbash.model.Event
 import com.firebase.ui.auth.ResultCodes
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
+import android.os.Build
 import android.support.design.widget.CoordinatorLayout
 import android.view.View
 import android.widget.AdapterView
@@ -159,12 +160,17 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     override fun onItemClick(event: Event, view: View) {
         Analytics.logEventSelected(event)
-        val transitionName = getString(R.string.event_card_transition)
-        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, view, transitionName)
         val bundle = Bundle()
         bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
-        ActivityCompat.startActivity(this, intentFor<ViewEventActivity>().putExtras(bundle),
-                options.toBundle())
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val transitionName = getString(R.string.event_card_transition)
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, view, transitionName)
+
+            ActivityCompat.startActivity(this, intentFor<ViewEventActivity>().putExtras(bundle),
+                    options.toBundle())
+        } else {
+            startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
+        }
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
