@@ -82,7 +82,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
             adapter = ChipAdapter(eventTypes, 1)
             layoutManager = LinearLayoutManager(rootView.context, LinearLayoutManager.HORIZONTAL, false)
         }
-        eventAdapter = EventAdapter(events, viewModel.getPlaces(), rootView.context)
+        eventAdapter = EventAdapter(events, emptyList(), rootView.context)
         event_recycler.adapter = eventAdapter
         event_recycler.layoutManager = LinearLayoutManager(rootView.context)
 
@@ -143,6 +143,11 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
             updateRecyclers()
             if (events.size > 0) {
                 eventAdapter.notifyDataSetChanged()
+            }
+        })
+        viewModel.getPlaces()?.observe(this, Observer {
+            if (it != null) {
+                eventAdapter.notifyPlaceChanged(it)
             }
         })
     }

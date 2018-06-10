@@ -69,7 +69,9 @@ class EventsFragment() : Fragment(){
         })
         places = viewModel.getPlaces()
         places?.observe(this, Observer {
-
+            it?.let {
+                adapter?.notifyPlaceChanged(it)
+            }
         })
 
         if(configProvider.isAdsEventsFragmentEnabled()) {
@@ -90,7 +92,8 @@ class EventsFragment() : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ViewCompat.setNestedScrollingEnabled(event_recycler, !myEvents)
-        adapter = EventAdapter(ArrayList<Any>(), viewModel.getPlaces(), rootView.context, myEvents)
+        adapter = EventAdapter(ArrayList<Any>(), viewModel.getPlaces()?.value ?: emptyList(),
+                rootView.context, myEvents)
         val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(rootView.context)
         event_recycler.layoutManager = layoutManager
         event_recycler.itemAnimator = DefaultItemAnimator()

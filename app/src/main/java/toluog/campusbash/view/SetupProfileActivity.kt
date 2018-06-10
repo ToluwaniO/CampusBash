@@ -36,6 +36,7 @@ class SetupProfileActivity : AppCompatActivity() {
         nextButton.setOnClickListener {
             updateFields()
             startActivity(intentFor<MainActivity>())
+            finish()
         }
 
     }
