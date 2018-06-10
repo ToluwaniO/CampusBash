@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
+import android.util.ArrayMap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,11 +24,12 @@ import toluog.campusbash.model.Event
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
+import java.util.HashSet
 
 /**
  * Created by oguns on 12/15/2017.
  */
-class EventAdapter(var events: ArrayList<Any>, var places: LiveData<List<Place>>?, var context: Context?,
+class EventAdapter(var events: ArrayList<Any>, var places: List<Place>, var context: Context?,
                    var myEvents: Boolean = false): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     private val listener: OnItemClickListener
@@ -35,6 +37,7 @@ class EventAdapter(var events: ArrayList<Any>, var places: LiveData<List<Place>>
     private val NATIVE_APP_INSTALL_AD_VIEW_TYPE = 1
     private val NATIVE_CONTENT_AD_VIEW_TYPE = 2
     private val TAG = EventAdapter::class.java.simpleName
+    private val noPlaceSet = ArrayMap<String, Set<Event>>()
 
     init {
         listener = context as OnItemClickListener
@@ -67,8 +70,8 @@ class EventAdapter(var events: ArrayList<Any>, var places: LiveData<List<Place>>
         Log.d(TAG, "VIEW TYPE is ${viewType}")
 
         when(viewType) {
-            EVENT_VIEW_TYPE -> (holder as EventViewHolder?)?.bind(item as Event, places?.value ?: emptyList(),
-                    listener, context, myEvents)
+            EVENT_VIEW_TYPE -> (holder as EventViewHolder?)?.bind(item as Event, places,
+                    listener, context, myEvents, noPlaceSet)
             NATIVE_APP_INSTALL_AD_VIEW_TYPE -> (holder as NativeAppInstallAdViewHolder?)
                     ?.bind(item as NativeAppInstallAd)
             NATIVE_CONTENT_AD_VIEW_TYPE -> (holder as NativeContentAdViewHolder?)
@@ -96,17 +99,38 @@ class EventAdapter(var events: ArrayList<Any>, var places: LiveData<List<Place>>
         diffResult.dispatchUpdatesTo(this)
     }
 
+    fun notifyPlaceChanged(places: List<Place>) {
+        this.places = places
+        for (place in places) {
+            if(noPlaceSet.containsKey(place.id)) {
+                noPlaceSet[place.id]?.forEach {
+                    val index = events.indexOf(it)
+                    notifyItemChanged(index)
+                }
+                noPlaceSet.remove(place.id)
+            }
+        }
+    }
+
     class EventViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),
             LayoutContainer {
 
-        fun bind(event: Event, places: List<Place>, listener: OnItemClickListener, context: Context?, myEvent: Boolean){
+        fun bind(event: Event, places: List<Place>, listener: OnItemClickListener, context: Context?,
+                 myEvent: Boolean, noPlaceSet: ArrayMap<String, Set<Event>>){
             event_title.text = event.eventName
             //event_address.text = event.place.address
             val place = findPlace(event.placeId, places)
             if(place != null) {
+                event_address.visibility = View.VISIBLE
                 event_address.text = place.address
             } else {
                 event_address.visibility = View.GONE
+                val notHaves = noPlaceSet[event.placeId]
+                if(notHaves == null) {
+                    noPlaceSet.put(event.placeId, setOf(event))
+                } else {
+                    notHaves.plus(event)
+                }
             }
             event_day.text = Util.getDay(event.startTime)
             event_month.text = Util.getShortMonth(event.startTime)

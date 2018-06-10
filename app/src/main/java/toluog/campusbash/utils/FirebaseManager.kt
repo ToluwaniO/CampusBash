@@ -104,7 +104,7 @@ class FirebaseManager(){
         if(user != null) {
             // Create a reference to "mountains.jpg"
             val imagesRef = storageRef?.child(AppContract.FIREBASESTORAGE_PROFILE_PHOTOS)
-                    ?.child(user.uid)
+                    ?.child(user.uid)?.child("${System.currentTimeMillis()}")
 
             imagesRef?.putFile(uri)?.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
                 if(taskSnapshot != null) {
