@@ -45,4 +45,9 @@ class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener{
     fun setOnTimeSetListener(listener: TimeSetListener){
         mCallback = listener
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        val refWatcher = MainApplication.getRefWatcher(activity?.applicationContext)
+        refWatcher?.watch(this)
+    }
 }

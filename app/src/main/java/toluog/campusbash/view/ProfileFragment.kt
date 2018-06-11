@@ -70,4 +70,10 @@ class ProfileFragment(): Fragment() {
         }
 
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val refWatcher = MainApplication.getRefWatcher(activity?.applicationContext)
+        refWatcher?.watch(this)
+    }
 }
