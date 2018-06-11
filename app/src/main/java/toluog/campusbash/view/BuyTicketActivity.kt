@@ -143,7 +143,6 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         if(currency != null) {
             purchaseMap[AppContract.CURRENCY] = currency
         }
-        purchaseMap[AppContract.DEBUG] = BuildConfig.DEBUG
         purchaseMap[AppContract.TICKETS] = map
         purchaseMap[AppContract.QUANTITY] = totalQuantity
         purchaseMap[AppContract.TOTAL] = priceBreakDown[AppContract.TOTAL_FEE]?.toDouble() ?: 0.0
@@ -174,13 +173,9 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         }
         pleaseWait.show()
         val customerId = user?.value?.get(AppContract.STRIPE_CUSTOMER_ID) as String?
-        val fcmToken = FirebaseManager.getFcmToken()
         if(tokenId != null) {
             overallMap[AppContract.TOKEN] = tokenId
             overallMap[AppContract.NEW_CARD] = newCard
-        }
-        if(fcmToken != null) {
-            overallMap[AppContract.FCM_TOKEN] = fcmToken
         }
         if(customerId != null) {
             overallMap[AppContract.STRIPE_CUSTOMER_ID] = customerId
