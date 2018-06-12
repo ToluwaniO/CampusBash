@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -30,8 +31,9 @@ class TicketsFragment : Fragment() {
         return inflater.inflate(R.layout.tickets_fragment, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setNestedScrollingEnabled(tickets_recycler, false)
         adapter = BoughtTicketAdapter(tickets)
         viewModel = ViewModelProviders.of(this).get(TicketsViewModel::class.java)
 
@@ -46,10 +48,9 @@ class TicketsFragment : Fragment() {
                 updateView()
             }
         })
-
     }
 
-    fun updateView() {
+    private fun updateView() {
         if(tickets.isNotEmpty()) {
             no_tickets_layout.visibility = View.GONE
             tickets_recycler.visibility = View.VISIBLE

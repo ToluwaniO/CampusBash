@@ -52,6 +52,29 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
+            R.id.navigation_events -> {
+                fab.visibility = VISIBLE
+                fragManager.popBackStack()
+                fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
+                        .commit()
+                setAppBarState(true)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_search -> {
+                fab.visibility = GONE
+                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
+                        .commit()
+                setAppBarState(null)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_tickets -> {
+                fab.visibility = GONE
+                fragManager.popBackStack()
+                fragManager.beginTransaction().replace(R.id.fragment_frame, TicketsFragment.newInstance(), null)
+                        .commit()
+                setAppBarState(false)
+                return@OnNavigationItemSelectedListener true
+            }
             R.id.navigation_host -> {
                 fab.visibility = VISIBLE
                 val bundle = Bundle()
@@ -64,34 +87,11 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 setAppBarState(false)
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_events -> {
-                fab.visibility = VISIBLE
-                fragManager.popBackStack()
-                fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
-                        .commit()
-                setAppBarState(true)
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_tickets -> {
-                fab.visibility = GONE
-                fragManager.popBackStack()
-                fragManager.beginTransaction().replace(R.id.fragment_frame, TicketsFragment.newInstance(), null)
-                        .commit()
-                setAppBarState(false)
-                return@OnNavigationItemSelectedListener true
-            }
             R.id.navigation_profile -> {
                 fab.visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
                 setAppBarState(false)
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_search -> {
-                fab.visibility = GONE
-                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
-                        .commit()
-                setAppBarState(null)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -231,7 +231,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 appbar.setExpanded(true, true)
                 appbar.visibility = View.VISIBLE
                 params.behavior = AppBarLayout.ScrollingViewBehavior()
-
             }
             else -> {
                 appbar.setExpanded(false, true)
