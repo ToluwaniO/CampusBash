@@ -438,12 +438,6 @@ class CreateEventFragment : Fragment(){
         creator.uid = cr[AppContract.FIREBASE_USER_UID] as String? ?: ""
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        val refWatcher = MainApplication.getRefWatcher(activity?.applicationContext)
-        refWatcher?.watch(this)
-    }
-
     companion object {
         private const val STRIPE_ACCOUNT_ID = "stripeAccountId"
         private const val MEDIA_TYPE_IMAGE = "image"

@@ -35,10 +35,4 @@ class PriceBreakDownDialogFragment: DialogFragment() {
         total_fee.text = getString(R.string.price_value, "$",
                 priceBreakdown[AppContract.TOTAL_FEE])
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        val refWatcher = MainApplication.getRefWatcher(activity?.applicationContext)
-        refWatcher?.watch(this)
-    }
 }

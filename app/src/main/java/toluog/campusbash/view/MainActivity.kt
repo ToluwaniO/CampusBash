@@ -33,7 +33,6 @@ import android.support.v4.app.ActivityOptionsCompat
 import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
-import com.squareup.leakcanary.LeakCanary
 import io.fabric.sdk.android.Fabric
 
 

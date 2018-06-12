@@ -1,6 +1,5 @@
 package toluog.campusbash.view
 
-import android.app.Application
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
@@ -33,9 +32,6 @@ import java.math.BigDecimal
 import android.text.Spanned
 import android.text.InputFilter
 import java.util.regex.Pattern
-import com.squareup.leakcanary.RefWatcher
-
-
 
 
 /**
@@ -274,12 +270,6 @@ class CreateTicketFragment: Fragment(){
         }catch (e: ClassCastException){
             Log.d(TAG, e.message)
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        val refWatcher = MainApplication.getRefWatcher(activity?.applicationContext)
-        refWatcher?.watch(this)
     }
 
     inner class DecimalDigitsInputFilter(val maxDigitsBeforeDecimalPoint: Int, val maxDigitsAfterDecimalPoint: Int) : InputFilter {
