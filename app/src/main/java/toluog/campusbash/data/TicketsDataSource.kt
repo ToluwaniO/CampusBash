@@ -17,7 +17,7 @@ class TicketsDataSource {
 
     fun initListener(mFirestore: FirebaseFirestore, uid: String){
         Log.d(TAG, "initListener")
-        val query = mFirestore.collection(AppContract.FIREBASE_EVENTS)
+        val query = mFirestore.collection(AppContract.FIREBASE_USER_TICKETS)
         query.whereEqualTo(AppContract.BUYER_ID, uid)
             .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
                 if (e != null) {

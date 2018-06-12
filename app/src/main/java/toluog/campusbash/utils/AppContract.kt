@@ -39,6 +39,7 @@ class AppContract{
 
         //FIREBASE KEYS
         val FIREBASE_EVENTS = "events"
+        val FIREBASE_USER_TICKETS = "userTickets"
         val FIREBASE_USER_USERNAME = "userName"
         val FIREBASE_USER_UID = "uid"
         val FIREBASE_USER_SUMMARY = "summary"
