@@ -30,6 +30,7 @@ import kotlin.collections.ArrayList
 import android.support.design.widget.AppBarLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
+import android.view.View.GONE
 import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_host -> {
+                fab.visibility = VISIBLE
                 val bundle = Bundle()
                 bundle.putBoolean(AppContract.MY_EVENT_BUNDLE, true)
                 val fragment = EventsFragment()
@@ -70,13 +72,23 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 setAppBarState(true)
                 return@OnNavigationItemSelectedListener true
             }
+            R.id.navigation_tickets -> {
+                fab.visibility = GONE
+                fragManager.popBackStack()
+                fragManager.beginTransaction().replace(R.id.fragment_frame, TicketsFragment.newInstance(), null)
+                        .commit()
+                setAppBarState(false)
+                return@OnNavigationItemSelectedListener true
+            }
             R.id.navigation_profile -> {
+                fab.visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
                 setAppBarState(false)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_search -> {
+                fab.visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
                         .commit()
                 setAppBarState(null)

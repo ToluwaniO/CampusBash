@@ -132,5 +132,7 @@
     <string name="ticket_price_entry">Enter ticket price</string>
     <string name="enter_username">Enter username</string>
     <string name="enter_summary_yourself">Enter summary of yourself</string>
+    <string name="no_tickets_here">No tickets here</string>
+    <string name="tickets">Tickets</string>
 
 </resources>
