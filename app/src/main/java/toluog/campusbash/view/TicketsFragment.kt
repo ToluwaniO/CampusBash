@@ -33,7 +33,7 @@ class TicketsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ViewCompat.setNestedScrollingEnabled(tickets_recycler, false)
+        //ViewCompat.setNestedScrollingEnabled(tickets_recycler, false)
         adapter = BoughtTicketAdapter(tickets)
         viewModel = ViewModelProviders.of(this).get(TicketsViewModel::class.java)
 

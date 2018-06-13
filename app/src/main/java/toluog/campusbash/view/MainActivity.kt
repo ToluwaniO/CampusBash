@@ -35,7 +35,8 @@ import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
-
+import android.support.annotation.NonNull
+import android.util.TypedValue
 
 
 class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
@@ -220,24 +221,38 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     }
 
     private  fun setAppBarState(enabled: Boolean?) {
-        val params = fragment_frame.layoutParams as CoordinatorLayout.LayoutParams
+        val params = appbar.layoutParams as CoordinatorLayout.LayoutParams
+        val frameParams = fragment_frame.layoutParams as CoordinatorLayout.LayoutParams
+
         when {
             enabled == null -> {
-                appbar.setExpanded(false, false)
+                appbar.setExpanded(false, true)
                 appbar.visibility = View.GONE
-                params.behavior = null
+                frameParams.behavior = null
             }
             enabled -> {
                 appbar.setExpanded(true, true)
                 appbar.visibility = View.VISIBLE
-                params.behavior = AppBarLayout.ScrollingViewBehavior()
+                params.height = resources.getDimension(R.dimen.main_app_bar).toInt()
+                frameParams.behavior = AppBarLayout.ScrollingViewBehavior()
             }
             else -> {
                 appbar.setExpanded(false, true)
                 appbar.visibility = View.VISIBLE
-                params.behavior = AppBarLayout.ScrollingViewBehavior()
+                params.height = actionBarHeight()
+                frameParams.behavior = AppBarLayout.ScrollingViewBehavior()
             }
         }
         fragment_frame.requestLayout()
+        appbar.requestLayout()
+    }
+
+    private fun actionBarHeight(): Int {
+        val tv = TypedValue()
+        if (this.theme.resolveAttribute(android.R.attr.actionBarSize, tv, true))
+        {
+            return  TypedValue.complexToDimensionPixelSize(tv.data, this.resources.displayMetrics);
+        }
+        return 56
     }
 }
