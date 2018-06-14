@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.support.v4.util.ArrayMap
 import android.support.v7.widget.*
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
 import org.jetbrains.anko.alert
@@ -42,6 +43,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buy_ticket)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         updateUi()
         
@@ -106,6 +108,14 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
                 }
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val id = item?.itemId
+        when (id){
+            android.R.id.home -> onBackPressed()
+        }
+        return true
     }
 
     override fun onTicketClick(ticket: Ticket) {

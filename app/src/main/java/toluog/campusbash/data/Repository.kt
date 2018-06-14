@@ -9,25 +9,23 @@ import org.jetbrains.anko.doAsync
 import toluog.campusbash.data.network.ServerResponse
 import toluog.campusbash.data.network.StripeAccountBody
 import toluog.campusbash.data.network.StripeServerClient
-import toluog.campusbash.model.Currency
+import toluog.campusbash.model.*
 import toluog.campusbash.utils.AppContract
-import toluog.campusbash.model.Event
-import toluog.campusbash.model.Place
-import toluog.campusbash.model.University
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 
 /**
  * Created by oguns on 12/7/2017.
  */
-class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
+class Repository(val context: Context, mFirebaseFirestore: FirebaseFirestore){
     private val TAG = Repository::class.java.simpleName
+    private val ticketsDataSource = TicketsDataSource()
     private val eventDataSource = EventDataSource()
-    private val db: AppDatabase? = AppDatabase.getDbInstance(c)
+    private val db: AppDatabase? = AppDatabase.getDbInstance(context)
     private val mFireStore = FirebaseFirestore.getInstance()
     private lateinit var stripeApi: StripeServerClient
-    private val context = c
     private var initializedEvents = false
+    private var initializedTickets = false
     private var initializedUnis = false
     private var initializedStripeApi = false
 
@@ -71,6 +69,15 @@ class Repository(c: Context, mFirebaseFirestore: FirebaseFirestore){
     fun getCurrencies(): LiveData<List<Currency>>? {
         Util.downloadCurrencies(context)
         return db?.currencyDao()?.getCurrencies()
+    }
+
+    fun getTickets(): LiveData<List<BoughtTicket>> {
+        val user = FirebaseManager.getUser()
+        if(!initializedTickets && user != null) {
+            initializedTickets = true
+            ticketsDataSource.initListener(FirebaseFirestore.getInstance(), user.uid)
+        }
+        return ticketsDataSource.getTickets()
     }
 
     fun getUser(uid: String) = GeneralDataSource.getUser(mFireStore, uid)

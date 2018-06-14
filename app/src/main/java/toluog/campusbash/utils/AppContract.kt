@@ -30,6 +30,7 @@ class AppContract{
         val TOKEN_ID = "tokenId"
         val NEW_CARD = "newCard"
         val MORE_TEXT = "moreText"
+        val BOUGHT_TICKET = "bought_ticket"
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"
@@ -39,6 +40,7 @@ class AppContract{
 
         //FIREBASE KEYS
         val FIREBASE_EVENTS = "events"
+        val FIREBASE_USER_TICKETS = "userTickets"
         val FIREBASE_USER_USERNAME = "userName"
         val FIREBASE_USER_UID = "uid"
         val FIREBASE_USER_SUMMARY = "summary"

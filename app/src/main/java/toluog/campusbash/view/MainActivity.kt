@@ -30,14 +30,17 @@ import kotlin.collections.ArrayList
 import android.support.design.widget.AppBarLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
+import android.view.View.GONE
 import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
+import toluog.campusbash.adapters.BoughtTicketAdapter
+import toluog.campusbash.model.BoughtTicket
 
 
-
-class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
+class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener,
+                                                            BoughtTicketAdapter.TicketListener {
 
     private val TAG = MainActivity::class.java.simpleName
     private val fragManager = supportFragmentManager
@@ -51,7 +54,31 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
+            R.id.navigation_events -> {
+                fab.visibility = VISIBLE
+                fragManager.popBackStack()
+                fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
+                        .commit()
+                setAppBarState(true)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_search -> {
+                fab.visibility = GONE
+                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
+                        .commit()
+                setAppBarState(null)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_tickets -> {
+                fab.visibility = GONE
+                fragManager.popBackStack()
+                fragManager.beginTransaction().replace(R.id.fragment_frame, TicketsFragment.newInstance(), null)
+                        .commit()
+                setAppBarState(false)
+                return@OnNavigationItemSelectedListener true
+            }
             R.id.navigation_host -> {
+                fab.visibility = VISIBLE
                 val bundle = Bundle()
                 bundle.putBoolean(AppContract.MY_EVENT_BUNDLE, true)
                 val fragment = EventsFragment()
@@ -62,24 +89,11 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 setAppBarState(false)
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_events -> {
-                fab.visibility = VISIBLE
-                fragManager.popBackStack()
-                fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
-                        .commit()
-                setAppBarState(true)
-                return@OnNavigationItemSelectedListener true
-            }
             R.id.navigation_profile -> {
+                fab.visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
                 setAppBarState(false)
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_search -> {
-                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
-                        .commit()
-                setAppBarState(null)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -98,7 +112,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         (fab.layoutParams as CoordinatorLayout.LayoutParams).behavior = FabScrollBehavior()
-        (navigation.layoutParams as CoordinatorLayout.LayoutParams).behavior = BottomNavigationBehavior()
+        //(navigation.layoutParams as CoordinatorLayout.LayoutParams).behavior = BottomNavigationBehavior()
         fab.setOnClickListener {
             startActivity(intentFor<CreateEventActivity>())
         }
@@ -110,6 +124,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         updateUi()
         fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null).commit()
     }
+
+
 
     override fun onStart() {
         super.onStart()
@@ -171,6 +187,12 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         } else {
             startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
         }
+    }
+
+    override fun onTicketClicked(ticket: BoughtTicket) {
+        startActivity(intentFor<ViewBoughtTicketActivity>().putExtras(Bundle().apply {
+            putParcelable(AppContract.BOUGHT_TICKET, ticket)
+        }))
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {

@@ -76,19 +76,6 @@ class EventDataSource()  {
             } else {
                 System.currentTimeMillis() - place.timeSaved >= TimeUnit.SECONDS.toMillis(30)
             }
-//            val alarm = getAlarmManager(context)
-//
-//            if(alarmSet == 0) {
-//                val calendar = Calendar.getInstance().apply {
-//                    timeInMillis = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30)
-//                }
-//                val intent = Intent(context, AlarmReceiver::class.java)
-//                val alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
-//                intent.putExtra("TAG", AppContract.ALARM_DELETE_PLACES)
-//                alarm.set(AlarmManager.ELAPSED_REALTIME, calendar.timeInMillis, alarmIntent)
-//                Util.setPrefInt(context, AppContract.PREF_FIRST_PLACE_ALARM, 1)
-//                Log.d(TAG, "Alarm set for places")
-//            }
 
             if(fetchPlace) {
                 GeneralDataSource.fetchPlace(id, event, context)

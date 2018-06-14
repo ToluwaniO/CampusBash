@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -15,7 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <activity
             android:name=".view.MainActivity"
             android:label="@string/app_name"
@@ -114,7 +116,8 @@
         <activity android:name=".view.CardPaymentActivity" />
         <activity android:name=".view.StripeSetupActivity" />
         <activity android:name=".view.SeeMoreActivity" />
-        <activity android:name=".view.SetupProfileActivity"></activity>
+        <activity android:name=".view.SetupProfileActivity" />
+        <activity android:name=".view.ViewBoughtTicketActivity"></activity>
     </application>
 
 </manifest>

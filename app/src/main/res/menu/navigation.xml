@@ -10,8 +10,12 @@
         android:icon="@drawable/ic_search_emoji"
         android:title="@android:string/search_go" />
     <item
-        android:id="@+id/navigation_host"
+        android:id="@+id/navigation_tickets"
         android:icon="@drawable/ticket"
+        android:title="@string/tickets" />
+    <item
+        android:id="@+id/navigation_host"
+        android:icon="@drawable/microphone_emoji"
         android:title="@string/title_host" />
     <item
         android:id="@+id/navigation_profile"
