@@ -39,7 +39,7 @@ class ViewBoughtTicketActivity : AppCompatActivity() {
         return true
     }
 
-    inner class TicketsAdapter(): RecyclerView.Adapter<TicketsAdapter.ViewHolder>() {
+    inner class TicketsAdapter: RecyclerView.Adapter<TicketsAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val v = LayoutInflater.from(parent.context).inflate(R.layout.ticket_card_layout, parent,
                     false)

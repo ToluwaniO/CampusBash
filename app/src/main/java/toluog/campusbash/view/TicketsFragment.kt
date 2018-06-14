@@ -24,7 +24,7 @@ class TicketsFragment : Fragment() {
 
     private lateinit var viewModel: TicketsViewModel
     private lateinit var adapter: BoughtTicketAdapter
-    private val tickets = arrayListOf<BoughtTicket>()
+    private var tickets = arrayListOf<BoughtTicket>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -41,9 +41,9 @@ class TicketsFragment : Fragment() {
         tickets_recycler.layoutManager = LinearLayoutManager(context)
 
         viewModel.getTickets()?.observe(this, Observer {
-            it?.let {
+            if(it != null) {
                 tickets.clear()
-                tickets.addAll(it)
+                tickets.addAll(it.sortedWith(compareBy {it.timeSpent}).reversed())
                 adapter.notifyDataSetChanged()
                 updateView()
             }
