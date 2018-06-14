@@ -35,10 +35,12 @@ import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
+import toluog.campusbash.adapters.BoughtTicketAdapter
+import toluog.campusbash.model.BoughtTicket
 
 
-
-class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener {
+class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener,
+                                                            BoughtTicketAdapter.TicketListener {
 
     private val TAG = MainActivity::class.java.simpleName
     private val fragManager = supportFragmentManager
@@ -185,6 +187,12 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         } else {
             startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
         }
+    }
+
+    override fun onTicketClicked(ticket: BoughtTicket) {
+        startActivity(intentFor<ViewBoughtTicketActivity>().putExtras(Bundle().apply {
+            putParcelable(AppContract.BOUGHT_TICKET, ticket)
+        }))
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
