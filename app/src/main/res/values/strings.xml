@@ -121,7 +121,6 @@
     <string name="when_it_starts">When does it start?</string>
     <string name="when_it_ends">When does it end?</string>
     <string name="where_its_happening">Where is it happening?</string>
-    <string name="got_any_tickets">Got any tickets?</string>
     <string name="search_an_address">Search an address</string>
     <string name="add_tickets">Add tickets</string>
     <string name="got_tickets">Got any tickets?</string>
@@ -134,5 +133,6 @@
     <string name="enter_summary_yourself">Enter summary of yourself</string>
     <string name="no_tickets_here">No tickets here</string>
     <string name="tickets">Tickets</string>
+    <string name="starts_on_x">Starts on %1s</string>
 
 </resources>
