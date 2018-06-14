@@ -14,7 +14,6 @@
         android:stateListAnimator="@null">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/col_bar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -72,6 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/navigation"
+        android:layout_marginBottom="@dimen/mtrl_bottomappbar_height"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
