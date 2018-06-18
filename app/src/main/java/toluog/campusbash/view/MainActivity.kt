@@ -51,10 +51,12 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private val firebaseManager = lazy { FirebaseManager() }
     private lateinit var country: String
     private lateinit var university: String
+    private var title = ""
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_events -> {
+                title = ""
                 fab.visibility = VISIBLE
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
@@ -63,6 +65,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_search -> {
+                title = ""
                 fab.visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
                         .commit()
@@ -70,6 +73,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_tickets -> {
+                title = getString(R.string.tickets)
                 fab.visibility = GONE
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, TicketsFragment.newInstance(), null)
@@ -78,6 +82,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_host -> {
+                title = getString(R.string.my_events)
                 fab.visibility = VISIBLE
                 val bundle = Bundle()
                 bundle.putBoolean(AppContract.MY_EVENT_BUNDLE, true)
@@ -90,6 +95,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_profile -> {
+                title = getString(R.string.profile)
                 fab.visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
@@ -241,7 +247,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 appbar.setExpanded(true, true)
                 appbar.visibility = View.VISIBLE
                 params.behavior = AppBarLayout.ScrollingViewBehavior()
-
             }
             else -> {
                 appbar.setExpanded(false, true)
@@ -250,5 +255,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             }
         }
         fragment_frame.requestLayout()
+        toolbar.title = title
     }
 }
