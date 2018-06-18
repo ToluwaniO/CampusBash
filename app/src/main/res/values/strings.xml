@@ -136,5 +136,9 @@
     <string name="starts_on_x">Starts on %1s</string>
     <string name="my_events">My Events</string>
     <string name="profile">Profile</string>
+    <string name="select_quantity">Select quantity</string>
+    <string name="tickets_left">%1d tickets left</string>
+    <string name="ticket_left">1 ticket left</string>
+    <string name="number_available">$1d available</string>
 
 </resources>

@@ -61,12 +61,12 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
             val quantityLeft = ticket.quantity - ticket.ticketsSold
             val context = containerView.context
             ticket_name.text = ticket.name
-            ticket_price.text = "$${ticket.price}"
+            ticket_price.text = context.getString(R.string.price_currency_value, "$", ticket.price)
             if(quantityLeft > 0) {
                 if(quantityLeft > 1) {
-                    ticket_quantity_left.text = "$quantityLeft tickets left"
+                    ticket_quantity_left.text = context.getString(R.string.tickets_left, quantityLeft)
                 } else {
-                    ticket_quantity_left.text = "$quantityLeft ticket left"
+                    ticket_quantity_left.text = context.getString(R.string.ticket_left)
                 }
                 ticket_quantity.visibility = View.VISIBLE
             } else {
@@ -80,11 +80,10 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
             }
 
             containerView.setOnClickListener { listener.onTicketClick(ticket) }
-//            ticket_quantity.addTextChangedListener(TicketWatcher(ticket.name, quantityLeft,
-//                    ticket_quantity, queryMap, listener))
+
             val selectableQuantity = arrayListOf<String>()
             val max = Math.min(10, quantityLeft)
-            for (i in 1..max) {
+            for (i in 0..max) {
                 val breakdown = Util.getFinalFee(i * ticket.price)
                 val total = breakdown[AppContract.TOTAL_FEE]?.toDouble()
                 if(total != null && total <= 999999.0) {
@@ -93,11 +92,11 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
             }
 
             ticket_quantity.setOnClickListener {
-                context.selector(context.getString(R.string.select_currency),
-                        selectableQuantity, { _, i ->
+                context.selector(context.getString(R.string.select_quantity),
+                        selectableQuantity) { _, i ->
                     updateMap(selectableQuantity[i].toInt(), ticket.name)
                     (it as TextView).text = selectableQuantity[i]
-                })
+                }
             }
         }
 
@@ -111,41 +110,4 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
 
     }
 
-    class TicketWatcher(var name: String, private var quantityLeft: Int, var view: EditText,
-                        private val queryMap: ArrayMap<String, Any>, private val listener: OnTicketClickListener): TextWatcher {
-
-        private val TAG = TicketWatcher::class.java.simpleName
-
-        override fun afterTextChanged(s: Editable?) {
-        }
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        }
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            view.error = null
-            if(s != null) {
-                val quantity = if(s.isNotEmpty()) {
-                    s.toString().toInt()
-                } else {
-                    0
-                }
-                when {
-                    quantity > quantityLeft -> {
-                        view.error = "$quantityLeft available"
-                        queryMap.remove(name)
-                    }
-                    quantity > 0 -> queryMap[name] = quantity
-                    quantity == 0 -> queryMap.remove(name)
-                    else -> {
-                        view.error = "Quantity can not be negative"
-                        queryMap.remove(name)
-                    }
-                }
-
-            }
-            Log.d(TAG, "TextChanged -> $queryMap")
-        }
-
-    }
 }
