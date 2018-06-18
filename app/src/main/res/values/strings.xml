@@ -134,5 +134,7 @@
     <string name="no_tickets_here">No tickets here</string>
     <string name="tickets">Tickets</string>
     <string name="starts_on_x">Starts on %1s</string>
+    <string name="my_events">My Events</string>
+    <string name="profile">Profile</string>
 
 </resources>
