@@ -10,6 +10,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.EventListener
 import kotlinx.coroutines.experimental.launch
 import toluog.campusbash.utils.AppContract
+import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -31,40 +32,83 @@ class EventDataSource()  {
             db = AppDatabase.getDbInstance(context)
             val university = Util.getPrefString(context, AppContract.PREF_UNIVERSITY_KEY)
             val query = mFirestore.collection(AppContract.FIREBASE_EVENTS)
+            activateGeneralEventListener(context, query, university)
+            activateMyEventListener(context, query)
+        }
+
+        private fun activateGeneralEventListener(context: Context, query: CollectionReference, university: String) {
             query.whereGreaterThanOrEqualTo("endTime", System.currentTimeMillis())
                     .whereEqualTo("university", university)
                     .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
-                if (e != null) {
-                    Log.d(TAG, "onEvent:error", e)
-                    return@EventListener
-                }
+                        if (e != null) {
+                            Log.d(TAG, "onEvent:error", e)
+                            return@EventListener
+                        }
 
-                launch {
-                    // Dispatch the event
-                    for (change in value.documentChanges) {
-                        if(!change.document.exists()) continue
-                        // Snapshot of the changed document
-                        Log.d(TAG, change.document.toString())
-                        val snapshot = change.document.toObject(Event::class.java)
+                        launch {
+                            // Dispatch the event
+                            for (change in value.documentChanges) {
+                                if(!change.document.exists()) continue
+                                // Snapshot of the changed document
+                                Log.d(TAG, change.document.toString())
+                                val snapshot = change.document.toObject(Event::class.java)
 
-                        when (change.type) {
-                            DocumentChange.Type.ADDED -> {
-                                Log.d(TAG, "ChildAdded")
-                                db?.eventDao()?.insertEvent(snapshot)
-                            }
-                            DocumentChange.Type.MODIFIED -> {
-                                Log.d(TAG, "ChildModified")
-                                db?.eventDao()?.updateEvent(snapshot)
-                            }
-                            DocumentChange.Type.REMOVED -> {
-                                Log.d(TAG, "ChildRemoved")
-                                db?.eventDao()?.deleteEvent(snapshot)
+                                when (change.type) {
+                                    DocumentChange.Type.ADDED -> {
+                                        Log.d(TAG, "ChildAdded")
+                                        db?.eventDao()?.insertEvent(snapshot)
+                                    }
+                                    DocumentChange.Type.MODIFIED -> {
+                                        Log.d(TAG, "ChildModified")
+                                        db?.eventDao()?.updateEvent(snapshot)
+                                    }
+                                    DocumentChange.Type.REMOVED -> {
+                                        Log.d(TAG, "ChildRemoved")
+                                        db?.eventDao()?.deleteEvent(snapshot)
+                                    }
+                                }
+                                savePlace(snapshot.placeId, snapshot, context)
                             }
                         }
-                        savePlace(snapshot.placeId, snapshot, context)
-                    }
-                }
-            })
+                    })
+        }
+
+        private fun activateMyEventListener(context: Context, query: CollectionReference) {
+            val uid = FirebaseManager.getUser()?.uid ?: return
+
+            query.whereEqualTo(FirestorePaths.EVENT_UID, uid)
+                    .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
+                        if (e != null) {
+                            Log.d(TAG, "onEvent:error", e)
+                            return@EventListener
+                        }
+
+                        launch {
+                            // Dispatch the event
+                            for (change in value.documentChanges) {
+                                if(!change.document.exists()) continue
+                                // Snapshot of the changed document
+                                Log.d(TAG, change.document.toString())
+                                val snapshot = change.document.toObject(Event::class.java)
+
+                                when (change.type) {
+                                    DocumentChange.Type.ADDED -> {
+                                        Log.d(TAG, "ChildAdded")
+                                        db?.eventDao()?.insertEvent(snapshot)
+                                    }
+                                    DocumentChange.Type.MODIFIED -> {
+                                        Log.d(TAG, "ChildModified")
+                                        db?.eventDao()?.updateEvent(snapshot)
+                                    }
+                                    DocumentChange.Type.REMOVED -> {
+                                        Log.d(TAG, "ChildRemoved")
+                                        db?.eventDao()?.deleteEvent(snapshot)
+                                    }
+                                }
+                                savePlace(snapshot.placeId, snapshot, context)
+                            }
+                        }
+                    })
         }
 
         @SuppressLint("RestrictedApi")

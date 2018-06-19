@@ -37,6 +37,9 @@ public interface EventDao{
     @Query("SELECT * FROM $TABLE WHERE endTime > :date")
     fun getEvents(date: Long): LiveData<List<Event>>
 
+    @Query("SELECT * FROM $TABLE WHERE uid LIKE :uid")
+    fun getMyEvents(uid: String): LiveData<List<Event>>
+
     @Query("SELECT * FROM $TABLE WHERE eventName LIKE :name AND startTime >= :time")
     fun getEventsWithQuery(name: String, time: Long): LiveData<List<Event>>
 
