@@ -140,5 +140,7 @@
     <string name="tickets_left">%1d tickets left</string>
     <string name="ticket_left">1 ticket left</string>
     <string name="number_available">$1d available</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="log_out">Log out</string>
 
 </resources>

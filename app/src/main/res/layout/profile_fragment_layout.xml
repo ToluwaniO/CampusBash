@@ -10,14 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/profile_image"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:layout_margin="5dp"
-            app:civ_border_color="#FF000000"
-            app:civ_border_width="2dp"
             tools:layout_editor_absoluteX="144dp"
             tools:layout_editor_absoluteY="26dp" />
 
@@ -27,9 +26,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="5dp"
-            android:text="Firstname Lastname"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
             tools:layout_editor_absoluteX="129dp"
-            tools:layout_editor_absoluteY="155dp" />
+            tools:layout_editor_absoluteY="155dp"
+            tools:text="Jessica Jones" />
 
         <TextView
             android:id="@+id/profile_email"
@@ -37,37 +40,16 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="5dp"
-            android:text="yourname@campusbash.ca"
             tools:layout_editor_absoluteX="106dp"
-            tools:layout_editor_absoluteY="219dp" />
+            tools:layout_editor_absoluteY="219dp"
+            tools:text="yourname@campusbash.ca" />
 
         <TextView
-            android:id="@+id/uni_view"
+            android:id="@+id/university_country_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="@string/university"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/profile_university"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-
-        <TextView
-            android:id="@+id/country_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="@string/country"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/profile_country"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
+            android:layout_gravity="center_horizontal"
+            tools:text="Canada . University of Ottawa" />
 
         <Button
             android:id="@+id/update_interests_button"

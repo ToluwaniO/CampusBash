@@ -6,9 +6,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewCompat
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import kotlinx.android.synthetic.main.profile_fragment_layout.*
 import org.jetbrains.anko.support.v4.act
 import org.jetbrains.anko.support.v4.intentFor
@@ -30,6 +28,12 @@ class ProfileFragment(): Fragment() {
     private lateinit var viewModel: ProfileViewModel
     private var profileInfo: LiveData<Map<String, Any>>? = null
     val util = Util()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.profile_fragment_layout, container, false)
         return rootView
@@ -57,8 +61,7 @@ class ProfileFragment(): Fragment() {
         university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
         country = Util.getPrefString(act, AppContract.PREF_COUNTRY_KEY)
 
-        profile_university.text = university
-        profile_country.text = country
+        university_country_view.text = "$country . $university"
 
         update_interests_button.setOnClickListener {
             startActivity(intentFor<InterestsActivity>())
@@ -69,5 +72,10 @@ class ProfileFragment(): Fragment() {
             Util.startSignInActivity(act)
         }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.profile_fragment_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 }

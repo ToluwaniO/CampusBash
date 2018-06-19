@@ -115,6 +115,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         Util.cancelAllJobs(this)
         firstOpen()
 
+        setSupportActionBar(toolbar)
+
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         (fab.layoutParams as CoordinatorLayout.LayoutParams).behavior = FabScrollBehavior()
