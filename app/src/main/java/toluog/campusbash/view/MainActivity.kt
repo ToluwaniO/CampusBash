@@ -131,8 +131,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null).commit()
     }
 
-
-
     override fun onStart() {
         super.onStart()
         if(FirebaseManager.isSignedIn()){

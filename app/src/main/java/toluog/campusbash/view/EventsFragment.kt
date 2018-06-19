@@ -48,7 +48,7 @@ class EventsFragment() : Fragment(){
             myEvents = bundle.getBoolean(AppContract.MY_EVENT_BUNDLE)
         }
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
-        viewModel.getEvents()?.observe(this, Observer { eventsList ->
+        viewModel.getEvents(myEvents)?.observe(this, Observer { eventsList ->
             val user = FirebaseManager.getUser()
             events.clear()
             if(eventsList != null) {

@@ -21,6 +21,7 @@ import toluog.campusbash.utils.AdManager
 class EventsViewModel(app: Application) : GeneralViewModel(app) {
 
     private var events: LiveData<List<Event>>? = null
+    private var myEvents: LiveData<List<Event>>? = null
     private var places: LiveData<List<Place>>? = null
     private val ads: ArrayList<NativeAd> = ArrayList()
     private val adsList = MutableLiveData<ArrayList<NativeAd>>()
@@ -38,6 +39,7 @@ class EventsViewModel(app: Application) : GeneralViewModel(app) {
     fun init() {
         places = repo.getPlaces()
         events = repo.getEvents()
+        myEvents = repo.getMyEvents()
     }
 
     fun loadAds() {
@@ -45,9 +47,22 @@ class EventsViewModel(app: Application) : GeneralViewModel(app) {
         adsJob = launch { adManager.loadAds() }
     }
 
-    fun getEvents(): LiveData<List<Event>>? {
+    fun getEvents(myEvents: Boolean = false): LiveData<List<Event>>? {
+        Log.d(TAG, "getEvents called")
+        if(myEvents) {
+            return getMyEvents()
+        }
+        return getEvents()
+    }
+
+    private fun getEvents(): LiveData<List<Event>>? {
         Log.d(TAG, "getEvents called")
         return events
+    }
+
+    private fun getMyEvents(): LiveData<List<Event>>? {
+        Log.d(TAG, "getMyEvents called")
+        return myEvents
     }
 
     fun getEvents(name: String, type: String, time: Long): LiveData<List<Event>>? {

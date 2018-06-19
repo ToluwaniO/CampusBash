@@ -40,6 +40,16 @@ class Repository(val context: Context, mFirebaseFirestore: FirebaseFirestore){
         return db?.eventDao()?.getEvents(System.currentTimeMillis())
     }
 
+    fun getMyEvents() : LiveData<List<Event>>?{
+        Log.d(TAG, "getEvents called")
+        if(!initializedEvents){
+            EventDataSource.initListener(FirebaseFirestore.getInstance(), context)
+            initializedEvents = true
+            Log.d(TAG, "datasource initialized")
+        }
+        return db?.eventDao()?.getMyEvents(FirebaseManager.getUser()?.uid ?: "")
+    }
+
     fun getEvent(eventId: String): LiveData<Event>?{
         return db?.eventDao()?.getEvent(eventId)
     }
