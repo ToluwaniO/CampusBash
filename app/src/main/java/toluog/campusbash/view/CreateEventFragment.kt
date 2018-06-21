@@ -154,11 +154,11 @@ class CreateEventFragment : Fragment(){
                     viewModel.event.tickets.size), android.R.color.black)
         }
         
-        imagePicker = ImagePicker(activity, this@CreateEventFragment, { imageUri ->
+        imagePicker = ImagePicker(activity, this@CreateEventFragment) { imageUri ->
             viewModel.imageUri = imageUri
             event_image.scaleType = ImageView.ScaleType.FIT_XY
-            event_image.setImageURI(imageUri)
-        })
+            event_image.loadImage(imageUri)
+        }
 
         event_save_button.setOnClickListener { save() }
 
@@ -201,17 +201,17 @@ class CreateEventFragment : Fragment(){
         }
 
         event_university.setOnClickListener {
-            selector(getString(R.string.select_university), universities, { _, i ->
+            selector(getString(R.string.select_university), universities) { _, i ->
                 viewModel.event.university = universities[i]
                 event_university.updateTextSelector(viewModel.event.university, android.R.color.black)
-            })
+            }
         }
 
         event_type.setOnClickListener {
-            selector(getString(R.string.select_type), types, { _, i ->
+            selector(getString(R.string.select_type), types) { _, i ->
                 event_type.updateTextSelector(types[i], android.R.color.black)
                 viewModel.event.eventType = types[i]
-            })
+            }
         }
     }
 
@@ -347,7 +347,7 @@ class CreateEventFragment : Fragment(){
         event_description.setText(event.description)
 
         if(event.eventType.isNotBlank()) {
-            event_type.text = event.eventType
+            event_type.updateTextSelector(event.eventType, android.R.color.black)
         }
 
         val place = viewModel.place
@@ -363,6 +363,15 @@ class CreateEventFragment : Fragment(){
                 event_image.loadImage(link)
                 event_image.scaleType = ImageView.ScaleType.FIT_XY
             }
+        }
+
+        updateAddress(event.placeId)
+
+        if(event.tickets.size == 1) {
+            event_tickets.updateTextSelector(getString(R.string.ticket_quantity_one), android.R.color.black)
+        } else if(event.tickets.size > 1) {
+            event_tickets.updateTextSelector(getString(R.string.ticket_quantity_with_params,
+                    viewModel.event.tickets.size), android.R.color.black)
         }
     }
 
@@ -429,6 +438,15 @@ class CreateEventFragment : Fragment(){
             return isValid
         }
         return isValid
+    }
+
+    fun updateAddress(placeId: String) {
+        viewModel.getPlace(placeId)?.observe(this, Observer {
+            it?.let {
+                event_address.updateTextSelector(getString(R.string.place_name_address, it.name,
+                        it.address), android.R.color.black)
+            }
+        })
     }
 
     private fun updateCreator(cr: Map<String, Any>) {

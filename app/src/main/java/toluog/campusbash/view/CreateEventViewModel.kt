@@ -45,6 +45,8 @@ class CreateEventViewModel(app: Application) : GeneralViewModel(app){
 
     fun getUser(uid: String) = repo.getUser(uid)
 
+    fun getPlace(id: String) = repo.getPlace(id)
+
     fun savePlace() {
         val p = place
         if(p != null) repo.savePlace(p)
