@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.MenuItem
 import org.jetbrains.anko.alert
@@ -105,8 +106,8 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
 
     private fun closeEventCreator() {
         val dialog = alert(getString(R.string.sure_you_want_to_leave)) {
-            yesButton { finish() }
-            noButton { it.dismiss() }
+            positiveButton(getString(R.string.yes)) { finish() }
+            negativeButton(getString(R.string.no)) { it.dismiss() }
         }
         dialog.show()
     }
