@@ -142,5 +142,8 @@
     <string name="number_available">$1d available</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="log_out">Log out</string>
+    <string name="edit_interests">Edit interests</string>
+    <string name="show_road">Let\'s get this show on the road. What sounds like fun?</string>
+    <string name="lets_get_lit">Let\'s get lit</string>
 
 </resources>

@@ -30,11 +30,13 @@ import kotlin.collections.ArrayList
 import android.support.design.widget.AppBarLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.content.ContextCompat
 import android.view.View.GONE
 import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
+import org.jetbrains.anko.backgroundColor
 import toluog.campusbash.adapters.BoughtTicketAdapter
 import toluog.campusbash.model.BoughtTicket
 
@@ -95,11 +97,11 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_profile -> {
-                title = getString(R.string.profile)
+                title = ""
                 fab.visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
-                setAppBarState(false)
+                setAppBarState(false, true)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -235,7 +237,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         main_uni_spinner.setSelection(uniPosition)
     }
 
-    private  fun setAppBarState(enabled: Boolean?) {
+    private  fun setAppBarState(enabled: Boolean?, isProfile: Boolean = false) {
         val params = fragment_frame.layoutParams as CoordinatorLayout.LayoutParams
         when {
             enabled == null -> {
@@ -246,13 +248,21 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             enabled -> {
                 appbar.setExpanded(true, true)
                 appbar.visibility = View.VISIBLE
+                toolbar.visibility = View.VISIBLE
                 params.behavior = AppBarLayout.ScrollingViewBehavior()
             }
             else -> {
                 appbar.setExpanded(false, true)
                 appbar.visibility = View.VISIBLE
+                toolbar.visibility = View.VISIBLE
                 params.behavior = AppBarLayout.ScrollingViewBehavior()
             }
+        }
+
+        if(isProfile) {
+            toolbar.backgroundColor = ContextCompat.getColor(this, R.color.background_material_light)
+        } else {
+            toolbar.backgroundColor = ContextCompat.getColor(this, R.color.colorPrimary)
         }
         fragment_frame.requestLayout()
         toolbar.title = title
