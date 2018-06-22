@@ -66,8 +66,8 @@ class EventDashboardDatasource() {
         liveMetaDatas.postValue(metadatas)
     }
 
-    fun getTickets() = tickets
+    fun getTickets() = liveTickets
 
-    fun getMetadatas() = metadatas
+    fun getMetadatas() = liveMetaDatas
 
 }

@@ -10,6 +10,7 @@ import toluog.campusbash.data.network.ServerResponse
 import toluog.campusbash.data.network.StripeAccountBody
 import toluog.campusbash.data.network.StripeServerClient
 import toluog.campusbash.model.*
+import toluog.campusbash.model.dashboard.UserTicket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
@@ -21,11 +22,13 @@ class Repository(val context: Context, mFirebaseFirestore: FirebaseFirestore){
     private val TAG = Repository::class.java.simpleName
     private val ticketsDataSource = TicketsDataSource()
     private val eventDataSource = EventDataSource()
+    private val eventDashboardSource = EventDashboardDatasource()
     private val db: AppDatabase? = AppDatabase.getDbInstance(context)
     private val mFireStore = FirebaseFirestore.getInstance()
     private lateinit var stripeApi: StripeServerClient
     private var initializedEvents = false
     private var initializedTickets = false
+    private var initializedDashboard = false
     private var initializedUnis = false
     private var initializedStripeApi = false
 
@@ -112,6 +115,20 @@ class Repository(val context: Context, mFirebaseFirestore: FirebaseFirestore){
 
     fun deleteOldEvents() {
         db?.eventDao()?.deleteEvents(System.currentTimeMillis())
+    }
+
+    fun getUserWithTickets(eventId: String): LiveData<List<UserTicket>> {
+        if(!initializedDashboard) {
+            eventDashboardSource.initListener(FirebaseFirestore.getInstance(), eventId)
+        }
+        return eventDashboardSource.getTickets()
+    }
+
+    fun getTicketMetaDatas(eventId: String): LiveData<Map<String, TicketMetaData>> {
+        if(!initializedDashboard) {
+            eventDashboardSource.initListener(FirebaseFirestore.getInstance(), eventId)
+        }
+        return eventDashboardSource.getMetadatas()
     }
 
 }
