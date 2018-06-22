@@ -66,7 +66,7 @@ class CardPaymentActivity : AppCompatActivity() {
         pleaseWait = indeterminateProgressDialog(R.string.please_wait)
         pleaseWait.dismiss()
         googlePayAlert = alert(getString(R.string.use_google_pay)) {
-            yesButton {
+            positiveButton(getString(R.string.yes)) {
                 Log.d(TAG, "Yes clicked for Google Pay")
                 val request = createPaymentDataRequest()
                 if (request != null) {
@@ -74,7 +74,7 @@ class CardPaymentActivity : AppCompatActivity() {
                             this@CardPaymentActivity, LOAD_PAYMENT_DATA_REQUEST_CODE)
                 }
             }
-            noButton {
+            negativeButton(getString(R.string.no)) {
                 Log.d(TAG, "User returned no for google pay request")
             }
         }

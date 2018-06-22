@@ -240,10 +240,10 @@ class CreateTicketFragment: Fragment(){
 
     private fun setupStripe() {
         val dialog = alert(R.string.set_up_stripe) {
-            yesButton {
+            positiveButton(getString(R.string.yes)) {
                 startActivity(intentFor<StripeSetupActivity>())
             }
-            noButton {
+            negativeButton(getString(R.string.no)) {
                 it.dismiss()
             }
         }

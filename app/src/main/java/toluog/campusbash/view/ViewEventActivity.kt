@@ -114,18 +114,18 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         event_time.text = Util.getPeriod(event.startTime, event.endTime)
 
         when {
-            event.tickets.size == 1 -> {
+            event.tickets.size == 1 && event.tickets[0].isVisible -> {
                 val ticket = event.tickets[0]
                 if(ticket.type == AppContract.TYPE_FREE) {
                     ticket_text.text = this.getString(R.string.free_event)
                 } else {
-                    ticket_text.text = getString(R.string.one_ticket_price, ticket.price)
+                    ticket_text.text = getString(R.string.price, event.tickets[0].currency, event.tickets[0].price)
                 }
             }
             else -> {
                 var min = event.tickets[0].price
                 var max = event.tickets[0].price
-                var currency = ""
+                var currency = event.tickets[0].currency
                 event.tickets.forEach {
                     if(it.price < min && it.isVisible) {
                         min = it.price
@@ -135,13 +135,13 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                         currency = it.currency
                     }
                 }
-                if(event.tickets.any { it.price == 0.0 && it.isVisible }) {
-                    ticket_text.text = getString(R.string.free_to_x, "$currency$max")
-                } else {
-                    ticket_text.text = getString(R.string.x_to_y, "$currency$min", 
-                            "$currency$max")
-                }
+                Log.d(TAG, "$currency $max")
 
+                if(min < max) {
+                    ticket_text.text = getString(R.string.minPrice_to_maxPrice, currency, min, currency, max)
+                } else {
+                    ticket_text.text = getString(R.string.price, currency, max)
+                }
             }
         }
 

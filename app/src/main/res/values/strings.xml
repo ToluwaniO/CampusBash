@@ -107,8 +107,10 @@
     <string name="welcome_to_cbash">Welcome to CampusBash</string>
     <string name="x_items_selected">%1d items selected</string>
     <string name="hosted_by_x">hosted by %1s</string>
+    <string name="price">%1s%2.2f</string>
     <string name="one_ticket_price">%1.2f</string>
-    <string name="free_to_x">Free - %1s</string>
+    <string name="free_to_x">0 - %1s</string>
+    <string name="minPrice_to_maxPrice">%1s%2.2f - %3s%4.2f</string>
     <string name="x_to_y">%1s - %2s</string>
     <string name="price_currency_value">%1s%2.2f</string>
     <string name="ticket_quantity_one">1 ticket</string>
@@ -145,5 +147,7 @@
     <string name="edit_interests">Edit interests</string>
     <string name="show_road">Let\'s get this show on the road. What sounds like fun?</string>
     <string name="lets_get_lit">Let\'s get lit</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
 
 </resources>
