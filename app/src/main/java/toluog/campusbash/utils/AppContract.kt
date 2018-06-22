@@ -51,6 +51,7 @@ class AppContract{
         val FIREBASE_CURRENCIES = "currencies"
         val FIREBASE_USERS = "users"
         val FIREBASE_FCM_TOKEN = "fcmToken"
+        val FIREBASE_EVENT_TICKET = "tickets"
 
         //SHAREDPREFERENCES
         const val PREF_FIRST_OPEN_KEY = "first_open"
@@ -103,6 +104,7 @@ class AppContract{
         const val TYPE_FREE = "free"
         const val BUYER_ID = "buyerId"
         const val BUYER_EMAIL = "buyerEmail"
+        const val BUYER_NAME = "buyerName"
         const val STRIPE_CUSTOMER_ID = "stripeCustomerId"
         const val FCM_TOKEN = "fcmToken"
         const val TOKEN = "token"
