@@ -120,6 +120,7 @@ class Repository(val context: Context, mFirebaseFirestore: FirebaseFirestore){
     fun getUserWithTickets(eventId: String): LiveData<List<UserTicket>> {
         if(!initializedDashboard) {
             eventDashboardSource.initListener(FirebaseFirestore.getInstance(), eventId)
+            initializedDashboard = true
         }
         return eventDashboardSource.getTickets()
     }
@@ -127,6 +128,7 @@ class Repository(val context: Context, mFirebaseFirestore: FirebaseFirestore){
     fun getTicketMetaDatas(eventId: String): LiveData<Map<String, TicketMetaData>> {
         if(!initializedDashboard) {
             eventDashboardSource.initListener(FirebaseFirestore.getInstance(), eventId)
+            initializedDashboard = true
         }
         return eventDashboardSource.getMetadatas()
     }

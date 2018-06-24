@@ -55,7 +55,7 @@ class ViewBoughtTicketActivity : AppCompatActivity() {
         inner class ViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
             fun bind(ticketMetaData: TicketMetaData) {
                 qr_image.loadImage(ticketMetaData.qrUrl)
-                ticket_name.text = ticketMetaData.ticketName
+                bought_quantity.text = ticketMetaData.ticketName
             }
         }
 

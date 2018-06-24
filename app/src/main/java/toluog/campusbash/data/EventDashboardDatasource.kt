@@ -21,7 +21,7 @@ class EventDashboardDatasource() {
 
     fun initListener(mFirestore: FirebaseFirestore, eventId: String){
         val query = mFirestore.collection(AppContract.FIREBASE_EVENTS).document(eventId)
-                .collection(AppContract.FIREBASE_USER_TICKETS)
+                .collection(AppContract.FIREBASE_EVENT_TICKET)
         query.addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
             if (e != null) {
                 Log.d(TAG, "onEvent:error", e)
@@ -40,18 +40,22 @@ class EventDashboardDatasource() {
     }
 
     private fun processDocument(doc: QueryDocumentSnapshot, type: DocumentChange.Type) {
-        val codes = doc["ticketCodes"] as List<Any>?
+        Log.d(TAG, doc.toString())
+        val codes = doc["ticketCodes"] as List<HashMap<String, Any>>?
+        Log.d(TAG, "$codes")
         val userTicket = UserTicket()
         codes?.forEach {
-            val code = it as TicketMetaData
+            Log.d(TAG, it.toString())
+            val code = mapToTicketMetadata(it)
             if(type == DocumentChange.Type.ADDED || type == DocumentChange.Type.MODIFIED) {
-                metadatas.put(code.code, code)
+                metadatas[code.code] = code
             } else {
                 metadatas.remove(code.code)
             }
         }
+        Log.d(TAG, "$metadatas")
 
-        val quantities = doc[AppContract.TICKETS] as Map<String, Int>?
+        val quantities = doc[AppContract.TICKETS] as Map<String, Long>?
         quantities?.keys?.forEach {
             userTicket.quantities.add(TicketQuantity(it, quantities[it] ?: 0))
         }
@@ -59,11 +63,22 @@ class EventDashboardDatasource() {
         userTicket.apply {
             buyerEmail = doc[AppContract.BUYER_EMAIL] as String? ?: ""
             buyerName = doc[AppContract.BUYER_NAME] as String? ?: ""
+            quantity = doc[AppContract.QUANTITY] as Long? ?: 0
         }
         tickets.add(userTicket)
+        Log.d(TAG, "$tickets")
 
         liveTickets.postValue(tickets)
         liveMetaDatas.postValue(metadatas)
+    }
+
+    private fun mapToTicketMetadata(map: HashMap<String, Any>): TicketMetaData {
+        return TicketMetaData().apply {
+            code = map["code"] as String? ?: ""
+            qrUrl = map["qrUrl"] as String? ?: ""
+            isUsed = map["isUSed"] as Boolean? ?: false
+            ticketName = map["ticketName"] as String? ?: ""
+        }
     }
 
     fun getTickets() = liveTickets

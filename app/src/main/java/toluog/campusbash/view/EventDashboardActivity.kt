@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import toluog.campusbash.R
 import kotlinx.android.synthetic.main.activity_event_dashboard.*
 import kotlinx.android.synthetic.main.fragment_event_dashboard.view.*
+import toluog.campusbash.utils.AppContract
 
 class EventDashboardActivity : AppCompatActivity() {
 
@@ -29,17 +30,23 @@ class EventDashboardActivity : AppCompatActivity() {
      * androidx.fragment.app.FragmentStatePagerAdapter.
      */
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+    private val fragments = arrayListOf<Fragment>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_dashboard)
+
+        val eventId = intent.extras.getString(AppContract.EVENT_ID)
+        fragments.apply {
+            add(EventDashboardFragment())
+            add(TicketDashboardFragment.newInstance(eventId))
+        }
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
-
+        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager, fragments)
         // Set up the ViewPager with the sections adapter.
         container.adapter = mSectionsPagerAdapter
-
+        tabs.setupWithViewPager(container)
 
     }
 
@@ -68,12 +75,12 @@ class EventDashboardActivity : AppCompatActivity() {
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+    inner class SectionsPagerAdapter(fm: FragmentManager, fragments: ArrayList<Fragment>) : FragmentPagerAdapter(fm) {
 
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1)
+            return fragments[position]
         }
 
         override fun getCount(): Int {

@@ -183,12 +183,16 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         }
         pleaseWait.show()
         val customerId = user?.value?.get(AppContract.STRIPE_CUSTOMER_ID) as String?
+        val userName = user?.value?.get(AppContract.FIREBASE_USER_USERNAME) as String?
         if(tokenId != null) {
             overallMap[AppContract.TOKEN] = tokenId
             overallMap[AppContract.NEW_CARD] = newCard
         }
         if(customerId != null) {
             overallMap[AppContract.STRIPE_CUSTOMER_ID] = customerId
+        }
+        if(userName != null) {
+            overallMap[AppContract.BUYER_NAME] = userName
         }
 
         overallMap[AppContract.TIME_SPENT] = System.currentTimeMillis()

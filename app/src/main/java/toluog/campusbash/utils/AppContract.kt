@@ -31,6 +31,7 @@ class AppContract{
         val NEW_CARD = "newCard"
         val MORE_TEXT = "moreText"
         val BOUGHT_TICKET = "bought_ticket"
+        val EVENT_ID = "eventId"
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"

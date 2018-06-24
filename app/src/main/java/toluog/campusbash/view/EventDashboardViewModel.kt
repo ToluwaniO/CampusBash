@@ -1,4 +1,4 @@
-package toluog.campusbash
+package toluog.campusbash.view
 
 import android.app.Application
 import toluog.campusbash.view.GeneralViewModel
