@@ -2,6 +2,7 @@ package toluog.campusbash.adapters
 
 import android.arch.lifecycle.LiveData
 import android.content.Context
+import android.opengl.Visibility
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.util.ArrayMap
@@ -45,6 +46,8 @@ class EventAdapter(var events: ArrayList<Any>, var places: List<Place>, var cont
 
     interface OnItemClickListener {
         fun onItemClick(event: Event, view: View)
+        fun onDashboardClicked(eventId: String)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -147,6 +150,10 @@ class EventAdapter(var events: ArrayList<Any>, var places: List<Place>, var cont
                     deleteEvent(context, event.eventId)
                     true
                 }
+                scan.visibility = View.VISIBLE
+            }
+            scan.setOnClickListener {
+                listener.onDashboardClicked(event.eventId)
             }
         }
 

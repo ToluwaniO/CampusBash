@@ -116,7 +116,10 @@
         <activity android:name=".view.StripeSetupActivity" />
         <activity android:name=".view.SeeMoreActivity" />
         <activity android:name=".view.SetupProfileActivity" />
-        <activity android:name=".view.ViewBoughtTicketActivity"></activity>
+        <activity android:name=".view.ViewBoughtTicketActivity" />
+        <activity
+            android:name=".view.EventDashboardActivity"
+            android:label="@string/title_activity_event_dashboard"></activity>
     </application>
 
 </manifest>

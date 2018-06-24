@@ -22,7 +22,7 @@ class Event(@PrimaryKey var eventId: String = "", var eventName: String = "", va
                  @Embedded(prefix = "eventVideo_") var eventVideo: Media? = null, var university: String = "",
                  var startTime: Long = 0L, var endTime: Long = 0L, var timeZone: String = "",
                  var placeId: String = "", var tickets: ArrayList<Ticket> = ArrayList(),
-                 @Embedded var creator: Creator = AppContract.CREATOR,
+                 @Embedded var creator: Creator = AppContract.CREATOR, var ticketsSold: Int = 0,
                  @Exclude var address: String = ""): Parcelable {
 
     override fun equals(other: Any?): Boolean {
