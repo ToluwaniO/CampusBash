@@ -121,8 +121,9 @@
         <activity android:name=".view.ViewBoughtTicketActivity" />
         <activity
             android:name=".view.EventDashboardActivity"
-            android:label="@string/title_activity_event_dashboard" />
-        <activity android:name=".view.ScannerActivity"></activity>
+            android:label="@string/title_dashboard" />
+        <activity android:name=".view.ScannerActivity"
+            android:label="@string/scanner"/>
     </application>
 
 </manifest>

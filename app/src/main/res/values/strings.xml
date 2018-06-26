@@ -160,5 +160,6 @@
     <string name="ticket_valid">This ticket is valid!</string>
     <string name="ticket_invalid">This ticket is invalid</string>
     <string name="nothing_scanned_yet">Nothing scanned yet</string>
+    <string name="scanner">Scanner</string>
 
 </resources>
