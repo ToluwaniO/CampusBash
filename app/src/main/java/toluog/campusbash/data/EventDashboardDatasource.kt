@@ -1,6 +1,7 @@
 package toluog.campusbash.data
 
 import android.arch.lifecycle.MutableLiveData
+import android.support.v4.util.ArrayMap
 import android.util.Log
 import com.google.firebase.firestore.*
 import toluog.campusbash.model.TicketMetaData
@@ -13,7 +14,7 @@ class EventDashboardDatasource() {
     private val TAG = EventDashboardDatasource::class.java.simpleName
 
     private val tickets = arrayListOf<UserTicket>()
-    private val metadatas = HashMap<String, TicketMetaData>()
+    private val metadatas = ArrayMap<String, TicketMetaData>()
 
     private val liveTickets = MutableLiveData<List<UserTicket>>()
     private val liveMetaDatas = MutableLiveData<Map<String, TicketMetaData>>()
@@ -46,7 +47,7 @@ class EventDashboardDatasource() {
         val userTicket = UserTicket()
         codes?.forEach {
             Log.d(TAG, it.toString())
-            val code = mapToTicketMetadata(it)
+            val code = mapToTicketMetadata(it, doc.id)
             if(type == DocumentChange.Type.ADDED || type == DocumentChange.Type.MODIFIED) {
                 metadatas[code.code] = code
             } else {
@@ -72,12 +73,13 @@ class EventDashboardDatasource() {
         liveMetaDatas.postValue(metadatas)
     }
 
-    private fun mapToTicketMetadata(map: HashMap<String, Any>): TicketMetaData {
+    private fun mapToTicketMetadata(map: HashMap<String, Any>, id: String): TicketMetaData {
         return TicketMetaData().apply {
             code = map["code"] as String? ?: ""
             qrUrl = map["qrUrl"] as String? ?: ""
             isUsed = map["isUSed"] as Boolean? ?: false
             ticketName = map["ticketName"] as String? ?: ""
+            ticketPurchaseId = id
         }
     }
 

@@ -48,6 +48,13 @@ class FirebaseManager(){
         }
     }
 
+    fun updateTicketField(eventId: String, ticketId: String, key: String, value: Any): Task<Void>? {
+        return db?.collection(AppContract.FIREBASE_EVENTS)?.document(eventId)
+                ?.collection(AppContract.FIREBASE_EVENT_TICKET)
+                ?.document(ticketId)
+                ?.update(key, value)
+    }
+
     private fun updateFcmToken(context: Context, token: String) {
         Log.d(TAG, "Attempting to upload fcm token")
         val uid = FirebaseManager.getUser()?.uid

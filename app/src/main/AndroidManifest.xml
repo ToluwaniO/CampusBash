@@ -5,6 +5,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="false"
@@ -119,7 +121,8 @@
         <activity android:name=".view.ViewBoughtTicketActivity" />
         <activity
             android:name=".view.EventDashboardActivity"
-            android:label="@string/title_activity_event_dashboard"></activity>
+            android:label="@string/title_activity_event_dashboard" />
+        <activity android:name=".view.ScannerActivity"></activity>
     </application>
 
 </manifest>

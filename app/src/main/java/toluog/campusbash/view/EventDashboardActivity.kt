@@ -1,22 +1,23 @@
 package toluog.campusbash.view
 
-
-import android.app.Activity;
-
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AppCompatActivity
-import android.view.LayoutInflater
+import android.util.ArrayMap
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import com.google.zxing.Result
 
 import toluog.campusbash.R
 import kotlinx.android.synthetic.main.activity_event_dashboard.*
-import kotlinx.android.synthetic.main.fragment_event_dashboard.view.*
+import me.dm7.barcodescanner.zxing.ZXingScannerView
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.toast
+import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.utils.AppContract
 
 class EventDashboardActivity : AppCompatActivity() {
@@ -30,6 +31,7 @@ class EventDashboardActivity : AppCompatActivity() {
      * androidx.fragment.app.FragmentStatePagerAdapter.
      */
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+    private lateinit var viewmodel: EventDashboardViewModel
     private val fragments = arrayListOf<Fragment>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,13 +45,16 @@ class EventDashboardActivity : AppCompatActivity() {
         }
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager, fragments)
+        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         // Set up the ViewPager with the sections adapter.
         container.adapter = mSectionsPagerAdapter
         tabs.setupWithViewPager(container)
-
+        scan_button.setOnClickListener {
+            startActivity(intentFor<ScannerActivity>().apply {
+                putExtra(AppContract.EVENT_ID, eventId)
+            })
+        }
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -75,7 +80,7 @@ class EventDashboardActivity : AppCompatActivity() {
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    inner class SectionsPagerAdapter(fm: FragmentManager, fragments: ArrayList<Fragment>) : FragmentPagerAdapter(fm) {
+    inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
         override fun getItem(position: Int): Fragment {
             // getItem is called to instantiate the fragment for the given page.
@@ -94,39 +99,6 @@ class EventDashboardActivity : AppCompatActivity() {
                 1 -> return "TICKETS"
             }
             return null
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    class PlaceholderFragment : Fragment() {
-
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                                  savedInstanceState: Bundle?): View? {
-            val rootView = inflater.inflate(R.layout.fragment_event_dashboard, container, false)
-            rootView.section_label.text = getString(R.string.section_format, arguments?.getInt(ARG_SECTION_NUMBER))
-            return rootView
-        }
-
-        companion object {
-            /**
-             * The fragment argument representing the section number for this
-             * fragment.
-             */
-            private val ARG_SECTION_NUMBER = "section_number"
-
-            /**
-             * Returns a new instance of this fragment for the given section
-             * number.
-             */
-            fun newInstance(sectionNumber: Int): PlaceholderFragment {
-                val fragment = PlaceholderFragment()
-                val args = Bundle()
-                args.putInt(ARG_SECTION_NUMBER, sectionNumber)
-                fragment.arguments = args
-                return fragment
-            }
         }
     }
 }
