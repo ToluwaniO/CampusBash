@@ -161,5 +161,8 @@
     <string name="ticket_invalid">This ticket is invalid</string>
     <string name="nothing_scanned_yet">Nothing scanned yet</string>
     <string name="scanner">Scanner</string>
+    <string name="tickets_sold">Tickets sold</string>
+    <string name="ticket_sold_available">%1d / %2d</string>
+    <string name="sales">SALES</string>
 
 </resources>

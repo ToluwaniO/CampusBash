@@ -1,8 +1,6 @@
 package toluog.campusbash.adapters
 
-import android.arch.lifecycle.LiveData
 import android.content.Context
-import android.opengl.Visibility
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.util.ArrayMap
@@ -25,7 +23,6 @@ import toluog.campusbash.model.Event
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
-import java.util.HashSet
 
 /**
  * Created by oguns on 12/15/2017.
@@ -46,7 +43,6 @@ class EventAdapter(var events: ArrayList<Any>, var places: List<Place>, var cont
 
     interface OnItemClickListener {
         fun onItemClick(event: Event, view: View)
-        fun onDashboardClicked(eventId: String)
 
     }
 
@@ -150,10 +146,6 @@ class EventAdapter(var events: ArrayList<Any>, var places: List<Place>, var cont
                     deleteEvent(context, event.eventId)
                     true
                 }
-                scan.visibility = View.VISIBLE
-            }
-            scan.setOnClickListener {
-                listener.onDashboardClicked(event.eventId)
             }
         }
 
