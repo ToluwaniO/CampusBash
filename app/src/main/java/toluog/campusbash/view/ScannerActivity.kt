@@ -37,6 +37,7 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         viewModel = ViewModelProviders.of(this).get(EventDashboardViewModel::class.java)
 
         viewModel.getTicketMetadatas(eventId).observe(this, Observer {
+            Log.d(TAG, "Data changed\n$it")
             if(it != null) {
                 ticketMap.clear()
                 ticketMap.putAll(it)
@@ -73,16 +74,23 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun handleResult(result: Result?) {
         val ticketCode = result?.text ?: ""
         if(ticketMap.containsKey(ticketCode) && ticketMap[ticketCode]?.isUsed == false) {
-            updateTicketStatusView(TicketState.VALID)
             ticketMap[ticketCode]?.isUsed = true
+            updateTicketStatusView(TicketState.VALID)
             updateTicket(ticketCode)
         } else if(ticketMap.containsKey(ticketCode) && ticketMap[ticketCode]?.isUsed == true) {
             updateTicketStatusView(TicketState.USED)
         } else {
             updateTicketStatusView(TicketState.INVALID)
         }
-        scanner_view.resumeCameraPreview(this)
+        doAsync {
+            Thread.sleep(500)
+            uiThread {
+                resumePreview()
+            }
+        }
     }
+
+    private fun resumePreview() = scanner_view.resumeCameraPreview(this)
 
     private fun resetCamera(start: Boolean = true) {
         doAsync {
@@ -119,12 +127,8 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         Log.d(TAG, "updating ticket")
         val ticketMetaData = ticketMap[code] ?: TicketMetaData()
         doAsync {
-            val newList = arrayListOf<Any>()
-            ticketMap.values.filter {
-                it.ticketPurchaseId == ticketMetaData.ticketPurchaseId
-            }.flatMapTo(newList) { listOf(it.toMap()) }
             val result = viewModel.updateTicket(fbManager, eventId, ticketMetaData.ticketPurchaseId,
-                    "ticketCodes", newList)
+                    "ticketCodes", true, code)
             Log.d(TAG, "sent request")
             result?.addOnSuccessListener {
                 Log.d(TAG, "Field update successful")

@@ -48,11 +48,22 @@ class FirebaseManager(){
         }
     }
 
-    fun updateTicketField(eventId: String, ticketId: String, key: String, value: Any): Task<Void>? {
-        return db?.collection(AppContract.FIREBASE_EVENTS)?.document(eventId)
+    fun updateTicketField(eventId: String, ticketId: String, key: String, value: Any, code: String): Task<Task<Void>>? {
+        val ref = db?.collection(AppContract.FIREBASE_EVENTS)?.document(eventId)
                 ?.collection(AppContract.FIREBASE_EVENT_TICKET)
                 ?.document(ticketId)
-                ?.update(key, value)
+        return db?.runTransaction {
+            ref?.let {ref ->
+                val snapshot =  it.get(ref)
+                val ticketCodes = snapshot.data[key] as List<HashMap<String, Any>>?
+                ticketCodes?.forEach {
+                    if(it["code"] as String? == code) {
+                        it["isUsed"] = value
+                    }
+                }
+                ref.update(key, ticketCodes)
+            }
+        }
     }
 
     private fun updateFcmToken(context: Context, token: String) {

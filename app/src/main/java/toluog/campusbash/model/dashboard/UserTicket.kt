@@ -2,11 +2,13 @@ package toluog.campusbash.model.dashboard
 
 import android.os.Parcelable
 import com.bignerdranch.expandablerecyclerview.model.Parent
+import com.google.firebase.firestore.Exclude
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class UserTicket(var buyerName: String = "", var buyerEmail: String = "", var quantity: Long = 0,
-                      var quantities: ArrayList<TicketQuantity> = arrayListOf()): Parcelable,
+                      var quantities: ArrayList<TicketQuantity> = arrayListOf(),
+                      @Exclude var ticketPurchaseId: String = "", @Exclude var totalPrice: Double = 0.0): Parcelable,
         Parent<TicketQuantity> {
     override fun getChildList() = quantities
 

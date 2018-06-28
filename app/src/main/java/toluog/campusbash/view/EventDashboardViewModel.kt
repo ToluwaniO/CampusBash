@@ -12,7 +12,7 @@ class EventDashboardViewModel(app: Application): GeneralViewModel(app) {
     fun getTicketMetadatas(eventId: String) = repo.getTicketMetaDatas(eventId)
 
     fun updateTicket(fbManager: FirebaseManager, eventId: String, ticketId: String, key: String,
-                     value: Any): Task<Void>? {
-        return fbManager.updateTicketField(eventId, ticketId, key, value)
+                     value: Any, code: String): Task<Task<Void>>? {
+        return fbManager.updateTicketField(eventId, ticketId, key, value, code)
     }
 }

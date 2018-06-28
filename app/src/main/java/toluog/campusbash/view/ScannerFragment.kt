@@ -119,12 +119,8 @@ class ScannerFragment : Fragment(), ZXingScannerView.ResultHandler {
         Log.d(TAG, "updating ticket")
         val ticketMetaData = ticketMap[code] ?: TicketMetaData()
         doAsync {
-            val newList = arrayListOf<Any>()
-            ticketMap.values.filter {
-                it.ticketPurchaseId == ticketMetaData.ticketPurchaseId
-            }.flatMapTo(newList) { listOf(it.toMap()) }
             val result = viewModel.updateTicket(fbManager, eventId, ticketMetaData.ticketPurchaseId,
-                    "ticketCodes", newList)
+                    "ticketCodes", true, code)
             Log.d(TAG, "sent request")
             result?.addOnSuccessListener {
                 Log.d(TAG, "Field update successful")
