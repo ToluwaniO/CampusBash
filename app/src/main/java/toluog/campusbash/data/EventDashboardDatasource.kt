@@ -1,8 +1,10 @@
 package toluog.campusbash.data
 
 import android.arch.lifecycle.MutableLiveData
+import android.support.v4.util.ArrayMap
 import android.util.Log
 import com.google.firebase.firestore.*
+import org.jetbrains.anko.collections.forEachByIndex
 import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.model.dashboard.TicketQuantity
 import toluog.campusbash.model.dashboard.UserTicket
@@ -13,7 +15,7 @@ class EventDashboardDatasource() {
     private val TAG = EventDashboardDatasource::class.java.simpleName
 
     private val tickets = arrayListOf<UserTicket>()
-    private val metadatas = HashMap<String, TicketMetaData>()
+    private val metadatas = ArrayMap<String, TicketMetaData>()
 
     private val liveTickets = MutableLiveData<List<UserTicket>>()
     private val liveMetaDatas = MutableLiveData<Map<String, TicketMetaData>>()
@@ -41,12 +43,13 @@ class EventDashboardDatasource() {
 
     private fun processDocument(doc: QueryDocumentSnapshot, type: DocumentChange.Type) {
         Log.d(TAG, doc.toString())
-        val codes = doc["ticketCodes"] as List<HashMap<String, Any>>?
+        val codes = doc[TICKET_CODES] as List<HashMap<String, Any>>?
+        val total = (doc.data[BREAKDOWN] as HashMap<String, Long?>)[TOTAL]
         Log.d(TAG, "$codes")
         val userTicket = UserTicket()
         codes?.forEach {
             Log.d(TAG, it.toString())
-            val code = mapToTicketMetadata(it)
+            val code = mapToTicketMetadata(it, doc.id)
             if(type == DocumentChange.Type.ADDED || type == DocumentChange.Type.MODIFIED) {
                 metadatas[code.code] = code
             } else {
@@ -64,25 +67,54 @@ class EventDashboardDatasource() {
             buyerEmail = doc[AppContract.BUYER_EMAIL] as String? ?: ""
             buyerName = doc[AppContract.BUYER_NAME] as String? ?: ""
             quantity = doc[AppContract.QUANTITY] as Long? ?: 0
+            ticketPurchaseId = doc.id
+            totalPrice = total?.toDouble() ?: 0.0
         }
-        tickets.add(userTicket)
+        if(type == DocumentChange.Type.ADDED) {
+            tickets.add(userTicket)
+        } else if (type == DocumentChange.Type.MODIFIED) {
+            var index = -1
+            for (i in 0 until tickets.size) {
+                val u = tickets[i]
+                if(u.ticketPurchaseId == doc.id) {
+                    index = i
+                    break
+                }
+            }
+            if(index != -1) {
+                tickets[index] = userTicket
+            }
+        } else {
+            tickets.remove(userTicket)
+        }
         Log.d(TAG, "$tickets")
 
         liveTickets.postValue(tickets)
         liveMetaDatas.postValue(metadatas)
     }
 
-    private fun mapToTicketMetadata(map: HashMap<String, Any>): TicketMetaData {
+    private fun mapToTicketMetadata(map: HashMap<String, Any>, id: String): TicketMetaData {
         return TicketMetaData().apply {
-            code = map["code"] as String? ?: ""
-            qrUrl = map["qrUrl"] as String? ?: ""
-            isUsed = map["isUSed"] as Boolean? ?: false
-            ticketName = map["ticketName"] as String? ?: ""
+            code = map[CODE] as String? ?: ""
+            qrUrl = map[QR_URL] as String? ?: ""
+            isUsed = map[IS_USED] as Boolean? ?: false
+            ticketName = map[TICKET_NAME] as String? ?: ""
+            ticketPurchaseId = id
         }
     }
 
     fun getTickets() = liveTickets
 
     fun getMetadatas() = liveMetaDatas
+
+    companion object {
+        const val CODE = "code"
+        const val QR_URL = "qrUrl"
+        const val IS_USED = "isUsed"
+        const val TICKET_NAME = "ticketName"
+        const val TICKET_CODES = "ticketCodes"
+        const val TOTAL = "totalFee"
+        const val BREAKDOWN = "breakdown"
+    }
 
 }

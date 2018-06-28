@@ -65,11 +65,11 @@ class TicketDashboardFragment : Fragment() {
         viewModel = ViewModelProviders.of(activity!!).get(EventDashboardViewModel::class.java)
         viewModel.getUsersWithTickets(eventId ?: "").observe(this, Observer {
             Log.d(TAG, "Tickets = $it")
+            userTickets.clear()
             it?.let {
-                userTickets.clear()
                 userTickets.addAll(it)
-                adapter.notifyParentDataSetChanged(true)
             }
+            adapter.notifyParentDataSetChanged(true)
         })
     }
 
