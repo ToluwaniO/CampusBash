@@ -40,7 +40,7 @@ class EventDashboardActivity : AppCompatActivity() {
 
         val eventId = intent.extras.getString(AppContract.EVENT_ID)
         fragments.apply {
-            add(EventDashboardFragment())
+            add(EventDashboardFragment.newInstance(eventId))
             add(TicketDashboardFragment.newInstance(eventId))
         }
         // Create the adapter that will return a fragment for each of the three

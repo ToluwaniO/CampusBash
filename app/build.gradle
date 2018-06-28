@@ -108,6 +108,7 @@ dependencies {
     implementation 'com.github.igalata:Bubble-Picker:v0.2.4'
     implementation 'com.bignerdranch.android:expandablerecyclerview:3.0.0-RC1'
     implementation 'me.dm7.barcodescanner:zxing:1.8.4'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
 
     testImplementation 'junit:junit:4.12'

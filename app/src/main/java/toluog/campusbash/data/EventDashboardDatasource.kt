@@ -44,7 +44,7 @@ class EventDashboardDatasource() {
     private fun processDocument(doc: QueryDocumentSnapshot, type: DocumentChange.Type) {
         Log.d(TAG, doc.toString())
         val codes = doc[TICKET_CODES] as List<HashMap<String, Any>>?
-        val total = (doc.data[BREAKDOWN] as HashMap<String, Long?>)[TOTAL]
+        val total = (doc.data[BREAKDOWN] as HashMap<String, Any?>)[TOTAL]
         Log.d(TAG, "$codes")
         val userTicket = UserTicket()
         codes?.forEach {
@@ -68,7 +68,7 @@ class EventDashboardDatasource() {
             buyerName = doc[AppContract.BUYER_NAME] as String? ?: ""
             quantity = doc[AppContract.QUANTITY] as Long? ?: 0
             ticketPurchaseId = doc.id
-            totalPrice = total?.toDouble() ?: 0.0
+            totalPrice = total?.toString()?.toDouble() ?: 0.0
         }
         if(type == DocumentChange.Type.ADDED) {
             tickets.add(userTicket)
@@ -113,7 +113,7 @@ class EventDashboardDatasource() {
         const val IS_USED = "isUsed"
         const val TICKET_NAME = "ticketName"
         const val TICKET_CODES = "ticketCodes"
-        const val TOTAL = "totalFee"
+        const val TOTAL = "ticketFee"
         const val BREAKDOWN = "breakdown"
     }
 
