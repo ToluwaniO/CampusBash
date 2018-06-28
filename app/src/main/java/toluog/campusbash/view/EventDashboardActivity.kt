@@ -37,6 +37,7 @@ class EventDashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_dashboard)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val eventId = intent.extras.getString(AppContract.EVENT_ID)
         fragments.apply {
@@ -56,19 +57,14 @@ class EventDashboardActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_event_dashboard, menu)
-        return true
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
 
-        if (id == R.id.action_settings) {
+        if (id == android.R.id.home) {
+            onBackPressed()
             return true
         }
 
@@ -89,14 +85,14 @@ class EventDashboardActivity : AppCompatActivity() {
         }
 
         override fun getCount(): Int {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2
         }
 
         override fun getPageTitle(position: Int): CharSequence? {
             when (position) {
-                0 -> return "DASHBOARD"
-                1 -> return "TICKETS"
+                0 -> return getString(R.string.sales)
+                1 -> return getString(R.string.tickets)
             }
             return null
         }

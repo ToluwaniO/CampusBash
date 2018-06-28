@@ -31,17 +31,6 @@
                 android:layout_margin="5dp"
                 app:srcCompat="@drawable/adult_emoji" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/scan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|right"
-                android:layout_margin="@dimen/mtrl_bottomappbar_fab_cradle_rounded_corner_radius"
-                android:clickable="true"
-                android:visibility="gone"
-                app:fabSize="mini"
-                app:srcCompat="@drawable/ic_photo_camera_white_24dp" />
-
         </FrameLayout>
 
         <LinearLayout

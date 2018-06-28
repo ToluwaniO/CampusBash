@@ -210,12 +210,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         (view as TextView?)?.setTextColor(Color.WHITE)
     }
 
-    override fun onDashboardClicked(eventId: String) {
-        startActivity(intentFor<EventDashboardActivity>().apply {
-            putExtra(AppContract.EVENT_ID, eventId)
-        })
-    }
-
     private fun firstOpen(){
         val fOpen = Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)
         Log.d(TAG, "FOPEN KEY: ${Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)}")
