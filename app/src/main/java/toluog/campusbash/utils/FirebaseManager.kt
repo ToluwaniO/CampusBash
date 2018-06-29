@@ -110,7 +110,7 @@ class FirebaseManager(){
         return null
     }
 
-    fun updateProfileField(key: String, value: String, user: FirebaseUser) {
+    fun updateProfileField(key: String, value: Any, user: FirebaseUser) {
         db?.collection(AppContract.FIREBASE_USERS)?.document(user.uid)?.update(key, value)
     }
 
