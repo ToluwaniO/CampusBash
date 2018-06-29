@@ -42,6 +42,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_event)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportPostponeEnterTransition()
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -107,13 +108,13 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun updateUi(event: Event){
         if(event.placeholderImage == null || TextUtils.isEmpty(event.placeholderImage?.url)){
-            Glide.with(this).load(R.drawable.default_event_background).into(event_image)
+            event_image.lazyLoadImage(this@ViewEventActivity, R.drawable.default_event_background)
         } else{
-            event_image.loadImage(event.placeholderImage?.url)
+            event_image.lazyLoadImage(this@ViewEventActivity, event.placeholderImage?.url)
         }
         event_title.text = event.eventName
         event_description.text = event.description
-        host_image.loadImage(event.creator.imageUrl)
+        host_image.lazyLoadImage(this@ViewEventActivity, event.creator.imageUrl)
         event_creator.text = getString(R.string.hosted_by_x, event.creator.name)
         event_time.text = Util.getPeriod(event.startTime, event.endTime)
 

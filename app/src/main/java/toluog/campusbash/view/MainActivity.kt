@@ -186,15 +186,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         Analytics.logEventSelected(event)
         val bundle = Bundle()
         bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val transitionName = getString(R.string.event_card_transition)
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, view, transitionName)
-
-            ActivityCompat.startActivity(this, intentFor<ViewEventActivity>().putExtras(bundle),
-                    options.toBundle())
-        } else {
             startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
-        }
     }
 
     override fun onTicketClicked(ticket: BoughtTicket) {
