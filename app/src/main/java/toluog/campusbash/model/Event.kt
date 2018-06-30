@@ -7,6 +7,7 @@ import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import android.os.Parcel
 import android.os.Parcelable
+import android.support.annotation.Keep
 import com.google.firebase.firestore.Exclude
 import kotlinx.android.parcel.Parcelize
 import toluog.campusbash.utils.AppContract
@@ -14,6 +15,7 @@ import toluog.campusbash.utils.AppContract
 /**
  * Created by oguns on 12/2/2017.
  */
+@Keep
 @SuppressLint("ParcelCreator")
 @Entity(tableName = AppContract.EVENT_TABLE)
 @Parcelize
