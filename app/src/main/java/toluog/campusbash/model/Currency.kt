@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import android.os.Parcelable
+import android.support.annotation.Keep
 import kotlinx.android.parcel.Parcelize
 import toluog.campusbash.utils.AppContract
 
 /**
  * Created by oguns on 3/2/2018.
  */
+@Keep
 @SuppressLint("ParcelCreator")
 @Entity(tableName = AppContract.CURRENCY_TABLE)
 @Parcelize
