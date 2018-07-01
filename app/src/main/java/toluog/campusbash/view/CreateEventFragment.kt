@@ -289,11 +289,6 @@ class CreateEventFragment : Fragment(){
             Log.d(TAG, "Invalid event")
             return
         }
-
-        if (event.tickets.size == 0) {
-            toast(R.string.must_add_1_ticket)
-            return
-        }
         val dialog = indeterminateProgressDialog(message = "", title = getString(R.string.uploading_event))
         dialog.show()
         if (uri != null) {
@@ -440,7 +435,7 @@ class CreateEventFragment : Fragment(){
         return isValid
     }
 
-    fun updateAddress(placeId: String) {
+    private fun updateAddress(placeId: String) {
         viewModel.getPlace(placeId)?.observe(this, Observer {
             it?.let {
                 event_address.updateTextSelector(getString(R.string.place_name_address, it.name,
