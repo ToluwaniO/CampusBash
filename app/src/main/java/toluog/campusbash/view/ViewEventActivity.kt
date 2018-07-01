@@ -118,7 +118,16 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         event_creator.text = getString(R.string.hosted_by_x, event.creator.name)
         event_time.text = Util.getPeriod(event.startTime, event.endTime)
 
+        if(event.tickets.isNotEmpty()) {
+            get_ticket_layout.visibility = View.VISIBLE
+        } else {
+            get_ticket_layout.visibility = View.GONE
+        }
+
         when {
+            event.tickets.isEmpty() -> {
+                ticket_text.text = this.getString(R.string.free_event)
+            }
             event.tickets.size == 1 && event.tickets[0].isVisible -> {
                 val ticket = event.tickets[0]
                 if(ticket.type == AppContract.TYPE_FREE) {
