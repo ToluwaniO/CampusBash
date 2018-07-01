@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.firebase.firebase-perf'
+//apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
 
 android {
@@ -54,7 +54,7 @@ dependencies {
     //Firebase
     implementation "com.google.firebase:firebase-auth:$fbase_version"
     implementation "com.google.firebase:firebase-firestore:$fbase_version"
-    implementation "com.google.firebase:firebase-perf:$fbase_version"
+    //implementation "com.google.firebase:firebase-perf:$fbase_version"
     implementation "com.google.firebase:firebase-storage:$fbase_version"
     implementation "com.google.firebase:firebase-ads:$fbase_version"
     implementation "com.google.firebase:firebase-config:$fbase_version"
