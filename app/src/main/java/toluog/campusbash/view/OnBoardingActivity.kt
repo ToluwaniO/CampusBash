@@ -37,6 +37,7 @@ class OnBoardingActivity : AppIntro2() {
         super.onSkipPressed(currentFragment)
         val intent = Intent(this@OnBoardingActivity, FirstOpenActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     override fun onDonePressed(currentFragment: Fragment?) {
@@ -44,6 +45,7 @@ class OnBoardingActivity : AppIntro2() {
         val intent = Intent(this@OnBoardingActivity, FirstOpenActivity::class.java)
         startActivity(intent)
         Analytics.logOnBoardFinished()
+        finish()
     }
 
 
