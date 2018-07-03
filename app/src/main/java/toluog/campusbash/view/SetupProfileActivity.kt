@@ -57,7 +57,7 @@ class SetupProfileActivity : AppCompatActivity() {
                 val name = it[AppContract.FIREBASE_USER_USERNAME] as String?
                 val summary = it[AppContract.FIREBASE_USER_SUMMARY] as String?
 
-                profileImage.loadImage(profile)
+                profile?.let { profileImage.loadImage(it) }
                 userNameView.setText(name ?: user.displayName)
                 summaryView.setText(summary)
             }
