@@ -54,7 +54,8 @@ class ProfileFragment(): Fragment() {
 
         profileInfo?.observe(this, Observer {
             it?.let {
-                profile_image.loadImage(it[AppContract.FIREBASE_USER_PHOTO_URL] as String?)
+                val profileImageUrl = it[AppContract.FIREBASE_USER_PHOTO_URL] as String?
+                profileImageUrl?.let { profile_image.loadImage(it) }
                 profile_summary.text = it[AppContract.FIREBASE_USER_SUMMARY] as String?
             }
         })
