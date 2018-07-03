@@ -18,6 +18,7 @@
             android:layout_height="120dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/com_facebook_auth_dialog_corner_radius"
+            android:src="@drawable/adult_emoji"
             tools:layout_editor_absoluteX="144dp"
             tools:layout_editor_absoluteY="26dp" />
 
