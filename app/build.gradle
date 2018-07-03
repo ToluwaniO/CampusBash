@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.firebase.firebase-perf'
+//apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
 
 android {
@@ -12,10 +12,9 @@ android {
         applicationId "toluog.campusbash"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 2
-        versionName "1.1"
+        versionCode 4
+        versionName "1.4"
         multiDexEnabled true
-        minify
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -55,7 +54,7 @@ dependencies {
     //Firebase
     implementation "com.google.firebase:firebase-auth:$fbase_version"
     implementation "com.google.firebase:firebase-firestore:$fbase_version"
-    implementation "com.google.firebase:firebase-perf:$fbase_version"
+    //implementation "com.google.firebase:firebase-perf:$fbase_version"
     implementation "com.google.firebase:firebase-storage:$fbase_version"
     implementation "com.google.firebase:firebase-ads:$fbase_version"
     implementation "com.google.firebase:firebase-config:$fbase_version"
