@@ -23,6 +23,22 @@
           }
         },
         {
+          "client_id": "590244169623-saftk0lfbiu9ffa9jgtugd9q09u60ft2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "toluog.campusbash",
+            "certificate_hash": "15fd5b668a60a6a9f6c5a7b80914a501f7ec8889"
+          }
+        },
+        {
+          "client_id": "590244169623-pp06i0ig88mto2157rdgmdkgrrusk0lm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "toluog.campusbash",
+            "certificate_hash": "9a9bb054b2370401fea0acefe313bfeae786a664"
+          }
+        },
+        {
           "client_id": "590244169623-car22ksfmtd9aiffqvid88b8oes0ncda.apps.googleusercontent.com",
           "client_type": 3
         }

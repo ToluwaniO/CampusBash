@@ -163,8 +163,9 @@ class Util{
         fun startSignInActivity(activity: Activity){
             Log.d(TAG, "startSignInActivity called")
             val providers = Arrays.asList(
-                    AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                    AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())
+                    AuthUI.IdpConfig.EmailBuilder().build(),
+                    AuthUI.IdpConfig.FacebookBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build())
             activity.startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
                     .setIsSmartLockEnabled(false)
                     .setAvailableProviders(providers).build(), RC_SIGN_IN)
