@@ -26,11 +26,10 @@ class EventDataSource()  {
         private val TAG = EventDataSource::class.java.simpleName
         private var alarmSet = 0
 
-        fun initListener(mFirestore: FirebaseFirestore, context: Context){
+        fun initListener(mFirestore: FirebaseFirestore, context: Context, university: String = ""){
             Log.d(TAG, "initListener")
             alarmSet = Util.getPrefInt(context, AppContract.PREF_FIRST_PLACE_ALARM)
             db = AppDatabase.getDbInstance(context)
-            val university = Util.getPrefString(context, AppContract.PREF_UNIVERSITY_KEY)
             val query = mFirestore.collection(AppContract.FIREBASE_EVENTS)
             activateGeneralEventListener(context, query, university)
             activateMyEventListener(context, query)

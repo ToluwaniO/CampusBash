@@ -31,6 +31,7 @@ class EventsFragment() : Fragment(){
 
     private lateinit var rootView: View
     private var myEvents = false
+    private var university: String = ""
     private val TAG = EventsFragment::class.java.simpleName
     private lateinit var viewModel: EventsViewModel
     private val configProvider = ConfigProvider(FirebaseRemoteConfig.getInstance())
@@ -40,15 +41,18 @@ class EventsFragment() : Fragment(){
     private var eventSize = 0
     private  var places: LiveData<List<Place>>? = null
 
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.events_layout, container, false)
 
-        val bundle = this.arguments
-        if(bundle != null){
-            myEvents = bundle.getBoolean(AppContract.MY_EVENT_BUNDLE)
+        arguments?.let {
+            myEvents = it.getBoolean(MY_EVENTS_PARAM)
+            university = it.getString(UNIVERSITY_PARAM)
         }
+
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
-        viewModel.getEvents(myEvents)?.observe(this, Observer { eventsList ->
+        viewModel.getEvents(university, myEvents)?.observe(this, Observer { eventsList ->
             val user = FirebaseManager.getUser()
             events.clear()
             if(eventsList != null) {
@@ -125,5 +129,16 @@ class EventsFragment() : Fragment(){
                 .forEach {
                     events.remove(it)
                 }
+    }
+
+    companion object {
+        private val UNIVERSITY_PARAM = "university"
+        private val MY_EVENTS_PARAM = "myEvents"
+        fun newInstance(university: String, myEvents: Boolean = false) = EventsFragment().apply {
+            arguments = Bundle().apply {
+                putString(UNIVERSITY_PARAM, university)
+                putBoolean(MY_EVENTS_PARAM, myEvents)
+            }
+        }
     }
 }

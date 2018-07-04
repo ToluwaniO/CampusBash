@@ -34,14 +34,14 @@ class Repository(val context: Context, mFirebaseFirestore: FirebaseFirestore){
     private var initializedStripeApi = false
 
 
-    fun getEvents() : LiveData<List<Event>>?{
+    fun getEvents(university: String) : LiveData<List<Event>>?{
         Log.d(TAG, "getEvents called")
         if(!initializedEvents){
-            EventDataSource.initListener(FirebaseFirestore.getInstance(), context)
+            EventDataSource.initListener(FirebaseFirestore.getInstance(), context, university)
             initializedEvents = true
             Log.d(TAG, "datasource initialized")
         }
-        return db?.eventDao()?.getEvents(System.currentTimeMillis())
+        return db?.eventDao()?.getEvents(university, System.currentTimeMillis())
     }
 
     fun getMyEvents() : LiveData<List<Event>>?{

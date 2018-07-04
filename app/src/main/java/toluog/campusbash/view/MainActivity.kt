@@ -52,8 +52,10 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private val uniList = ArrayList<University>()
     private val firebaseManager = lazy { FirebaseManager() }
     private lateinit var country: String
-    private lateinit var university: String
+    private var university: String = ""
     private var title = ""
+    private var appbarState = Pair<Boolean?, Boolean>(true, false)
+    private var firstDropSelect = false
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -61,7 +63,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 title = ""
                 fab.visibility = VISIBLE
                 fragManager.popBackStack()
-                fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null)
+                fragManager.beginTransaction().replace(R.id.fragment_frame,
+                        EventsFragment.newInstance(university, false), null)
                         .commit()
                 setAppBarState(true)
                 return@OnNavigationItemSelectedListener true
@@ -86,12 +89,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             R.id.navigation_host -> {
                 title = getString(R.string.my_events)
                 fab.visibility = VISIBLE
-                val bundle = Bundle()
-                bundle.putBoolean(AppContract.MY_EVENT_BUNDLE, true)
-                val fragment = EventsFragment()
-                fragment.arguments = bundle
                 fragManager.popBackStack()
-                fragManager.beginTransaction().replace(R.id.fragment_frame, fragment, null)
+                fragManager.beginTransaction().replace(R.id.fragment_frame,
+                        EventsFragment.newInstance(university, true), null)
                         .commit()
                 setAppBarState(false)
                 return@OnNavigationItemSelectedListener true
@@ -132,7 +132,10 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
 
         updateUi()
-        fragManager.beginTransaction().replace(R.id.fragment_frame, EventsFragment(), null).commit()
+        if(savedInstanceState == null) {
+            fragManager.beginTransaction().replace(R.id.fragment_frame,
+                    EventsFragment.newInstance(university, false), null).commit()
+        }
     }
 
     override fun onStart() {
@@ -200,6 +203,13 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         (view as TextView?)?.setTextColor(Color.WHITE)
+        if(!firstDropSelect) {
+            university = uniList[position].name
+            fragManager.beginTransaction().replace(R.id.fragment_frame,
+                    EventsFragment.newInstance(university, false), null).commit()
+        } else {
+            firstDropSelect = false
+        }
     }
 
     private fun firstOpen(){
@@ -226,6 +236,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 break
             }
         }
+        firstDropSelect = true
         main_uni_spinner.setSelection(uniPosition)
     }
 
@@ -258,5 +269,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         }
         fragment_frame.requestLayout()
         toolbar.title = title
+        appbarState = Pair(enabled, isProfile)
     }
 }
