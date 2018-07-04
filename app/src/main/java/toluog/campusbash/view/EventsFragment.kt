@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import com.google.android.gms.ads.formats.NativeAd
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.events_layout.*
+import kotlinx.android.synthetic.main.no_events_layout.*
 import org.jetbrains.anko.coroutines.experimental.bg
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
@@ -55,6 +56,7 @@ class EventsFragment() : Fragment(){
         viewModel.getEvents(university, myEvents)?.observe(this, Observer { eventsList ->
             val user = FirebaseManager.getUser()
             events.clear()
+            eventSize = 0
             if(eventsList != null) {
                 eventSize = eventsList.size
 
@@ -70,6 +72,7 @@ class EventsFragment() : Fragment(){
             copyAds(eventSize)
             event_recycler.stopScroll()
             adapter?.notifyListChanged(events)
+            updateUiVisibility()
         })
         places = viewModel.getPlaces()
         places?.observe(this, Observer {
@@ -102,6 +105,16 @@ class EventsFragment() : Fragment(){
         event_recycler.layoutManager = layoutManager
         event_recycler.itemAnimator = DefaultItemAnimator()
         event_recycler.adapter = adapter
+    }
+
+    private fun updateUiVisibility() {
+        if(eventSize == 0) {
+            event_recycler.visibility = View.GONE
+            no_events.visibility = View.VISIBLE
+        } else {
+            event_recycler.visibility = View.VISIBLE
+            no_events.visibility = View.GONE
+        }
     }
 
     private fun copyAds(eventSize: Int) {
