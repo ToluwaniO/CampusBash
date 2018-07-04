@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.*
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract
 import java.util.*
 
@@ -33,6 +34,9 @@ public interface EventDao{
 
     @Query("Select * FROM $TABLE")
     fun getStaticEvents():List<Event>?
+
+    @Query("SELECT * FROM $TABLE WHERE endTime > :date AND university LIKE :university")
+    fun getEvents(university: String, date: Long): LiveData<List<Event>>
 
     @Query("SELECT * FROM $TABLE WHERE endTime > :date")
     fun getEvents(date: Long): LiveData<List<Event>>

@@ -38,7 +38,6 @@ class EventsViewModel(app: Application) : GeneralViewModel(app) {
 
     fun init() {
         places = repo.getPlaces()
-        events = repo.getEvents()
         myEvents = repo.getMyEvents()
     }
 
@@ -47,17 +46,17 @@ class EventsViewModel(app: Application) : GeneralViewModel(app) {
         adsJob = launch { adManager.loadAds() }
     }
 
-    fun getEvents(myEvents: Boolean = false): LiveData<List<Event>>? {
+    fun getEvents(university: String, myEvents: Boolean = false): LiveData<List<Event>>? {
         Log.d(TAG, "getEvents called")
         if(myEvents) {
             return getMyEvents()
         }
-        return getEvents()
+        return getEvents(university)
     }
 
-    private fun getEvents(): LiveData<List<Event>>? {
+    private fun getEvents(university: String): LiveData<List<Event>>? {
         Log.d(TAG, "getEvents called")
-        return events
+        return repo.getEvents(university)
     }
 
     private fun getMyEvents(): LiveData<List<Event>>? {
