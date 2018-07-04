@@ -2,8 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
+
+if (!project.hasProperty("disable-performance-plugin")) {
+    apply plugin: 'com.google.firebase.firebase-perf'
+}
 
 android {
     compileSdkVersion 28

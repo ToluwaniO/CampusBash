@@ -145,8 +145,8 @@ class EventsFragment() : Fragment(){
     }
 
     companion object {
-        private val UNIVERSITY_PARAM = "university"
-        private val MY_EVENTS_PARAM = "myEvents"
+        private const val UNIVERSITY_PARAM = "university"
+        private const val MY_EVENTS_PARAM = "myEvents"
         fun newInstance(university: String, myEvents: Boolean = false) = EventsFragment().apply {
             arguments = Bundle().apply {
                 putString(UNIVERSITY_PARAM, university)
