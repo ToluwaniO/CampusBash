@@ -27,11 +27,12 @@ class AppContract{
         val TICKETS_KEY = "tickets"
 
         //BUNDLE TAGS
-        val TOKEN_ID = "tokenId"
-        val NEW_CARD = "newCard"
-        val MORE_TEXT = "moreText"
-        val BOUGHT_TICKET = "bought_ticket"
-        val EVENT_ID = "eventId"
+        const val TOKEN_ID = "tokenId"
+        const val NEW_CARD = "newCard"
+        const val MORE_TEXT = "moreText"
+        const val BOUGHT_TICKET = "bought_ticket"
+        const val EVENT_ID = "eventId"
+        const val WEB_VIEW_URL = "web_view_url"
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"
@@ -82,7 +83,7 @@ class AppContract{
         val JOB_EVENT_DELETE = "delete_old_events"
         val ALARM_DELETE_PLACES = "alarm_delete_places"
 
-        val STRIPE_PUBLISHABLE_KEY = if(BuildConfig.DEBUG) {
+        val STRIPE_PUBLISHABLE_KEY = if(BuildConfig.FLAVOR.equals("dev")) {
             "pk_test_CVyOXRhK6S5K0RlHkLzIiReJ"
         } else {
             "pk_live_8mv4tYyz8VBXXjUSdmQmOtcD"
