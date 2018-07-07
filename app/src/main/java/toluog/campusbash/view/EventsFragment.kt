@@ -28,7 +28,7 @@ import toluog.campusbash.utils.FirebaseManager
 /**
  * Created by oguns on 12/13/2017.
  */
-class EventsFragment() : Fragment(){
+class EventsFragment : Fragment(){
 
     private lateinit var rootView: View
     private var myEvents = false
