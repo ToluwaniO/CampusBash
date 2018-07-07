@@ -1,8 +1,12 @@
 package toluog.campusbash.view
 
+import android.Manifest
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v4.util.ArrayMap
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -11,8 +15,8 @@ import android.view.View
 import com.google.zxing.Result
 import kotlinx.android.synthetic.main.activity_scanner.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.toast
 import org.jetbrains.anko.uiThread
 import toluog.campusbash.R
 import toluog.campusbash.model.TicketMetaData
@@ -23,6 +27,7 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     private val TAG = ScannerActivity::class.java.simpleName
     private lateinit var viewModel: EventDashboardViewModel
+    private var permissionExplained = false
 
     private lateinit var eventId: String
     private val ticketMap = ArrayMap<String, TicketMetaData>()
@@ -32,6 +37,7 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scanner)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        checkPermissions()
 
         eventId = intent.extras.getString(AppContract.EVENT_ID)
         viewModel = ViewModelProviders.of(this).get(EventDashboardViewModel::class.java)
@@ -68,6 +74,20 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
                 true
             }
             else -> false
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            CAMERA_PERMISSION -> {
+                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    finish()
+                }
+                return
+            }
         }
     }
 
@@ -138,8 +158,60 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         }
     }
 
+    private fun checkPermissions() {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this@ScannerActivity,
+                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (shouldExplainPermission()) {
+                Log.d(TAG, "Requesting to show permission explanation")
+                showExplanation()
+            } else {
+                // No explanation needed, we can request the permission.
+                Log.d(TAG, "Requesting permission")
+                ActivityCompat.requestPermissions(this@ScannerActivity,
+                        arrayOf(Manifest.permission.CAMERA),
+                        CAMERA_PERMISSION)
+            }
+        } else {
+            Log.d(TAG, "Permission already granted")
+        }
+    }
+
+    private fun shouldExplainPermission(): Boolean {
+        if (!permissionExplained && ActivityCompat.shouldShowRequestPermissionRationale(this@ScannerActivity,
+                        Manifest.permission.CAMERA) ||
+                ActivityCompat.shouldShowRequestPermissionRationale(this@ScannerActivity,
+                        Manifest.permission.VIBRATE)) {
+            // Show an explanation to the user *asynchronously* -- don't block
+            // this thread waiting for the user's response! After the user
+            // sees the explanation, try again to request the permission.
+            return true
+        }
+        return false
+    }
+
+    private fun showExplanation() {
+        permissionExplained = true
+        alert(R.string.camera_vibrate_permission) {
+            positiveButton(R.string.yes) {
+                checkPermissions()
+            }
+            negativeButton(R.string.no) {
+                finish()
+            }
+        }.show()
+    }
+
     enum class TicketState {
         VALID, INVALID, USED
+    }
+
+    companion object {
+        private const val CAMERA_PERMISSION = 1213
+        private const val VIBRATE_PERMISSION = 3822
     }
 
 }
