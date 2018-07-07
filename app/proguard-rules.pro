@@ -31,6 +31,9 @@
 # OkHttp platform used only on JVM and when Conscrypt dependency is available.
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
 
+-keep class com.igalata.** { *; }
+-keep class org.jbox2d.** { *; }
+
 -dontwarn javax.naming.**
 -dontwarn javax.servlet.**
 -dontwarn org.slf4j.**
