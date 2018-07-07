@@ -165,5 +165,6 @@
     <string name="tickets_sold">Tickets sold</string>
     <string name="ticket_sold_available">%1d / %2d</string>
     <string name="sales">SALES</string>
+    <string name="camera_vibrate_permission">CampusBash would like to use your camera to scan bar-codes. Would you like to grant it access?</string>
 
 </resources>
