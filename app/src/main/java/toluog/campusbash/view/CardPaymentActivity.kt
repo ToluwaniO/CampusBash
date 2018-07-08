@@ -25,6 +25,8 @@ import java.lang.Exception
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import com.stripe.android.CustomerSession
+import com.stripe.android.PaymentSession
+import com.stripe.android.model.Customer
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.credit_card_view.*
 import org.jetbrains.anko.*
@@ -52,13 +54,25 @@ class CardPaymentActivity : AppCompatActivity() {
         currency = intent.extras.getString(AppContract.CURRENCY)
 
         if(CampusBash.stripeSessionStarted) {
-            Log.d(TAG, "Stripe session started")
-            CustomerSession.getInstance().cachedCustomer?.sources?.forEach {
-                val card = it.asCard()
-                if(card != null) {
-                    cards.add(BashCard(card))
+            CustomerSession.getInstance().retrieveCurrentCustomer(object : CustomerSession.CustomerRetrievalListener {
+                override fun onCustomerRetrieved(customer: Customer) {
+                    Log.d(TAG, "ID -> ${customer.id}\ndef_source -> ${customer.defaultSource}")
+                    customer.sources.forEach {
+                        val card = it.asCard()
+                        Log.d(TAG, "$card")
+                        if(card != null) {
+                            cards.add(BashCard(card))
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
                 }
-            }
+
+                override fun onError(errorCode: Int, errorMessage: String?) {
+                    Log.d(TAG, "$errorCode")
+                    Log.d(TAG, errorMessage)
+                }
+
+            })
             Log.d(TAG, "Found ${cards.size} cached cards")
             updateView()
         }
@@ -76,6 +90,7 @@ class CardPaymentActivity : AppCompatActivity() {
             }
             negativeButton(getString(R.string.no)) {
                 Log.d(TAG, "User returned no for google pay request")
+                updateView()
             }
         }
 
@@ -295,7 +310,7 @@ class CardPaymentActivity : AppCompatActivity() {
                 } else if(unknown != null) {
                     logo_view.imageResource = unknown
                 }
-                containerView?.setOnClickListener {
+                containerView.setOnClickListener {
                     getToken(bCard)
                 }
             }
