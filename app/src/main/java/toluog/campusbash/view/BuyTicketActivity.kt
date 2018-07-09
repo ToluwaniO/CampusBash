@@ -14,12 +14,11 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
-import org.jetbrains.anko.alert
+import org.jetbrains.anko.*
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
-import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
@@ -50,6 +49,8 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             startActivity(intentFor<NoNetworkActivity>())
             finish()
         }
+        val customerId = user?.value?.get(AppContract.STRIPE_CUSTOMER_ID) as String?
+        CampusBash.initCustomerSession(customerId)
 
         updateUi()
         
@@ -68,9 +69,6 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         user = viewModel.getUser()
         pleaseWait = indeterminateProgressDialog(R.string.please_wait)
         pleaseWait.dismiss()
-
-        val customerId = user?.value?.get(AppContract.STRIPE_CUSTOMER_ID) as String?
-        CampusBash.initCustomerSession(customerId)
 
     }
 
