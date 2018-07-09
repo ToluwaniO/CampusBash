@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_view_bought_ticket.*
 import kotlinx.android.synthetic.main.ticket_card_layout.*
+import org.jetbrains.anko.intentFor
 import toluog.campusbash.R
 import toluog.campusbash.model.BoughtTicket
 import toluog.campusbash.model.TicketMetaData
@@ -56,6 +57,12 @@ class ViewBoughtTicketActivity : AppCompatActivity() {
             fun bind(ticketMetaData: TicketMetaData) {
                 qr_image.loadImage(ticketMetaData.qrUrl)
                 bought_quantity.text = ticketMetaData.ticketName
+                containerView.setOnClickListener {
+                    startActivity(intentFor<ImageViewerActivity>().apply {
+                        putExtra(AppContract.IMAGE_NAME, ticketMetaData.ticketName)
+                        putExtra(AppContract.IMAGE_SRC, ticketMetaData.qrUrl)
+                    })
+                }
             }
         }
 

@@ -169,5 +169,6 @@
     <string name="stripe_account_exists_connect">Seems like you already have a stripe account. Would you like to connect it to CampusBash?</string>
     <string name="no_internet">No internet connection</string>
     <string name="try_again">try again</string>
+    <string name="share_with">Share with</string>
 
 </resources>

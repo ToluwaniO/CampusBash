@@ -14,7 +14,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import org.jetbrains.anko.textColor
 
-fun ImageView.loadImage(url: String?) {
+fun ImageView.loadImage(url: Any?) {
     Glide.with(context).load(url).into(this)
 }
 
@@ -32,10 +32,6 @@ fun ImageView.lazyLoadImage(act: AppCompatActivity, url: Any?) {
         }
 
     }).into(this)
-}
-
-fun ImageView.loadImage(uri: Uri?) {
-    Glide.with(context).load(uri).into(this)
 }
 
 fun TextView.updateTextSelector(message: String, color: Int) {
