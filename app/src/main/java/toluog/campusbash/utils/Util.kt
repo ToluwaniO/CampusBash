@@ -20,12 +20,17 @@ import com.firebase.jobdispatcher.Constraint
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
 import toluog.campusbash.data.CurrencyDataSource
-import android.support.v4.content.ContextCompat.startActivity
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.net.Uri
+import android.support.v4.content.ContextCompat.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.startActivity
 import toluog.campusbash.BuildConfig
+import toluog.campusbash.view.NoNetworkActivity
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.collections.HashMap
@@ -313,12 +318,11 @@ class Util{
 
         fun debugMode() = BuildConfig.DEBUG
 
-        fun ImageView.loadImage(url: String, context: Context){
-            Glide.with(context).load(url).into(this)
+        fun isConnected(context: Context?): Boolean {
+            val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+            val activeNetwork = cm?.activeNetworkInfo
+            return activeNetwork?.isConnected ?: false
         }
 
-        fun CircleImageView.loadImage(url: String, context: Context){
-            Glide.with(context).load(url).into(this)
-        }
     }
 }

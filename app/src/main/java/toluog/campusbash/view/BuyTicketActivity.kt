@@ -13,19 +13,18 @@ import android.support.v7.widget.*
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import com.stripe.android.view.PaymentMethodsActivity
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.snackbar
-import toluog.campusbash.BuildConfig
+import org.jetbrains.anko.indeterminateProgressDialog
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.longToast
 import toluog.campusbash.R
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.*
 import java.math.BigDecimal
-import android.R.attr.data
-import com.stripe.android.model.Source
 
 
 class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListener {
@@ -46,6 +45,10 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         setContentView(R.layout.activity_buy_ticket)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        if(!Util.isConnected(this)) {
+            startActivity(intentFor<NoNetworkActivity>())
+            finish()
+        }
         val customerId = user?.value?.get(AppContract.STRIPE_CUSTOMER_ID) as String?
         CampusBash.initCustomerSession(customerId)
 

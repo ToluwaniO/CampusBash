@@ -18,11 +18,13 @@ import toluog.campusbash.utils.Util
 import com.firebase.ui.auth.ErrorCodes.NO_NETWORK
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.android.synthetic.main.activity_first_open.*
+import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 
 
 class FirstOpenActivity : AppCompatActivity(), PickUniversityFragment.PickUniversityListener,
-PickEventTypeFragment.PickEventTypeListener{
+PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInteractionListener{
 
     private val fragManager = supportFragmentManager
     private lateinit var viewModel: GeneralViewModel
@@ -38,6 +40,7 @@ PickEventTypeFragment.PickEventTypeListener{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_first_open)
+
         Log.d(TAG, "Activity opened")
         user = FirebaseManager.getUser()
         viewModel = ViewModelProviders.of(this).get(GeneralViewModel::class.java)
@@ -78,9 +81,15 @@ PickEventTypeFragment.PickEventTypeListener{
         } else{
             Util.startSignInActivity(act)
         }
-        if(country == null || university == null) {
+        if(!Util.isConnected(this)) {
+            fragManager.beginTransaction().replace(R.id.fragment_frame, NoNetworkFragment(),
+                    null).commit()
+        } else if(country == null || university == null) {
             count++
             fragManager.beginTransaction().replace(R.id.fragment_frame, PickUniversityFragment(), null).commit()
+        } else if (prefs == null) {
+            count++
+            fragManager.beginTransaction().replace(R.id.fragment_frame, PickEventTypeFragment(), null).commit()
         }
     }
 
@@ -119,6 +128,15 @@ PickEventTypeFragment.PickEventTypeListener{
                 university = it?.get(AppContract.FIREBASE_USER_UNIVERSITY) as String?
                 prefs = it?.get(AppContract.FIREBASE_USER_PREFERENCES) as List<String>?
             })
+        }
+    }
+
+    override fun onTryAgainClicked(connected: Boolean) {
+        if(connected) {
+            startActivity(intentFor<FirstOpenActivity>())
+            finish()
+        } else {
+            snackbar(container, R.string.no_internet)
         }
     }
 }
