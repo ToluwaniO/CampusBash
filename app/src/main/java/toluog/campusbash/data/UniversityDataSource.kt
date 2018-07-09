@@ -14,12 +14,13 @@ import toluog.campusbash.utils.AppContract
 class UniversityDataSource {
 
     companion object {
-        val mFireStore = FirebaseFirestore.getInstance()
-        val query = mFireStore.collection(AppContract.FIREBASE_UNIVERSITIES)
+
         var db: AppDatabase? = null
         val TAG = UniversityDataSource::class.java.simpleName
 
         fun initListener(context: Context){
+            val mFireStore = FirebaseFirestore.getInstance()
+            val query = mFireStore.collection(AppContract.FIREBASE_UNIVERSITIES)
             Log.d(TAG, "initListener")
             db = AppDatabase.getDbInstance(context)
             val uniDao = db?.universityDao()
@@ -30,12 +31,12 @@ class UniversityDataSource {
                 }
 
                 // Dispatch the event
-                for (change in value.getDocumentChanges()) {
+                for (change in value.documentChanges) {
                     // Snapshot of the changed document
                     Log.d(TAG, change.document.toString())
                     val snapshot = change.document.toObject(University::class.java)
 
-                    when (change.getType()) {
+                    when (change.type) {
                         DocumentChange.Type.ADDED -> {
                             Log.d(TAG, "ChildAdded")
                             launch { uniDao?.insertUniversity(snapshot) }

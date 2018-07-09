@@ -8,13 +8,14 @@ import com.github.paolorotolo.appintro.AppIntro2
 import com.github.paolorotolo.appintro.AppIntroFragment
 
 import toluog.campusbash.R
+import toluog.campusbash.data.UniversityDataSource
 import toluog.campusbash.utils.Analytics
 
 class OnBoardingActivity : AppIntro2() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        UniversityDataSource.initListener(applicationContext)
         addSlide(AppIntroFragment.newInstance("Welcome to Campus Bash",
                 getString(R.string.Description1Onboarding),
                 R.drawable.mug, resources.getColor(R.color.colorPrimary)))
