@@ -57,7 +57,11 @@ class SetupProfileActivity : AppCompatActivity() {
                 val name = it[AppContract.FIREBASE_USER_USERNAME] as String?
                 val summary = it[AppContract.FIREBASE_USER_SUMMARY] as String?
 
-                profile?.let { profileImage.loadImage(it) }
+                if(profile == null) {
+                    profileImage.setImageResource(R.drawable.adult_emoji)
+                } else {
+                    profileImage.loadImage(profile)
+                }
                 userNameView.setText(name ?: user.displayName)
                 summaryView.setText(summary)
             }

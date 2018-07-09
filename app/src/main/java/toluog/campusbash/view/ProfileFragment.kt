@@ -56,6 +56,11 @@ class ProfileFragment(): Fragment() {
             it?.let {
                 val profileImageUrl = it[AppContract.FIREBASE_USER_PHOTO_URL] as String?
                 profileImageUrl?.let { profile_image.loadImage(it) }
+                if(profileImageUrl == null) {
+                    profile_image.setImageResource(R.drawable.adult_emoji)
+                } else {
+                    profile_image.loadImage(profileImageUrl)
+                }
                 profile_summary.text = it[AppContract.FIREBASE_USER_SUMMARY] as String?
             }
         })
