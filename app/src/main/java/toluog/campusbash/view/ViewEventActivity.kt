@@ -221,7 +221,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                         val shareIntent = Intent(Intent.ACTION_SEND)
                         shareIntent.type = "text/plain"
                         shareIntent.putExtra(Intent.EXTRA_TEXT, shortUrl)
-                        startActivity(Intent.createChooser(shareIntent, "Share link using"))
+                        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_with)))
                     } else {
                         Log.d(TAG, "An error occurred getting the shortLink\n${task.exception?.message}")
                         toast(R.string.error_occurred)
