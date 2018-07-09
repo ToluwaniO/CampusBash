@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.activity_buy_ticket.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.indeterminateProgressDialog
+import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
@@ -44,6 +45,11 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_buy_ticket)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        if(!Util.isConnected(this)) {
+            startActivity(intentFor<NoNetworkActivity>())
+            finish()
+        }
 
         updateUi()
         

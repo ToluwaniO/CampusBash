@@ -46,24 +46,26 @@ class PickUniversityFragment(): Fragment(){
 
 
         country_text.setOnClickListener {
-            selector(getString(R.string.select_country), countries, { dialogInterface, i ->
+            selector(getString(R.string.select_country), countries) { dialogInterface, i ->
                 country_text.text = countries[i]
                 country = countries[i]
+                uni_title.visibility = View.VISIBLE
+                university_text.visibility = View.VISIBLE
                 viewModel?.getUniversities(countries[i])?.observe(this, Observer {
                     universities.clear()
                     it?.forEach { uni ->
                         universities.add(uni.name)
                     }
                 })
-            })
+            }
         }
 
         university_text.setOnClickListener {
             Log.d(TAG, "UNIVERSITIES -> ${universities.size}")
-            selector(getString(R.string.select_university), universities, { dialogInterface, i ->
+            selector(getString(R.string.select_university), universities) { dialogInterface, i ->
                 university_text.text = universities[i]
                 university = universities[i]
-            })
+            }
         }
 
         next_button.setOnClickListener {

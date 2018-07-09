@@ -27,7 +27,10 @@ import android.net.Uri
 import android.support.v4.content.ContextCompat.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.startActivity
 import toluog.campusbash.BuildConfig
+import toluog.campusbash.view.NoNetworkActivity
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.collections.HashMap
@@ -315,10 +318,11 @@ class Util{
 
         fun debugMode() = BuildConfig.DEBUG
 
-        fun isConnected(context: Context): Boolean {
-            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+        fun isConnected(context: Context?): Boolean {
+            val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
             val activeNetwork = cm?.activeNetworkInfo
             return activeNetwork?.isConnected ?: false
         }
+
     }
 }
