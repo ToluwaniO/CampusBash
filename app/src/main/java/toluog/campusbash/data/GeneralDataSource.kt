@@ -23,14 +23,14 @@ class GeneralDataSource {
         fun getUser(mFirestore: FirebaseFirestore, uid: String): LiveData<Map<String, Any>> {
             Log.d(TAG, "getting user")
             userQuery = mFirestore.collection(FirestorePaths.USERS).document(uid)
-            userQuery.addSnapshotListener({ documentSnapshot, err ->
+            userQuery.addSnapshotListener { documentSnapshot, err ->
                 if(documentSnapshot != null && documentSnapshot.exists()) {
                     user.postValue(documentSnapshot.data)
                 }
                 if(err != null) {
                     Log.d(TAG, "An error occurred getting user\ne -> ${err.message}")
                 }
-            })
+            }
             return user
         }
 
