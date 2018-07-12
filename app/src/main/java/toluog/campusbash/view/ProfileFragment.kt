@@ -55,6 +55,8 @@ class ProfileFragment(): Fragment() {
         profileInfo?.observe(this, Observer {
             it?.let {
                 val profileImageUrl = it[AppContract.FIREBASE_USER_PHOTO_URL] as String?
+                val userName = it[AppContract.FIREBASE_USER_USERNAME] as String?
+                profile_name.text = userName ?: user?.displayName
                 profileImageUrl?.let { profile_image.loadImage(it) }
                 if(profileImageUrl == null) {
                     profile_image.setImageResource(R.drawable.adult_emoji)
