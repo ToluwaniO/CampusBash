@@ -17,19 +17,19 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/country_text"
-        android:layout_width="match_parent"
+    <Spinner
+        android:id="@+id/country_picker"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="?android:attr/selectableItemBackground"
         android:fontFamily="@font/roboto_light"
-        android:text="@string/select_country"
+        android:prompt="@string/select_country"
         android:textSize="24sp"
+        android:theme="@style/ThemeOverlay.AppCompat.Light"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
@@ -42,21 +42,22 @@
         android:text="@string/university"
         android:textColor="@android:color/black"
         android:textSize="18sp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/country_text" />
+        app:layout_constraintTop_toBottomOf="@+id/country_picker" />
 
-    <TextView
-        android:id="@+id/university_text"
-        android:layout_width="0dp"
+    <Spinner
+        android:id="@+id/university_picker"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/roboto_light"
-        android:text="@string/select_university"
+        android:prompt="@string/select_university"
         android:textSize="24sp"
-        android:visibility="gone"
+        android:theme="@style/ThemeOverlay.AppCompat.Light"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/uni_title" />

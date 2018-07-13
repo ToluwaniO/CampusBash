@@ -9,7 +9,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.pick_university_fragment_layout.*
+import org.jetbrains.anko.sdk25.coroutines.onItemSelectedListener
 import org.jetbrains.anko.support.v4.selector
 import toluog.campusbash.R
 import java.lang.ClassCastException
@@ -27,11 +30,13 @@ class PickUniversityFragment(): Fragment(){
     private val TAG = PickUniversityFragment::class.java.simpleName
     private lateinit var rootView: View
     private lateinit var callback: PickUniversityListener
-    private lateinit var countries: List<String>
+    private lateinit var countries: Array<String>
+    private var universities = ArrayList<String>()
     private var viewModel: FirstOpenViewModel? = null
     private var country: String? = null
     private var university: String? = null
-    private var universities = ArrayList<String>()
+    private lateinit var countryAdapter: ArrayAdapter<String>
+    private lateinit var universityAdapter: ArrayAdapter<String>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         rootView = inflater.inflate(R.layout.pick_university_fragment_layout, container, false)
@@ -42,28 +47,38 @@ class PickUniversityFragment(): Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        countries = resources.getStringArray(R.array.countries).asList()
+        countries = resources.getStringArray(R.array.countries)
+        countryAdapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, countries)
+        countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        universityAdapter = ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, universities)
+        universityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
+        country_picker.adapter = countryAdapter
+        university_picker.adapter = universityAdapter
 
-        country_text.setOnClickListener {
-            selector(getString(R.string.select_country), countries) { dialogInterface, i ->
-                country_text.text = countries[i]
-                country = countries[i]
+        country_picker.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, id: Long) {
+                country = countries[pos]
                 uni_title.visibility = View.VISIBLE
-                university_text.visibility = View.VISIBLE
-                viewModel?.getUniversities(countries[i])?.observe(this, Observer {
+                university_picker.visibility = View.VISIBLE
+                viewModel?.getUniversities(countries[pos])?.observe(this@PickUniversityFragment, Observer {
                     universities.clear()
                     it?.forEach { uni ->
                         universities.add(uni.name)
                     }
+                    universityAdapter.notifyDataSetChanged()
                 })
             }
+
         }
 
-        university_text.setOnClickListener {
-            Log.d(TAG, "UNIVERSITIES -> ${universities.size}")
-            selector(getString(R.string.select_university), universities) { dialogInterface, i ->
-                university_text.text = universities[i]
+
+        university_picker.onItemSelectedListener {
+            this.onItemSelected { adapterView, view, i, l ->
+                Log.d(TAG, "UNIVERSITIES -> ${universities.size}")
                 university = universities[i]
             }
         }
