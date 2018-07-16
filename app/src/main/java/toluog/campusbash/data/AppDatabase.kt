@@ -21,9 +21,18 @@ abstract class AppDatabase(): RoomDatabase() {
 
     companion object {
         var dbInstance: AppDatabase? = null
+        var testDbInstance: AppDatabase? = null
         val dbName = "CampusBashDB"
 
-        fun getDbInstance(context: Context): AppDatabase?{
+        fun getDbInstance(context: Context, isTest: Boolean = false): AppDatabase?{
+            if(isTest) {
+                synchronized(this) {
+                    if(testDbInstance == null) {
+                        testDbInstance = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+                    }
+                }
+                return testDbInstance
+            }
             if(dbInstance == null){
                 synchronized(this) {
                     if (dbInstance == null) {
