@@ -29,6 +29,9 @@ class EventDbTest {
 
     @get:Rule var instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    private val MY_UID = "z8237b23729x272937b"
+    private val TYPE = "party!!"
+    private val UNIVERSITY = "University of Ottawa"
     private val events = arrayListOf(
             Event().apply {
                 eventId = "1"
@@ -36,6 +39,9 @@ class EventDbTest {
                 eventType = "party"
                 startTime = now
                 endTime = now - 5000
+                creator.apply {
+                    uid = "qey38"
+                }
             },
             Event().apply {
                 eventId = "2"
@@ -50,6 +56,8 @@ class EventDbTest {
                 eventType = "party"
                 startTime = now
                 endTime = now + 5000
+                university = UNIVERSITY
+                eventType = TYPE
             },
             Event().apply {
                 eventId = "4"
@@ -64,6 +72,9 @@ class EventDbTest {
                 eventType = "party"
                 startTime = now
                 endTime = now + 5000
+                creator.apply {
+                    uid = MY_UID
+                }
             }
     )
 
@@ -77,11 +88,37 @@ class EventDbTest {
     }
 
     @Test
-    fun testAdd() {
+    fun testInsert() {
         eventDao.insertEvent(events[0])
         val dbEvents = eventDao.getEvents().data()
         assertEquals(dbEvents?.get(0), events[0])
         Log.d(TAG, "testing done")
+    }
+
+    @Test
+    fun testUpdate() {
+        eventDao.insertEvent(events[0])
+        eventDao.updateEvent(events[0].apply {
+            eventName = "1000"
+        })
+        assertEquals(eventDao.getEvent(events[0].eventId).data()?.eventName, "1000")
+    }
+
+    @Test
+    fun testGet() {
+        eventDao.insertEvents(events)
+        assertEquals(eventDao.getEvents(now).data()?.size, 4)
+        assertEquals(eventDao.getMyEvents(MY_UID).data()?.size, 1)
+        assertEquals(eventDao.getMyEvents(MY_UID).data()?.first(), events.last())
+
+        //WITH TIME
+        assertFalse(eventDao.getEvents(now).data()?.contains(events[0]) ?: false)
+        assertTrue(eventDao.getEvents(now).data()?.contains(events[1]) ?: false)
+        assertEquals(eventDao.getEvents(UNIVERSITY, now).data()?.size, 1)
+
+        //SEARCH QUERY
+        assertEquals(eventDao.getEventsWithQuery("4", now).data()?.first(), events[3])
+        assertEquals(eventDao.getEventsWithQueryAndType("3", TYPE, now).data()?.first(), events[2])
     }
 
     @Test
@@ -90,13 +127,6 @@ class EventDbTest {
         assertThat(eventDao.getEvents().data()?.size, `is`(events.size))
         eventDao.nukeTable()
         assertThat(eventDao.getEvents().data()?.size, `is`(0))
-    }
-
-    @Test
-    fun testDbWithTime() {
-        eventDao.insertEvents(events)
-        assertFalse(eventDao.getEvents(now).data()?.contains(events[0]) ?: false)
-        assertTrue(eventDao.getEvents(now).data()?.contains(events[1]) ?: false)
     }
 
     @After
