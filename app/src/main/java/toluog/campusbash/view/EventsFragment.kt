@@ -50,10 +50,12 @@ class EventsFragment : Fragment(){
         arguments?.let {
             myEvents = it.getBoolean(MY_EVENTS_PARAM)
             university = it.getString(UNIVERSITY_PARAM)
+            Log.d(TAG, "university=$university")
         }
 
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
         viewModel.getEvents(university, myEvents)?.observe(this, Observer { eventsList ->
+            Log.d(TAG, "Events size is ${eventsList?.size}")
             val user = FirebaseManager.getUser()
             events.clear()
             eventSize = 0

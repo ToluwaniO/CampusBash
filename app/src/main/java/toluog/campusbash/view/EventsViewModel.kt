@@ -55,7 +55,7 @@ class EventsViewModel(app: Application) : GeneralViewModel(app) {
     }
 
     private fun getEvents(university: String): LiveData<List<Event>>? {
-        Log.d(TAG, "getEvents called")
+        Log.d(TAG, "getEvents(university= $university) called")
         return repo.getEvents(university)
     }
 
