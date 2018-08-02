@@ -9,10 +9,11 @@ import toluog.campusbash.data.Repository
 
 open class GeneralViewModel(app: Application): AndroidViewModel(app) {
     val repo = Repository(app.applicationContext, FirebaseFirestore.getInstance())
+    private var lastUser = ""
     private var profileInfo: LiveData<Map<String, Any>>? = null
 
     fun getProfileInfo(user: FirebaseUser): LiveData<Map<String, Any>>? {
-        if(profileInfo == null) {
+        if(user.uid != lastUser || profileInfo == null) {
             profileInfo = repo.getUser(user.uid)
         }
         return profileInfo
