@@ -4,6 +4,8 @@ import android.app.ProgressDialog
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -73,8 +75,8 @@ class StripeSetupActivity : AppCompatActivity() {
     private fun accountExistsDialog() {
         alert(R.string.stripe_account_exists_connect) {
             positiveButton(R.string.yes) {
-                startActivity(intentFor<WebActivity>().apply {
-                    putExtra(AppContract.WEB_VIEW_URL, STRIPE_CONNECT_ACCOUNT_URL)
+                startActivity(Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(STRIPE_CONNECT_ACCOUNT_URL)
                 })
                 finish()
             }

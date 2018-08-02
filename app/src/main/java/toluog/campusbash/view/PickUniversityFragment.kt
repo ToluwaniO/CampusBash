@@ -67,6 +67,7 @@ class PickUniversityFragment(): Fragment(){
                 viewModel?.getUniversities(countries[pos])?.observe(this@PickUniversityFragment, Observer {
                     universities.clear()
                     it?.forEach { uni ->
+                        
                         universities.add(uni.name)
                     }
                     universityAdapter.notifyDataSetChanged()
