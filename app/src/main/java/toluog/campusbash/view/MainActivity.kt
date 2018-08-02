@@ -173,7 +173,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
             if (resultCode == ResultCodes.OK) {
                 // Successfully signed in
-                val user = FirebaseManager.getUser()
                 Log.d(TAG, "Sign in successful")
                 // ...
             } else {
@@ -182,6 +181,13 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                 Log.d(TAG, "Sign in failed")
             }
         }
+
+        supportFragmentManager.fragments.forEach {
+            if(it is ProfileFragment) {
+                it.onActivityResult(requestCode, resultCode, data)
+            }
+        }
+
 
     }
 

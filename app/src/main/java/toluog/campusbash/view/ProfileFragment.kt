@@ -3,9 +3,11 @@ package toluog.campusbash.view
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewCompat
+import android.util.Log
 import android.view.*
 import kotlinx.android.synthetic.main.profile_fragment_layout.*
 import org.jetbrains.anko.intentFor
@@ -20,7 +22,7 @@ import toluog.campusbash.utils.loadImage
 /**
  * Created by oguns on 12/26/2017.
  */
-class ProfileFragment(): Fragment() {
+class ProfileFragment: Fragment() {
 
     private val TAG = ProfileFragment::class.java.simpleName
     private lateinit var rootView: View
@@ -45,28 +47,7 @@ class ProfileFragment(): Fragment() {
         parent.isNestedScrollingEnabled = false
         ViewCompat.setNestedScrollingEnabled(parent, false)
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
-        val user = FirebaseManager.getUser()
-        if(user != null) {
-            profileInfo = viewModel.getProfileInfo(user)
-            profile_name.text = user.displayName
-            profile_email.text = user.email
-        }
-
-        profileInfo?.observe(this, Observer {
-            it?.let {
-                val profileImageUrl = it[AppContract.FIREBASE_USER_PHOTO_URL] as String?
-                val userName = it[AppContract.FIREBASE_USER_USERNAME] as String?
-                profile_name.text = userName ?: user?.displayName
-                profileImageUrl?.let { profile_image.loadImage(it) }
-                if(profileImageUrl == null) {
-                    profile_image.setImageResource(R.drawable.adult_emoji)
-                } else {
-                    profile_image.loadImage(profileImageUrl)
-                }
-                profile_summary.text = it[AppContract.FIREBASE_USER_SUMMARY] as String?
-            }
-        })
-
+        observeUser()
         university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
         country = Util.getPrefString(act, AppContract.PREF_COUNTRY_KEY)
 
@@ -101,5 +82,34 @@ class ProfileFragment(): Fragment() {
             }
         }
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d(TAG, "onActivityResult")
+        super.onActivityResult(requestCode, resultCode, data)
+        observeUser()
+    }
+
+    private fun observeUser() {
+        val user = FirebaseManager.getUser()
+        if(user != null) {
+            profileInfo = viewModel.getProfileInfo(user)
+            profile_name.text = user.displayName
+            profile_email.text = user.email
+        }
+        profileInfo?.observe(this, Observer {
+            it?.let {
+                val profileImageUrl = it[AppContract.FIREBASE_USER_PHOTO_URL] as String?
+                val userName = it[AppContract.FIREBASE_USER_USERNAME] as String?
+                profile_name.text = userName ?: user?.displayName
+                profileImageUrl?.let { profile_image.loadImage(it) }
+                if(profileImageUrl == null) {
+                    profile_image.setImageResource(R.drawable.adult_emoji)
+                } else {
+                    profile_image.loadImage(profileImageUrl)
+                }
+                profile_summary.text = it[AppContract.FIREBASE_USER_SUMMARY] as String?
+            }
+        })
     }
 }
