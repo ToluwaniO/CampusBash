@@ -20,7 +20,7 @@ import toluog.campusbash.model.Creator
 /**
  * Created by oguns on 12/13/2017.
  */
-class FirebaseManager(){
+class FirebaseManager {
     var db: FirebaseFirestore? = null
     init {
         db = FirebaseFirestore.getInstance()
@@ -140,7 +140,7 @@ class FirebaseManager(){
 
     companion object {
         var storage: FirebaseStorage? = null
-        val auth = FirebaseAuth.getInstance()
+        val auth: FirebaseAuth = FirebaseAuth.getInstance()
         private val TAG = FirebaseManager::class.java.simpleName
 
         fun isSignedIn() = auth.currentUser != null
@@ -151,6 +151,8 @@ class FirebaseManager(){
             auth.signOut()
             CampusBash.endCustomerSession()
         }
+
+        fun getAuthToken() = getUser()?.getIdToken(true)
 
         fun getFcmToken() = FirebaseInstanceId.getInstance().token
 

@@ -182,7 +182,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private fun buyTickets(tokenId: String?, newCard: Boolean) {
         val overallMap = getData()
         if(overallMap[AppContract.QUANTITY] == 0){
-            snackbar(container,R.string.no_ticket_purchased)
+            snackbar(container, R.string.no_ticket_purchased)
             return
         }
         pleaseWait.show()

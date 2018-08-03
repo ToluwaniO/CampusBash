@@ -9,21 +9,19 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.POST
 import com.google.gson.GsonBuilder
 import com.stripe.android.EphemeralKeyProvider
 import com.stripe.android.EphemeralKeyUpdateListener
 import kotlinx.coroutines.experimental.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.http.GET
-import retrofit2.http.QueryMap
+import retrofit2.http.*
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 
-class StripeServerClient() {
+class StripeServerClient {
+
     private lateinit var httpClientAPI: StripeClientAPI
     private val result = MutableLiveData<ServerResponse>()
     private val ephemeralKey = MutableLiveData<String>()
@@ -54,11 +52,27 @@ class StripeServerClient() {
                 .create(StripeClientAPI::class.java)
     }
 
-    fun createStripeAccount(body: StripeAccountBody): MutableLiveData<ServerResponse> {
+    fun createStripeAccount(body: StripeAccountBody, uid: String): MutableLiveData<ServerResponse> {
         httpClientAPI = createStripeClient()
+        FirebaseManager.getAuthToken()
+                ?.addOnCompleteListener {
+                    val token = it.result.token
+                    if(token != null) {
+                        handleAccountResponse(body, uid, token)
+                    } else {
+                        Log.d(TAG, "Could not get token")
+                    }
+                }
+                ?.addOnFailureListener {
+                    Log.d(TAG, it.message)
+                }
 
+        return result
+    }
+
+    private fun handleAccountResponse(body: StripeAccountBody, uid: String, token: String) {
         launch {
-            response = httpClientAPI.createStripeAccount(body)
+            response = httpClientAPI.createStripeAccount(uid, token, body)
             response.enqueue(object : Callback<ServerResponse> {
                 override fun onResponse(call: Call<ServerResponse>?, response: Response<ServerResponse>?) {
                     if (response == null) {
@@ -75,19 +89,34 @@ class StripeServerClient() {
                 }
             })
         }
-
-        return result
     }
 
-    fun createEphemeralKey(customerId: String, apiVersion: String) {
+    fun createEphemeralKey(customerId: String, apiVersion: String, uid: String) {
         httpClientAPI = createStripeClient()
-        val body = mapOf(
-                "customerId" to customerId,
-                "apiVersion" to apiVersion
-        )
+        FirebaseManager.getAuthToken()
+                ?.addOnCompleteListener {
+                    val token = it.result.token
+                    if(token != null) {
+                        Log.d(TAG, token)
+                        handleEphemeralKeyResponse(customerId, apiVersion, uid, token)
+                    } else {
+                        Log.d(TAG, "Could not get token")
+                    }
+                }
+                ?.addOnFailureListener {
+                    Log.d(TAG, it.message)
+                }
+    }
 
+    fun getEphemeralKey() = ephemeralKey
+
+    private fun handleEphemeralKeyResponse(customerId: String, apiVersion: String, uid: String, token: String) {
         launch {
-            ephemeralResponse = httpClientAPI.createEphemeralKey(body)
+            val body = mapOf(
+                    "customerId" to customerId,
+                    "apiVersion" to apiVersion
+            )
+            ephemeralResponse = httpClientAPI.createEphemeralKey(uid, token, body)
             ephemeralResponse.enqueue(object : Callback<EphemeralResponse> {
                 override fun onResponse(call: Call<EphemeralResponse>?, response: Response<EphemeralResponse>?) {
                     if (response == null) {
@@ -106,14 +135,15 @@ class StripeServerClient() {
         }
     }
 
-    fun getEphemeralKey() = ephemeralKey
-
     interface StripeClientAPI {
-        @POST("stripe/createStripeAccount")
-        fun createStripeAccount(@Body account: StripeAccountBody): Call<ServerResponse>
+        @POST("stripe/{uid}/{token}/createStripeAccount")
+        fun createStripeAccount(@Path("uid") uid: String, @Path("token") token: String,
+                                @Body account: StripeAccountBody): Call<ServerResponse>
 
-        @GET("stripe/createEphemeralKey")
-        fun createEphemeralKey(@QueryMap options: Map<String, String>): Call<EphemeralResponse>
+        @GET("stripe/{uid}/{token}/createEphemeralKey")
+        fun createEphemeralKey(@Path("uid") uid: String, @Path("token") token: String,
+                               @QueryMap options: Map<String, String>)
+                : Call<EphemeralResponse>
     }
 
 

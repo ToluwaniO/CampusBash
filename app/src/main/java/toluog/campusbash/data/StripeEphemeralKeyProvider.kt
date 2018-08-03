@@ -10,7 +10,7 @@ import com.stripe.android.EphemeralKeyProvider
 import com.stripe.android.EphemeralKeyUpdateListener
 import toluog.campusbash.data.network.StripeServerClient
 
-class StripeEphemeralKeyProvider(val progressListener: ProgressListener, val customerId: String): EphemeralKeyProvider {
+class StripeEphemeralKeyProvider(val progressListener: ProgressListener, val customerId: String, val uid: String): EphemeralKeyProvider {
 
     private val TAG = StripeEphemeralKeyProvider::class.java.simpleName
     private lateinit var stripeServerClient: StripeServerClient
@@ -21,7 +21,7 @@ class StripeEphemeralKeyProvider(val progressListener: ProgressListener, val cus
     override fun createEphemeralKey(apiVersion: String, keyUpdateListener: EphemeralKeyUpdateListener) {
         Log.d(TAG, "Create ephemeral key called")
         stripeServerClient = StripeServerClient()
-        stripeServerClient.createEphemeralKey(customerId, apiVersion)
+        stripeServerClient.createEphemeralKey(customerId, apiVersion, uid)
         key = stripeServerClient.getEphemeralKey()
         key.observeForever(object : Observer<String> {
             override fun onChanged(it: String?) {
