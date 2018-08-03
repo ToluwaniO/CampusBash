@@ -101,7 +101,7 @@ class Repository(val context: Context, mFirebaseFirestore: FirebaseFirestore){
             initializedStripeApi = true
         }
         val body = StripeAccountBody(user?.uid ?: "", user?.email ?: "", "CA")
-        return stripeApi.createStripeAccount(body)
+        return stripeApi.createStripeAccount(body, user?.uid ?: "")
     }
 
     fun savePlace(place: Place) {

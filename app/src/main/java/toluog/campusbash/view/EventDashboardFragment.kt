@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,7 @@ import com.github.mikephil.charting.utils.ViewPortHandler
  *
  */
 class EventDashboardFragment : Fragment() {
+    private val TAG = EventDashboardFragment::class.java.simpleName
     private var eventId: String = ""
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var viewModel: EventDashboardViewModel
@@ -178,6 +180,7 @@ class EventDashboardFragment : Fragment() {
                 LayoutContainer {
 
             fun bind(ticket: Ticket) {
+                Log.d(TAG, "$ticket")
                 ticket_name.text = ticket.name
                 tickets_sold.text = getString(R.string.ticket_sold_available, ticket.ticketsSold,
                         ticket.quantity)
@@ -209,7 +212,6 @@ class EventDashboardFragment : Fragment() {
      * for more information.
      */
     interface OnFragmentInteractionListener {
-
     }
 
     companion object {

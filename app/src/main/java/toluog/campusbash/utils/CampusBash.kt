@@ -62,7 +62,7 @@ object CampusBash {
                         Log.d(TAG, "Failed to start stripe session")
                     }
                 }
-            }, customerId))
+            }, customerId, FirebaseManager.getUser()?.uid ?: ""))
         }
     }
 
