@@ -127,7 +127,8 @@
             android:label="@string/scanner" />
         <activity android:name=".view.WebActivity" />
         <activity android:name=".view.NoNetworkActivity" />
-        <activity android:name=".view.ImageViewerActivity"></activity>
+        <activity android:name=".view.ImageViewerActivity" />
+        <activity android:name=".view.AddCardActivity"></activity>
     </application>
 
 </manifest>

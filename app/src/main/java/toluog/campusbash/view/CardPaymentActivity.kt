@@ -89,27 +89,10 @@ class CardPaymentActivity : AppCompatActivity() {
         card_recycler.layoutManager = layoutManager
 
         add_card.setOnClickListener {
-            add_card_layout.visibility = View.VISIBLE
-            add_card.visibility = View.GONE
-            no_card_layout.visibility = View.GONE
-        }
-
-        save.setOnClickListener {
-            Util.hideKeyboard(this@CardPaymentActivity)
-            addCard()
+            startActivityForResult(intentFor<AddCardActivity>(), ADD_CARD)
         }
 
         //isReadyToPay()
-    }
-
-    override fun onBackPressed() {
-        if(add_card_layout.visibility == View.VISIBLE) {
-            add_card_layout.visibility = View.GONE
-            add_card.visibility = View.VISIBLE
-            updateView()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -138,15 +121,16 @@ class CardPaymentActivity : AppCompatActivity() {
                     Activity.RESULT_CANCELED -> Log.d(TAG, "Google Pay result cancelled")
                 }
             }
+            ADD_CARD -> {
+                if(resultCode == Activity.RESULT_OK) {
+                    val bashCard = data?.extras?.get("card") as BashCard?
+                    if(bashCard != null && isNewCard(bashCard.card)) {
+                        cards.add(bashCard)
+                    }
+                    updateView()
+                }
+            }
         }
-    }
-
-    private fun validateCard(cardToSave: Card): Boolean {
-        if(!cardToSave.validateCard()) {
-            snackbar(root_view, R.string.could_not_validate_card)
-            return false
-        }
-        return true
     }
 
     private fun getToken(bashCard: BashCard) {
@@ -260,18 +244,6 @@ class CardPaymentActivity : AppCompatActivity() {
         }
     }
 
-    private fun addCard() {
-        val card = card_input_widget.card
-        if(card != null && validateCard(card)) {
-            cards.add(BashCard(null, card, newCard = true))
-        } else if(card == null) {
-            snackbar(root_view, R.string.could_not_validate_card)
-        }
-        add_card_layout.visibility = View.GONE
-        add_card.visibility = View.VISIBLE
-        updateView()
-    }
-
     private fun manageCards() {
         CampusBash.getBashCards().observe(this, Observer {
             cards.removeAll(cards.filter { !it.newCard })
@@ -282,7 +254,18 @@ class CardPaymentActivity : AppCompatActivity() {
         })
     }
 
+    private fun isNewCard(card: Card?): Boolean {
+        if (card == null) return false
+        cards.forEach {
+            val c = it.card
+            if(card == c) return false
+        }
+        return true
+    }
 
+    companion object {
+        const val ADD_CARD = 3628
+    }
 
     inner class CardAdapter: RecyclerView.Adapter<CardAdapter.ViewHolder>() {
 
@@ -302,7 +285,7 @@ class CardPaymentActivity : AppCompatActivity() {
                 LayoutContainer {
 
             fun bind(bCard: BashCard) {
-                val card = bCard.customerSource?.asCard()
+                val card = bCard.customerSource?.asCard() ?: bCard.card
                 card_number.text = getString(R.string.debit_card_digits, card?.brand, card?.last4)
                 val logo = Card.BRAND_RESOURCE_MAP[card?.brand]
                 val unknown = Card.BRAND_RESOURCE_MAP[Card.UNKNOWN]

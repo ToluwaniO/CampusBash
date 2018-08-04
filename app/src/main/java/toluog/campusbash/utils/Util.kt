@@ -27,8 +27,10 @@ import android.net.Uri
 import android.support.v4.content.ContextCompat.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.stripe.android.model.Card
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivity
+import org.json.JSONObject
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.view.NoNetworkActivity
 import java.math.BigDecimal
@@ -324,5 +326,16 @@ class Util{
             return activeNetwork?.isConnected ?: false
         }
 
+        fun getObject(value: String?): JSONObject? {
+            if (value == null) return null
+            return JSONObject(value)
+        }
+
+        fun getCardFromJson(value: String?): Card? {
+            val json = Util.getObject(value)
+            val card = Card.fromJson(json)
+            val number = json?.get(CARD_NUMBER) as String?
+            return Card(number, card?.expMonth, card?.expYear, card?.cvc)
+        }
     }
 }
