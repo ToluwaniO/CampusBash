@@ -72,6 +72,7 @@ class StripeServerClient {
 
     private fun handleAccountResponse(body: StripeAccountBody, uid: String, token: String) {
         launch {
+
             response = httpClientAPI.createStripeAccount(uid, token, body)
             response.enqueue(object : Callback<ServerResponse> {
                 override fun onResponse(call: Call<ServerResponse>?, response: Response<ServerResponse>?) {

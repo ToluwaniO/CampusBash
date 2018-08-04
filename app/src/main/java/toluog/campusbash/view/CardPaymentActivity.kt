@@ -3,6 +3,8 @@ package toluog.campusbash.view
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -12,6 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.crashlytics.android.Crashlytics
 import com.stripe.android.Stripe
 import com.stripe.android.TokenCallback
 import com.stripe.android.model.Card
@@ -30,7 +33,9 @@ import com.stripe.android.model.Customer
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.credit_card_view.*
 import org.jetbrains.anko.*
+import toluog.campusbash.model.BashCard
 import toluog.campusbash.utils.CampusBash
+import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import java.util.*
 import kotlin.collections.ArrayList
@@ -47,35 +52,11 @@ class CardPaymentActivity : AppCompatActivity() {
     private val adapter = CardAdapter()
     private lateinit var pleaseWait: ProgressDialog
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_payment)
         currency = intent.extras.getString(AppContract.CURRENCY)
-
-        if(CampusBash.stripeSessionStarted) {
-            CustomerSession.getInstance().retrieveCurrentCustomer(object : CustomerSession.CustomerRetrievalListener {
-                override fun onCustomerRetrieved(customer: Customer) {
-                    Log.d(TAG, "ID -> ${customer.id}\ndef_source -> ${customer.defaultSource}")
-                    customer.sources.forEach {
-                        val card = it.asCard()
-                        Log.d(TAG, "$card")
-                        if(card != null) {
-                            cards.add(BashCard(card))
-                            adapter.notifyDataSetChanged()
-                        }
-                    }
-                }
-
-                override fun onError(errorCode: Int, errorMessage: String?) {
-                    Log.d(TAG, "$errorCode")
-                    Log.d(TAG, errorMessage)
-                }
-
-            })
-            Log.d(TAG, "Found ${cards.size} cached cards")
-            updateView()
-        }
+        manageCards()
 
         pleaseWait = indeterminateProgressDialog(R.string.please_wait)
         pleaseWait.dismiss()
@@ -108,27 +89,10 @@ class CardPaymentActivity : AppCompatActivity() {
         card_recycler.layoutManager = layoutManager
 
         add_card.setOnClickListener {
-            add_card_layout.visibility = View.VISIBLE
-            add_card.visibility = View.GONE
-            no_card_layout.visibility = View.GONE
+            startActivityForResult(intentFor<AddCardActivity>(), ADD_CARD)
         }
 
-        save.setOnClickListener {
-            Util.hideKeyboard(this@CardPaymentActivity)
-            addCard()
-        }
-
-        isReadyToPay()
-    }
-
-    override fun onBackPressed() {
-        if(add_card_layout.visibility == View.VISIBLE) {
-            add_card_layout.visibility = View.GONE
-            add_card.visibility = View.VISIBLE
-            updateView()
-        } else {
-            super.onBackPressed()
-        }
+        //isReadyToPay()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -157,31 +121,43 @@ class CardPaymentActivity : AppCompatActivity() {
                     Activity.RESULT_CANCELED -> Log.d(TAG, "Google Pay result cancelled")
                 }
             }
-        }
-    }
-
-    private fun validateCard(cardToSave: Card): Boolean {
-        if(!cardToSave.validateCard()) {
-            snackbar(root_view, R.string.could_not_validate_card)
-            return false
-        }
-        return true
-    }
-
-    private fun getToken(card: BashCard) {
-        pleaseWait.show()
-        val stripe = Stripe(this, AppContract.STRIPE_PUBLISHABLE_KEY)
-        stripe.createToken(card.card, object : TokenCallback {
-            override fun onSuccess(token: Token?) {
-                val id: String? = token?.id
-                sendActivityResult(id, card.newCard)
+            ADD_CARD -> {
+                if(resultCode == Activity.RESULT_OK) {
+                    val bashCard = data?.extras?.get("card") as BashCard?
+                    if(bashCard != null && isNewCard(bashCard.card)) {
+                        cards.add(bashCard)
+                    }
+                    updateView()
+                }
             }
+        }
+    }
 
-            override fun onError(error: Exception?) {
-                Log.d(TAG, "Token error\ne -> ${error?.message}")
+    private fun getToken(bashCard: BashCard) {
+        pleaseWait.show()
+        val source = bashCard.customerSource
+        val card = bashCard.card
+        when {
+            source != null -> sendActivityResult(source.id)
+            card != null -> {
+                val stripe = Stripe(this, AppContract.STRIPE_PUBLISHABLE_KEY)
+                stripe.createToken(card, object : TokenCallback {
+                    override fun onSuccess(token: Token?) {
+                        val id: String? = token?.id
+                        sendActivityResult(id, bashCard.newCard)
+                    }
+
+                    override fun onError(error: Exception?) {
+                        Log.d(TAG, "Token error\ne -> ${error?.message}")
+                        sendActivityResult(null)
+                    }
+                })
+            }
+            else -> {
+                Log.d(TAG, "Card is null")
                 sendActivityResult(null)
             }
-        })
+        }
     }
 
     private fun sendActivityResult(tokenId: String?, newCard: Boolean = false) {
@@ -268,19 +244,28 @@ class CardPaymentActivity : AppCompatActivity() {
         }
     }
 
-    private fun addCard() {
-        val card = card_input_widget.card
-        if(card != null && validateCard(card)) {
-            cards.add(BashCard(card, true))
-        } else if(card == null) {
-            snackbar(root_view, R.string.could_not_validate_card)
-        }
-        add_card_layout.visibility = View.GONE
-        add_card.visibility = View.VISIBLE
-        updateView()
+    private fun manageCards() {
+        CampusBash.getBashCards().observe(this, Observer {
+            cards.removeAll(cards.filter { !it.newCard })
+            if(it != null) {
+                cards.addAll(it)
+            }
+            updateView()
+        })
     }
 
-    data class BashCard(var card: Card, var newCard: Boolean = false)
+    private fun isNewCard(card: Card?): Boolean {
+        if (card == null) return false
+        cards.forEach {
+            val c = it.card
+            if(card == c) return false
+        }
+        return true
+    }
+
+    companion object {
+        const val ADD_CARD = 3628
+    }
 
     inner class CardAdapter: RecyclerView.Adapter<CardAdapter.ViewHolder>() {
 
@@ -296,14 +281,13 @@ class CardPaymentActivity : AppCompatActivity() {
             holder.bind(cards[position])
         }
 
-
         inner class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),
                 LayoutContainer {
 
             fun bind(bCard: BashCard) {
-                val card = bCard.card
-                card_number.text = getString(R.string.debit_card_digits, card.brand, card.last4)
-                val logo = Card.BRAND_RESOURCE_MAP[card.brand]
+                val card = bCard.customerSource?.asCard() ?: bCard.card
+                card_number.text = getString(R.string.debit_card_digits, card?.brand, card?.last4)
+                val logo = Card.BRAND_RESOURCE_MAP[card?.brand]
                 val unknown = Card.BRAND_RESOURCE_MAP[Card.UNKNOWN]
                 if(logo != null) {
                     logo_view.imageResource = logo
