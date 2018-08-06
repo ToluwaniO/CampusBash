@@ -239,7 +239,7 @@ class CreateTicketFragment: Fragment(){
     }
 
     private fun setupStripe() {
-        val dialog = alert(R.string.set_up_stripe) {
+        val dialog = alert(R.string.account_not_setup_payments) {
             positiveButton(getString(R.string.yes)) {
                 startActivity(intentFor<StripeSetupActivity>())
             }
