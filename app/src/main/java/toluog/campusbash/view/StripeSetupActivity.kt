@@ -10,7 +10,12 @@ import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Message
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.view.MenuItem
+import android.view.View
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.synthetic.main.activity_stripe_setup.*
 import org.jetbrains.anko.*
@@ -24,6 +29,7 @@ class StripeSetupActivity : AppCompatActivity() {
 
     private lateinit var viewModel: StripeSetupViewModel
     private val TAG = StripeSetupActivity::class.java.simpleName
+    private val STRIPE_URL = "https://stripe.com/ca"
     private var stripeResult: LiveData<ServerResponse>? = null
     private lateinit var dialog: ProgressDialog
 
@@ -40,6 +46,18 @@ class StripeSetupActivity : AppCompatActivity() {
         create_stripe_button.setOnClickListener {
             setupStripe()
         }
+
+        val info = SpannableString(getString(R.string.stripe_setup_info))
+        val len = info.length
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(view: View?) {
+                val myIntent = Intent(Intent.ACTION_VIEW, Uri.parse(STRIPE_URL))
+                startActivity(myIntent)
+            }
+        }
+        info.setSpan(clickableSpan, len-5, len-1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        message.text = info
+        message.movementMethod = LinkMovementMethod.getInstance()
     }
 
     override fun onPause() {
