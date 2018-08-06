@@ -50,7 +50,9 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             finish()
         }
         val customerId = user?.value?.get(AppContract.STRIPE_CUSTOMER_ID) as String?
-        CampusBash.initCustomerSession(customerId)
+        if(!CampusBash.stripeSessionStarted) {
+            CampusBash.initCustomerSession(customerId, this)
+        }
 
         updateUi()
         
