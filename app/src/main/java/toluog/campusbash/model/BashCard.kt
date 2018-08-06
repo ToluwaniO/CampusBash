@@ -2,11 +2,13 @@ package toluog.campusbash.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.support.annotation.Keep
 import com.stripe.android.model.Card
 import com.stripe.android.model.CustomerSource
 import toluog.campusbash.utils.Util
 import toluog.campusbash.utils.convertToJson
 
+@Keep
 data class BashCard(var customerSource: CustomerSource?, var card: Card? = null, var newCard: Boolean = false) : Parcelable {
     constructor(source: Parcel) : this(
             CustomerSource.fromJson(Util.getObject(source.readString())),

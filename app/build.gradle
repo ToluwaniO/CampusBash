@@ -15,8 +15,8 @@ android {
         applicationId "toluog.campusbash"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 13
-        versionName "0.0.3"
+        versionCode 14
+        versionName "0.0.4"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
