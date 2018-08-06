@@ -24,6 +24,7 @@ import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 import toluog.campusbash.data.network.ServerResponse
 import toluog.campusbash.utils.AppContract
+import toluog.campusbash.utils.Util
 
 class StripeSetupActivity : AppCompatActivity() {
 
@@ -44,7 +45,11 @@ class StripeSetupActivity : AppCompatActivity() {
         dialog.dismiss()
 
         create_stripe_button.setOnClickListener {
-            setupStripe()
+            if(Util.isConnected(this@StripeSetupActivity)) {
+                setupStripe()
+            } else {
+                snackbar(root, R.string.no_internet)
+            }
         }
 
         val info = SpannableString(getString(R.string.stripe_setup_info))

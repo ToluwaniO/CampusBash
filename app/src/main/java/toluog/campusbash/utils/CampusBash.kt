@@ -38,7 +38,7 @@ object CampusBash {
                 user.observeForever {
                     Log.d(TAG, "Observing user")
                     it?.let {
-                        initCustomerSession(it["stripeCustomerId"] as String?)
+                        initCustomerSession(it["stripeCustomerId"] as String?, c)
                     }
                 }
             }
@@ -52,10 +52,10 @@ object CampusBash {
     }
 
     @Synchronized
-    fun initCustomerSession(customerId: String?) {
+    fun initCustomerSession(customerId: String?, context: Context) {
         Log.d(TAG,"Initializing customer session")
         if(!stripeSessionStarted && customerId != null
-                && customerSessionRetries < MAX_CUSTOMER_SESSION_RETRIES){
+                && customerSessionRetries < MAX_CUSTOMER_SESSION_RETRIES && Util.isConnected(context)){
             CustomerSession.initCustomerSession(StripeEphemeralKeyProvider(object : ProgressListener {
                 override fun onStringResponse(message: String) {
                     if(!message.startsWith("Error:")) {
@@ -64,7 +64,7 @@ object CampusBash {
                         retrieveCustomer()
                     } else {
                         customerSessionRetries++
-                        initCustomerSession(customerId)
+                        initCustomerSession(customerId, context)
                         Log.d(TAG, "Failed to start stripe session")
                     }
                 }
