@@ -47,6 +47,7 @@ class AppContract{
         val FIREBASE_USER_TICKETS = "userTickets"
         val FIREBASE_USER_USERNAME = "userName"
         val FIREBASE_USER_UID = "uid"
+        val FIREBASE_USER_STUDENT_ID = "studentId"
         val FIREBASE_USER_PREFERENCES = "preference"
         val FIREBASE_USER_UNIVERSITY = "university"
         val FIREBASE_USER_COUNTRY = "country"
