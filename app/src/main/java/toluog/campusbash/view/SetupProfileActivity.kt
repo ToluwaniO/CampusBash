@@ -56,6 +56,7 @@ class SetupProfileActivity : AppCompatActivity() {
                 val profile = it[AppContract.FIREBASE_USER_PHOTO_URL] as String?
                 val name = it[AppContract.FIREBASE_USER_USERNAME] as String?
                 val summary = it[AppContract.FIREBASE_USER_SUMMARY] as String?
+                val studentId = it[AppContract.FIREBASE_USER_STUDENT_ID] as String?
 
                 if(profile == null) {
                     profileImage.setImageResource(R.drawable.adult_emoji)
@@ -64,6 +65,7 @@ class SetupProfileActivity : AppCompatActivity() {
                 }
                 userNameView.setText(name ?: user.displayName)
                 summaryView.setText(summary)
+                studentIdView.setText(studentId)
             }
         })
     }
@@ -75,6 +77,8 @@ class SetupProfileActivity : AppCompatActivity() {
                     userNameView.text.toString(), user)
             fbManager.updateProfileField(AppContract.FIREBASE_USER_SUMMARY,
                     summaryView.text.toString(), user)
+            fbManager.updateProfileField(AppContract.FIREBASE_USER_STUDENT_ID,
+                    studentIdView.text.toString(), user)
         }
     }
 
