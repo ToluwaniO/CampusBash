@@ -43,8 +43,12 @@ class CreateEventFragment : Fragment(){
 
     private val TAG = CreateEventFragment::class.java.simpleName
     private lateinit var rootView: View
-    private val startCalendar = Calendar.getInstance()
-    private val endCalendar = Calendar.getInstance()
+    private val startCalendar = Calendar.getInstance().apply {
+        timeInMillis = System.currentTimeMillis()
+    }
+    private val endCalendar = Calendar.getInstance().apply {
+        timeInMillis = System.currentTimeMillis()
+    }
     private var imagePicker: ImagePicker? = null
     private lateinit var fbasemanager: FirebaseManager
     private var mCallback: CreateEventFragmentInterface? = null
@@ -56,6 +60,7 @@ class CreateEventFragment : Fragment(){
     var isSaved = false
     private val user = FirebaseManager.getUser()
     private val creator = Creator()
+    private val eventTypes = arrayListOf<String>()
 
 
     interface CreateEventFragmentInterface {
@@ -77,6 +82,7 @@ class CreateEventFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val bundle = arguments
         countries = resources.getStringArray(R.array.countries).asList()
+        eventTypes.addAll(resources.getStringArray(R.array.party_types))
 
         viewModel.getUniversities(country)?.observe(this, Observer {
             universities.clear()
@@ -90,6 +96,12 @@ class CreateEventFragment : Fragment(){
                 if(it != null) {
                     Log.d(TAG, "user -> $it")
                     updateCreator(it)
+                    val flags = it[AppContract.FIREBASE_USER_ACCOUNT_FLAGS] as List<String>
+                    eventTypes.clear()
+                    eventTypes.addAll(resources.getStringArray(R.array.party_types))
+                    if(flags.contains("facultyAccount")) {
+                        eventTypes.addAll(resources.getStringArray(R.array.faculty_party_types))
+                    }
                 }
             })
         }
@@ -132,7 +144,6 @@ class CreateEventFragment : Fragment(){
     }
 
     private fun updateUi(context: Context){
-        val types = context.resources.getStringArray(R.array.party_types).toList()
         val place = viewModel.place
 
         if(viewModel.event.university.isNotBlank()) {
@@ -208,9 +219,9 @@ class CreateEventFragment : Fragment(){
         }
 
         event_type.setOnClickListener {
-            selector(getString(R.string.select_type), types) { _, i ->
-                event_type.updateTextSelector(types[i], android.R.color.black)
-                viewModel.event.eventType = types[i]
+            selector(getString(R.string.select_type), eventTypes) { _, i ->
+                event_type.updateTextSelector(eventTypes[i], android.R.color.black)
+                viewModel.event.eventType = eventTypes[i]
             }
         }
     }

@@ -13,6 +13,10 @@
         <item>Seminar or Talk</item>
     </string-array>
 
+    <string-array name="faculty_party_types">
+        <item>Frosh</item>
+    </string-array>
+
     <string-array name="countries">
         <item>Canada</item>
         <item>United States</item>
