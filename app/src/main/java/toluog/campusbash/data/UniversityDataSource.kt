@@ -31,23 +31,25 @@ class UniversityDataSource {
                 }
 
                 // Dispatch the event
-                for (change in value.documentChanges) {
-                    // Snapshot of the changed document
-                    Log.d(TAG, change.document.toString())
-                    val snapshot = change.document.toObject(University::class.java)
+                value?.documentChanges?.forEach {
+                    if(it.document.exists()) {
+                        // Snapshot of the changed document
+                        Log.d(TAG, it.document.toString())
+                        val snapshot = it.document.toObject(University::class.java)
 
-                    when (change.type) {
-                        DocumentChange.Type.ADDED -> {
-                            Log.d(TAG, "ChildAdded")
-                            launch { uniDao?.insertUniversity(snapshot) }
-                        }
-                        DocumentChange.Type.MODIFIED -> {
-                            Log.d(TAG, "ChildModified")
-                            launch { uniDao?.updateUniversity(snapshot) }
-                        }
-                        DocumentChange.Type.REMOVED -> {
-                            Log.d(TAG, "ChildRemoved")
-                            launch { uniDao?.deleteUniversity(snapshot) }
+                        when (it.type) {
+                            DocumentChange.Type.ADDED -> {
+                                Log.d(TAG, "ChildAdded")
+                                launch { uniDao?.insertUniversity(snapshot) }
+                            }
+                            DocumentChange.Type.MODIFIED -> {
+                                Log.d(TAG, "ChildModified")
+                                launch { uniDao?.updateUniversity(snapshot) }
+                            }
+                            DocumentChange.Type.REMOVED -> {
+                                Log.d(TAG, "ChildRemoved")
+                                launch { uniDao?.deleteUniversity(snapshot) }
+                            }
                         }
                     }
                 }

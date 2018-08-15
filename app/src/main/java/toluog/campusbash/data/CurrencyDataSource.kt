@@ -34,13 +34,13 @@ class CurrencyDataSource {
 
                 // Dispatch the event
                launch {
-                   for (change in value.documentChanges) {
+                   value?.documentChanges?.forEach {
                        // Snapshot of the changed document
-                       if(change.document.exists()) {
-                           Log.d(TAG, change.document.toString())
-                           val snapshot = change.document.toObject(Currency::class.java)
+                       if(it.document.exists()) {
+                           Log.d(TAG, it.document.toString())
+                           val snapshot = it.document.toObject(Currency::class.java)
 
-                           when (change.type) {
+                           when (it.type) {
                                DocumentChange.Type.ADDED -> {
                                    Log.d(TAG, "ChildAdded")
                                    currDao?.insertCurrency(snapshot)

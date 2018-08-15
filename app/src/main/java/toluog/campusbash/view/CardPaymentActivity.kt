@@ -209,7 +209,7 @@ class CardPaymentActivity : AppCompatActivity() {
                 .setPaymentMethodTokenizationType(WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY)
                 .addParameter("gateway", "stripe")
                 .addParameter("stripe:publishableKey", AppContract.STRIPE_PUBLISHABLE_KEY)
-                .addParameter("stripe:version", "6.1.2")
+                .addParameter("stripe:version", "7.0.1")
                 .build()
     }
 
