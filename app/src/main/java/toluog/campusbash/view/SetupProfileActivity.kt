@@ -39,9 +39,11 @@ class SetupProfileActivity : AppCompatActivity() {
         profileImage.setOnClickListener { imagePicker.choosePicture(true) }
 
         nextButton.setOnClickListener {
-            updateFields()
-            startActivity(intentFor<MainActivity>())
-            finish()
+            if(validate()) {
+                updateFields()
+                startActivity(intentFor<MainActivity>())
+                finish()
+            }
         }
 
     }
@@ -80,6 +82,14 @@ class SetupProfileActivity : AppCompatActivity() {
             fbManager.updateProfileField(AppContract.FIREBASE_USER_STUDENT_ID,
                     studentIdView.text.toString(), user)
         }
+    }
+
+    private fun validate(): Boolean {
+        if(userNameView.text.toString().isBlank()) {
+            userNameView.error = getString(R.string.field_cant_be_empty)
+            return false
+        }
+        return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

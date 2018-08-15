@@ -74,6 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="2dp"
+                    android:maxLines="2"
                     android:text="Telfer Night!"
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
