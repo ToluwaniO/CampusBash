@@ -174,5 +174,6 @@
     <string name="stripe_info">CampusBash use stripe to manage </string>
     <string name="stripe_setup_info">In order to receive payments on CampusBash, we need to create an account for you on Stripe - our 3rd party payments provider. Stripe will help you monitor the income from your all your CampusBash ticket purchases. They will also make payouts to your bank account 7 days after any amount is spent on your CampusBash tickets. You can find out more here.</string>
     <string name="enter_student_id">Enter student id</string>
+    <string name="featured">Featured 🔥</string>
 
 </resources>

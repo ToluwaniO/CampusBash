@@ -21,6 +21,7 @@ import org.jetbrains.anko.coroutines.experimental.bg
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
+import toluog.campusbash.model.Featured
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.ConfigProvider
 import toluog.campusbash.utils.FirebaseManager
@@ -41,12 +42,13 @@ class EventsFragment : Fragment(){
     private val ads = ArrayList<NativeAd>()
     private var eventSize = 0
     private  var places: LiveData<List<Place>>? = null
-
-
+    private lateinit var featured: Featured
+    private lateinit var featuredTypes: Set<String>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.events_layout, container, false)
-
+        featuredTypes = configProvider.featuredEventTypes()
+        featured = Featured(title = getString(R.string.featured))
         arguments?.let {
             myEvents = it.getBoolean(MY_EVENTS_PARAM)
             university = it.getString(UNIVERSITY_PARAM)
@@ -58,6 +60,7 @@ class EventsFragment : Fragment(){
             Log.d(TAG, "Events size is ${eventsList?.size}")
             val user = FirebaseManager.getUser()
             events.clear()
+            featured.events.clear()
             eventSize = 0
             if(eventsList != null) {
                 eventSize = eventsList.size
@@ -66,13 +69,20 @@ class EventsFragment : Fragment(){
                     if(myEvents) {
                         if(it.creator.uid == user?.uid) events.add(it)
                     } else {
-                        events.add(it)
+                        if(featuredTypes.contains(it.eventType)) {
+                            featured.events.add(it)
+                        } else {
+                            events.add(it)
+                        }
                     }
                 }
             }
 
             copyAds(eventSize)
-            event_recycler.stopScroll()
+            if(featured.events.isNotEmpty()) {
+                events.add(0, featured)
+            }
+            //event_recycler.stopScroll()
             adapter?.notifyListChanged(events)
             updateUiVisibility()
         })
@@ -90,7 +100,7 @@ class EventsFragment : Fragment(){
                     ads.clear()
                     ads.addAll(it)
                     copyAds(eventSize)
-                    event_recycler.stopScroll()
+                    //event_recycler.stopScroll()
                     adapter?.notifyListChanged(events)
                 }
             })
@@ -101,7 +111,7 @@ class EventsFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ViewCompat.setNestedScrollingEnabled(event_recycler, !myEvents)
-        adapter = EventAdapter(ArrayList<Any>(), viewModel.getPlaces()?.value ?: emptyList(),
+        adapter = EventAdapter(arrayListOf(), viewModel.getPlaces()?.value ?: emptyList(),
                 rootView.context, myEvents)
         val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(rootView.context)
         event_recycler.layoutManager = layoutManager

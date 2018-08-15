@@ -12,6 +12,7 @@ import com.google.android.gms.ads.formats.NativeAd
 import com.google.android.gms.ads.formats.NativeAdOptions
 import com.google.android.gms.ads.formats.NativeAppInstallAd
 import com.google.android.gms.ads.formats.NativeContentAd
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 
@@ -27,7 +28,7 @@ class AdManager(val context: Context, val adList: MutableLiveData<ArrayList<Nati
 
         val ads = adList.value
         if(ads != null) {
-            if (ads.size >= AppContract.NUM_EVENTS_FRAGMENT_ADS) return
+            if (ads.size >= configProvider.eventsFragmentAdsMax()) return
 
             val builder = AdLoader.Builder(context, admobAppId)
 
@@ -61,6 +62,7 @@ class AdManager(val context: Context, val adList: MutableLiveData<ArrayList<Nati
         private val TAG = AdManager::class.java.simpleName
         private var admobAppId: String = ""
         private var isInitialized = false
+        private val configProvider = ConfigProvider(FirebaseRemoteConfig.getInstance())
 
         fun initializeAds(context: Context) {
             Log.d(TAG, "Initializing MobileAds")

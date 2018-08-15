@@ -75,7 +75,7 @@ class AppContract{
         const val MAX_EVENTS_FOR_ADS_IN_FRAGMENT = 20
 
         //RemoteConfig
-        val configRefreshTime = 3600L
+        val configRefreshTime = 3600000L
         get() {
             if(BuildConfig.DEBUG) return 0L
             return field

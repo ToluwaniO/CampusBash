@@ -35,6 +35,10 @@ data class Event(@PrimaryKey var eventId: String = "", var eventName: String = "
         return false
     }
 
+    fun deepEquals(other: Any?): Boolean {
+        return super.equals(other)
+    }
+
     override fun hashCode(): Int {
         var result = eventId.hashCode()
         result = 31 * result + eventName.hashCode()
