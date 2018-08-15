@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
+import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -12,6 +13,7 @@ import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import org.jetbrains.anko.toast
 import toluog.campusbash.model.Creator
@@ -55,7 +57,7 @@ class FirebaseManager {
         return db?.runTransaction {
             ref?.let {ref ->
                 val snapshot =  it.get(ref)
-                val ticketCodes = snapshot.data[key] as List<HashMap<String, Any>>?
+                val ticketCodes = snapshot.data?.get(key) as List<HashMap<String, Any>>?
                 ticketCodes?.forEach {
                     if(it["code"] as String? == code) {
                         it["isUsed"] = value
@@ -94,7 +96,7 @@ class FirebaseManager {
                 }
     }
 
-    fun uploadEventImage(uri: Uri): UploadTask? {
+    fun uploadEventImage(uri: Uri): Pair<StorageReference?, UploadTask?> {
         // Create a storage reference from our app
         val storageRef = storage?.reference
         val user = getUser()
@@ -105,9 +107,9 @@ class FirebaseManager {
                     ?.child(user.uid)
                     ?.child("${uri.lastPathSegment}${System.currentTimeMillis()}")
 
-            return imagesRef?.putFile(uri)
+            return Pair(imagesRef, imagesRef?.putFile(uri))
         }
-        return null
+        return Pair(null, null)
     }
 
     fun updateProfileField(key: String, value: Any, user: FirebaseUser) {
@@ -123,10 +125,19 @@ class FirebaseManager {
             // Create a reference to "mountains.jpg"
             val imagesRef = storageRef?.child(AppContract.FIREBASESTORAGE_PROFILE_PHOTOS)
                     ?.child(user.uid)?.child("${System.currentTimeMillis()}")
-
-            imagesRef?.putFile(uri)?.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
-                if(taskSnapshot != null) {
-                    updateProfileField(AppContract.FIREBASE_USER_PHOTO_URL, taskSnapshot.downloadUrl?.toString() ?: "", user)
+//
+            val uploadTask = imagesRef?.putFile(uri)
+            uploadTask?.continueWithTask { task ->
+                if(!task.isSuccessful) {
+                    Log.d(TAG, task.exception?.message)
+                    throw task.exception ?: Exception("Upload task was not successful")
+                }
+                imagesRef.downloadUrl
+            }?.addOnCompleteListener { task ->
+                if(task.isSuccessful) {
+                    updateProfileField(AppContract.FIREBASE_USER_PHOTO_URL, task.result.toString(), user)
+                } else {
+                    Log.d(TAG, task.exception?.message)
                 }
             }
         }

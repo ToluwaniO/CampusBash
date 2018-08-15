@@ -282,7 +282,7 @@ class CreateEventFragment : Fragment(){
         viewModel.place?.address = place.address.toString()
         viewModel.place?.name = place.name.toString()
         viewModel.place?.id = place.id
-        if(place.name.isNotEmpty() && place.address.isNotEmpty()) {
+        if(place.name.isNotEmpty() && place.address?.isNotEmpty() == true) {
             event_address.updateTextSelector(getString(R.string.place_name_address, place.name,
                     place.address), android.R.color.black)
         }
@@ -305,13 +305,23 @@ class CreateEventFragment : Fragment(){
         if (uri != null) {
             Log.d(TAG, "uri is not null")
             dialog.setMessage(getString(R.string.uploading_media))
-            fbasemanager.uploadEventImage(uri)?.addOnSuccessListener { taskSnapshot: UploadTask.TaskSnapshot? ->
-                val placeholder = taskSnapshot?.storage?.path?.let{
-                    Media(taskSnapshot.downloadUrl.toString(), it, MEDIA_TYPE_IMAGE)
+            val pair = fbasemanager.uploadEventImage(uri)
+            pair.second?.continueWithTask { task ->
+                if(!task.isSuccessful) {
+                    Log.d(TAG, task.exception?.message)
+                    throw task.exception ?: Exception("Upload task was not successful")
                 }
-                event.placeholderImage = placeholder
-                completeSave(dialog, event)
+                pair.first?.downloadUrl
+            }?.addOnCompleteListener { task ->
+                if(task.isSuccessful) {
+                    val placeholder = Media(task.result.toString(), pair.first?.path ?: "", MEDIA_TYPE_IMAGE)
+                    event.placeholderImage = placeholder
+                    completeSave(dialog, event)
+                } else {
+                    Log.d(TAG, task.exception?.message)
+                }
             }
+
         }
         else{
             Log.d(TAG, "uri is null")

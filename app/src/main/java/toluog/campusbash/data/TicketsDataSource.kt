@@ -26,27 +26,28 @@ class TicketsDataSource {
                 }
 
                 // Dispatch the event
-                for (change in value.documentChanges) {
-                    if(!change.document.exists()) continue
-                    // Snapshot of the changed document
-                    Log.d(TAG, change.document.toString())
-                    val snapshot = change.document.toObject(BoughtTicket::class.java)
+                value?.documentChanges?.forEach {
+                    if (it.document.exists()) {
+                        // Snapshot of the changed document
+                        Log.d(TAG, it.document.toString())
+                        val snapshot = it.document.toObject(BoughtTicket::class.java)
 
-                    when (change.type) {
-                        DocumentChange.Type.ADDED -> {
-                            Log.d(TAG, "ChildAdded")
-                            tickets.add(snapshot)
-                        }
-                        DocumentChange.Type.MODIFIED -> {
-                            Log.d(TAG, "ChildModified")
-                            val index = indexOf(snapshot)
-                            if (index >= 0) {
-                                tickets[index] = snapshot
+                        when (it.type) {
+                            DocumentChange.Type.ADDED -> {
+                                Log.d(TAG, "ChildAdded")
+                                tickets.add(snapshot)
                             }
-                        }
-                        DocumentChange.Type.REMOVED -> {
-                            Log.d(TAG, "ChildRemoved")
-                            tickets.remove(snapshot)
+                            DocumentChange.Type.MODIFIED -> {
+                                Log.d(TAG, "ChildModified")
+                                val index = indexOf(snapshot)
+                                if (index >= 0) {
+                                    tickets[index] = snapshot
+                                }
+                            }
+                            DocumentChange.Type.REMOVED -> {
+                                Log.d(TAG, "ChildRemoved")
+                                tickets.remove(snapshot)
+                            }
                         }
                     }
                 }

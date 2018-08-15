@@ -1,5 +1,6 @@
 package toluog.campusbash.view
 
+import android.app.Activity
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
@@ -13,7 +14,6 @@ import android.widget.ArrayAdapter
 import org.jetbrains.anko.intentFor
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
-import com.firebase.ui.auth.ResultCodes
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
 import android.os.Build
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         when (item.itemId) {
             R.id.navigation_events -> {
                 title = ""
-                fab.visibility = VISIBLE
+                (fab as View).visibility = VISIBLE
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame,
                         EventsFragment.newInstance(university, false), null)
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             }
             R.id.navigation_search -> {
                 title = ""
-                fab.visibility = GONE
+                (fab as View).visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
                         .commit()
                 setAppBarState(null)
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             }
             R.id.navigation_tickets -> {
                 title = getString(R.string.tickets)
-                fab.visibility = GONE
+                (fab as View).visibility = GONE
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, TicketsFragment.newInstance(), null)
                         .commit()
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             }
             R.id.navigation_host -> {
                 title = getString(R.string.my_events)
-                fab.visibility = VISIBLE
+                (fab as View).visibility = VISIBLE
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame,
                         EventsFragment.newInstance(university, true), null)
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             }
             R.id.navigation_profile -> {
                 title = ""
-                fab.visibility = GONE
+                (fab as View).visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
                 setAppBarState(false, true)
@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
         if (requestCode == RC_SIGN_IN) {
 
-            if (resultCode == ResultCodes.OK) {
+            if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 Log.d(TAG, "Sign in successful")
                 // ...

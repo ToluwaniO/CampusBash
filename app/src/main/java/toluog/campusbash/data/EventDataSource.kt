@@ -55,28 +55,29 @@ class EventDataSource  {
 
                         launch {
                             // Dispatch the event
-                            for (change in value.documentChanges) {
-                                if(!change.document.exists()) continue
-                                // Snapshot of the changed document
-                                Log.d(TAG, change.document.toString())
-                                val snapshot = change.document.toObject(Event::class.java)
-                                Log.d(TAG, snapshot.toString())
+                            value?.documentChanges?.forEach {
+                                if(it.document.exists()) {
+                                    // Snapshot of the changed document
+                                    Log.d(TAG, it.document.toString())
+                                    val snapshot = it.document.toObject(Event::class.java)
+                                    Log.d(TAG, snapshot.toString())
 
-                                when (change.type) {
-                                    DocumentChange.Type.ADDED -> {
-                                        Log.d(TAG, "ChildAdded")
-                                        db?.eventDao()?.insertEvent(snapshot)
+                                    when (it.type) {
+                                        DocumentChange.Type.ADDED -> {
+                                            Log.d(TAG, "ChildAdded")
+                                            db?.eventDao()?.insertEvent(snapshot)
+                                        }
+                                        DocumentChange.Type.MODIFIED -> {
+                                            Log.d(TAG, "ChildModified")
+                                            db?.eventDao()?.updateEvent(snapshot)
+                                        }
+                                        DocumentChange.Type.REMOVED -> {
+                                            Log.d(TAG, "ChildRemoved")
+                                            db?.eventDao()?.deleteEvent(snapshot)
+                                        }
                                     }
-                                    DocumentChange.Type.MODIFIED -> {
-                                        Log.d(TAG, "ChildModified")
-                                        db?.eventDao()?.updateEvent(snapshot)
-                                    }
-                                    DocumentChange.Type.REMOVED -> {
-                                        Log.d(TAG, "ChildRemoved")
-                                        db?.eventDao()?.deleteEvent(snapshot)
-                                    }
+                                    savePlace(snapshot.placeId, snapshot, context)
                                 }
-                                savePlace(snapshot.placeId, snapshot, context)
                             }
                         }
                     })
@@ -96,28 +97,29 @@ class EventDataSource  {
 
                         launch {
                             // Dispatch the event
-                            for (change in value.documentChanges) {
-                                if(!change.document.exists()) continue
-                                // Snapshot of the changed document
-                                Log.d(TAG, change.document.toString())
-                                val snapshot = change.document.toObject(Event::class.java)
-                                Log.d(TAG, snapshot.toString())
+                            value?.documentChanges?.forEach {
+                                if(!it.document.exists()) {
+                                    // Snapshot of the changed document
+                                    Log.d(TAG, it.document.toString())
+                                    val snapshot = it.document.toObject(Event::class.java)
+                                    Log.d(TAG, snapshot.toString())
 
-                                when (change.type) {
-                                    DocumentChange.Type.ADDED -> {
-                                        Log.d(TAG, "ChildAdded")
-                                        db?.eventDao()?.insertEvent(snapshot)
+                                    when (it.type) {
+                                        DocumentChange.Type.ADDED -> {
+                                            Log.d(TAG, "ChildAdded")
+                                            db?.eventDao()?.insertEvent(snapshot)
+                                        }
+                                        DocumentChange.Type.MODIFIED -> {
+                                            Log.d(TAG, "ChildModified")
+                                            db?.eventDao()?.updateEvent(snapshot)
+                                        }
+                                        DocumentChange.Type.REMOVED -> {
+                                            Log.d(TAG, "ChildRemoved")
+                                            db?.eventDao()?.deleteEvent(snapshot)
+                                        }
                                     }
-                                    DocumentChange.Type.MODIFIED -> {
-                                        Log.d(TAG, "ChildModified")
-                                        db?.eventDao()?.updateEvent(snapshot)
-                                    }
-                                    DocumentChange.Type.REMOVED -> {
-                                        Log.d(TAG, "ChildRemoved")
-                                        db?.eventDao()?.deleteEvent(snapshot)
-                                    }
+                                    savePlace(snapshot.placeId, snapshot, context)
                                 }
-                                savePlace(snapshot.placeId, snapshot, context)
                             }
                         }
                     })

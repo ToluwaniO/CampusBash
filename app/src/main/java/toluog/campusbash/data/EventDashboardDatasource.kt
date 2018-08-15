@@ -30,12 +30,13 @@ class EventDashboardDatasource() {
                 return@EventListener
             }
 
-            for (change in value.documentChanges) {
-                if(!change.document.exists()) continue
-                // Snapshot of the changed document
-                Log.d(TAG, change.document.toString())
-                val document = change.document
-                processDocument(document, change.type)
+            value?.documentChanges?.forEach {
+                if(it.document.exists()) {
+                    // Snapshot of the changed document
+                    Log.d(TAG, it.document.toString())
+                    val document = it.document
+                    processDocument(document, it.type)
+                }
             }
 
         })
