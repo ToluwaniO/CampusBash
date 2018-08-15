@@ -53,6 +53,7 @@ class AppContract{
         val FIREBASE_USER_COUNTRY = "country"
         val FIREBASE_USER_SUMMARY = "summary"
         val FIREBASE_USER_PHOTO_URL = "photoUrl"
+        val FIREBASE_USER_ACCOUNT_FLAGS = "accountFlags"
         val FIREBASE_UNIVERSITIES = "universities"
         val FIREBASESTORAGE_EVENT_IMAGE_PLACEHOLDERS = "event_placeholder_images"
         val FIREBASESTORAGE_PROFILE_PHOTOS = "user_profile_photos"
@@ -74,7 +75,7 @@ class AppContract{
         const val MAX_EVENTS_FOR_ADS_IN_FRAGMENT = 20
 
         //RemoteConfig
-        val configRefreshTime = 3600L
+        val configRefreshTime = 3600000L
         get() {
             if(BuildConfig.DEBUG) return 0L
             return field

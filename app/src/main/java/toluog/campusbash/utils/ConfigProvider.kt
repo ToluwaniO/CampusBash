@@ -11,7 +11,7 @@ import com.google.android.gms.tasks.Task
 /**
  * Created by oguns on 2/6/2018.
  */
-class ConfigProvider(val remoteConfig: FirebaseRemoteConfig) {
+class ConfigProvider(private val remoteConfig: FirebaseRemoteConfig) {
 
     private val TAG = ConfigProvider::class.java.simpleName
     private val defaults = mapOf(
@@ -21,7 +21,8 @@ class ConfigProvider(val remoteConfig: FirebaseRemoteConfig) {
             FeatureKey.CAMPUSBASH_TICKET_CUT to 1,
             FeatureKey.STRIPE_TICKET_CUT to 2.9,
             FeatureKey.STRIPE_SERVICE_FEE to 0.30,
-            FeatureKey.CAMPUSBASH_SERVICE_FEE to 0.10
+            FeatureKey.CAMPUSBASH_SERVICE_FEE to 0.10,
+            FeatureKey.FEATURED_EVENTS_TYPES to ""
     )
 
     init {
@@ -43,7 +44,19 @@ class ConfigProvider(val remoteConfig: FirebaseRemoteConfig) {
 
     fun stripeServiceFee() = remoteConfig.getDouble(FeatureKey.STRIPE_SERVICE_FEE)
 
-    fun fetch() {
+    fun featuredEventTypes(): Set<String> {
+        val raw = remoteConfig.getString(FeatureKey.FEATURED_EVENTS_TYPES)
+        if(raw.isNullOrBlank()) {
+            return emptySet()
+        }
+        val list = raw.split(",").toMutableList()
+        for(i in 0 until list.size) {
+            list[i] = list[i].trim()
+        }
+        return list.toHashSet()
+    }
+
+    private fun fetch() {
         Log.d(TAG, "FETCHING CONFIG VALUES")
         remoteConfig.fetch(AppContract.configRefreshTime)
                 .addOnCompleteListener { task ->
