@@ -48,7 +48,7 @@ class EventsFragment : Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.events_layout, container, false)
         featuredTypes = configProvider.featuredEventTypes()
-        featured = Featured(title = getString(R.string.featured))
+        featured = Featured(title = getString(R.string.featured_emoji, AppContract.FIRE_EMOJI))
         arguments?.let {
             myEvents = it.getBoolean(MY_EVENTS_PARAM)
             university = it.getString(UNIVERSITY_PARAM)

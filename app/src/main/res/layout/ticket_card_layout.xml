@@ -22,7 +22,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@color/blueStart" />
 
-        <TextView
+        <android.support.text.emoji.widget.EmojiTextView
             android:id="@+id/bought_quantity"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

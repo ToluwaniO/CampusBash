@@ -124,5 +124,7 @@ class AppContract{
         const val CURRENCY = "currency"
         const val DEBUG = "debug"
         const val TIME_SPENT = "timeSpent"
+
+        const val FIRE_EMOJI = "\uD83D\uDD25"
     }
 }
