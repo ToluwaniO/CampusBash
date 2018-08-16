@@ -56,7 +56,7 @@ class EventDataSource  {
                         launch {
                             // Dispatch the event
                             value?.documentChanges?.forEach {
-                                if(it.document.exists()) {
+                                if(it.document.exists() && validate(it)) {
                                     // Snapshot of the changed document
                                     Log.d(TAG, it.document.toString())
                                     val snapshot = it.document.toObject(Event::class.java)
@@ -140,6 +140,21 @@ class EventDataSource  {
             } else {
                 Log.d(TAG, "Place already saved")
             }
+        }
+
+        private fun validate(snap: DocumentChange): Boolean {
+            val doc = snap.document
+            if(doc["eventId"] == null) return false
+            if(doc["eventName"] == null) return false
+            if(doc["eventType"] == null) return false
+            if(doc["university"] == null) return false
+            if(doc["startTime"] == null) return false
+            if(doc["endTime"] == null) return false
+            if(doc["placeId"] == null) return false
+            if(doc["tickets"] == null) return false
+            if(doc["creator"] == null) return false
+            if(doc["ticketsSold"] == null) return false
+            return true
         }
 
         private fun getAlarmManager(context: Context): AlarmManager {

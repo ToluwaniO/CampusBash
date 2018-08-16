@@ -27,7 +27,7 @@ class TicketsDataSource {
 
                 // Dispatch the event
                 value?.documentChanges?.forEach {
-                    if (it.document.exists()) {
+                    if (it.document.exists() && validate(it)) {
                         // Snapshot of the changed document
                         Log.d(TAG, it.document.toString())
                         val snapshot = it.document.toObject(BoughtTicket::class.java)
@@ -62,5 +62,20 @@ class TicketsDataSource {
             if(tickets[i].ticketId == ticket.ticketId) return i
         }
         return -1
+    }
+
+    private fun validate(snap: DocumentChange): Boolean {
+        val doc = snap.document
+        if(doc["ticketId"] == null) return false
+        if(doc["buyerId"] == null) return false
+        if(doc["eventId"] == null) return false
+        if(doc["eventName"] == null) return false
+        if(doc["eventTime"] == null) return false
+        if(doc["placeholderImage"] == null) return false
+        if(doc["currency"] == null) return false
+        if(doc["quantity"] == null) return false
+        if(doc["ticketCodes"] == null) return false
+        if(doc["timeSpent"] == null) return false
+        return true
     }
 }

@@ -2,10 +2,7 @@ package toluog.campusbash.data
 
 import android.content.Context
 import android.util.Log
-import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import kotlinx.coroutines.experimental.launch
 import toluog.campusbash.model.Currency
 import toluog.campusbash.model.University
@@ -69,7 +66,7 @@ class CurrencyDataSource {
                 if (task.isSuccessful) {
                     launch {
                         for (document in task.result) {
-                            if(document.exists()) {
+                            if(document.exists() && validate(document)) {
                                 val snapshot = document.toObject(Currency::class.java)
                                 currDao?.insertCurrency(snapshot)
                                 Log.d(TAG, "$snapshot")
@@ -80,6 +77,18 @@ class CurrencyDataSource {
                     Log.d(TAG, "Error getting documents: ", task.exception)
                 }
             }
+        }
+
+        private fun validate(doc: QueryDocumentSnapshot): Boolean {
+            if(doc["id"] == null) return false
+            if(doc["name"] == null) return false
+            if(doc["namePlural"] == null) return false
+            if(doc["symbol"] == null) return false
+            if(doc["symbolNative"] == null) return false
+            if(doc["code"] == null) return false
+            if(doc["rounding"] == null) return false
+            if(doc["decimalDigits"] == null) return false
+            return true
         }
     }
 }
