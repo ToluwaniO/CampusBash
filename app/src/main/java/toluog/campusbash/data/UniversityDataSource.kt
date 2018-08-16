@@ -32,7 +32,7 @@ class UniversityDataSource {
 
                 // Dispatch the event
                 value?.documentChanges?.forEach {
-                    if(it.document.exists()) {
+                    if(it.document.exists() && validate(it)) {
                         // Snapshot of the changed document
                         Log.d(TAG, it.document.toString())
                         val snapshot = it.document.toObject(University::class.java)
@@ -54,6 +54,18 @@ class UniversityDataSource {
                     }
                 }
             })
+        }
+
+        private fun validate(snap: DocumentChange): Boolean {
+            val doc = snap.document
+            if(doc["uniId"] == null) return false
+            if(doc["name"] == null) return false
+            if(doc["city"] == null) return false
+            if(doc["province"] == null) return false
+            if(doc["country"] == null) return false
+            if(doc["nickName"] == null) return false
+            if(doc["shortName"] == null) return false
+            return true
         }
     }
 }
