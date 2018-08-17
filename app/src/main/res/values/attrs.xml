@@ -9,10 +9,4 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
-    <declare-styleable name="ChipView">
-        <attr name="backgroundColor" format="color" />
-        <attr name="clickedBackgroundColor" format="color" />
-        <attr name="clicked" format="boolean"/>
-    </declare-styleable>
-
 </resources>
