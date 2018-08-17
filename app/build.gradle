@@ -96,6 +96,8 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_logger_version"
 
+    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:1.0.0"
+
     //Others
     implementation "com.stripe:stripe-android:$stripe_version"
     implementation "com.google.android.gms:play-services-maps:$play_services_version"
