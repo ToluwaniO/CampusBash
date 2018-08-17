@@ -111,11 +111,11 @@ class CreateTicketFragment: Fragment(){
         }
 
         ticket_currency.setOnClickListener {
-            selector(getString(R.string.select_currency), currencies, { _, i ->
+            selector(getString(R.string.select_currency), currencies) { _, i ->
                 currency = currencySymbols[i]
                 ticket_currency.text = currencies[i]
                 ticket_currency.error = null
-            })
+            }
         }
 
         typeAdapter = ArrayAdapter(activity, R.layout.text_view_layout, ticketTypes)
