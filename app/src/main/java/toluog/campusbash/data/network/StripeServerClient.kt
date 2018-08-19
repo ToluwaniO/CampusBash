@@ -134,7 +134,6 @@ class StripeServerClient {
                                @QueryMap options: Map<String, String>): Deferred<EphemeralResponse>
     }
 
-
     companion object {
         private const val CAMPUSBASH_STRIPE_SERVER_URL = "https://us-central1-campusbash-e0ca8.cloudfunctions.net/"
         private const val CAMPUSBASH_STRIPE_SERVER_URL_DEV = "https://us-central1-campusbash-dev.cloudfunctions.net/"

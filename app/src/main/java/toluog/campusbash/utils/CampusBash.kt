@@ -31,7 +31,7 @@ object CampusBash {
     @SuppressLint("RestrictedApi")
     fun init(c: Context) {
         if(!isInitialized) {
-            val repo = Repository(c, FirebaseFirestore.getInstance())
+            val repo = Repository(c)
             val uid = FirebaseManager.auth.uid
             uid?.let {
                 user = repo.getUser(it)

@@ -4,42 +4,47 @@ import android.arch.lifecycle.MutableLiveData
 import android.support.v4.util.ArrayMap
 import android.util.Log
 import com.google.firebase.firestore.*
-import org.jetbrains.anko.collections.forEachByIndex
 import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.model.dashboard.TicketQuantity
 import toluog.campusbash.model.dashboard.UserTicket
 import toluog.campusbash.utils.AppContract
 
-class EventDashboardDatasource() {
+object EventDashboardDataSource {
 
-    private val TAG = EventDashboardDatasource::class.java.simpleName
-
+    private val TAG = EventDashboardDataSource::class.java.simpleName
     private val tickets = arrayListOf<UserTicket>()
     private val metadatas = ArrayMap<String, TicketMetaData>()
-
     private val liveTickets = MutableLiveData<List<UserTicket>>()
     private val liveMetaDatas = MutableLiveData<Map<String, TicketMetaData>>()
+    private var listener: ListenerRegistration? = null
+    private var lastEventId: String? = null
 
 
     fun initListener(mFirestore: FirebaseFirestore, eventId: String){
-        val query = mFirestore.collection(AppContract.FIREBASE_EVENTS).document(eventId)
-                .collection(AppContract.FIREBASE_EVENT_TICKET)
-        query.addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
-            if (e != null) {
-                Log.d(TAG, "onEvent:error", e)
-                return@EventListener
-            }
-
-            value?.documentChanges?.forEach {
-                if(it.document.exists()) {
-                    // Snapshot of the changed document
-                    Log.d(TAG, it.document.toString())
-                    val document = it.document
-                    processDocument(document, it.type)
+        if(lastEventId != eventId) {
+            tickets.clear()
+            metadatas.clear()
+            val query = mFirestore.collection(AppContract.FIREBASE_EVENTS).document(eventId)
+                    .collection(AppContract.FIREBASE_EVENT_TICKET)
+            listener?.remove()
+            listener = query.addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
+                if (e != null) {
+                    Log.d(TAG, "onEvent:error", e)
+                    return@EventListener
                 }
-            }
 
-        })
+                value?.documentChanges?.forEach {
+                    if(it.document.exists()) {
+                        // Snapshot of the changed document
+                        Log.d(TAG, it.document.toString())
+                        val document = it.document
+                        processDocument(document, it.type)
+                    }
+                }
+
+            })
+            lastEventId = eventId
+        }
     }
 
     private fun processDocument(doc: QueryDocumentSnapshot, type: DocumentChange.Type) {
@@ -108,14 +113,12 @@ class EventDashboardDatasource() {
 
     fun getMetadatas() = liveMetaDatas
 
-    companion object {
-        const val CODE = "code"
-        const val QR_URL = "qrUrl"
-        const val IS_USED = "isUsed"
-        const val TICKET_NAME = "ticketName"
-        const val TICKET_CODES = "ticketCodes"
-        const val TOTAL = "ticketFee"
-        const val BREAKDOWN = "breakdown"
-    }
+    private const val CODE = "code"
+    private const val QR_URL = "qrUrl"
+    private const val IS_USED = "isUsed"
+    private const val TICKET_NAME = "ticketName"
+    private const val TICKET_CODES = "ticketCodes"
+    private const val TOTAL = "ticketFee"
+    private const val BREAKDOWN = "breakdown"
 
 }
