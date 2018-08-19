@@ -1,58 +1,61 @@
 package toluog.campusbash.data
 
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import android.util.Log
-import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import toluog.campusbash.model.BoughtTicket
 import toluog.campusbash.utils.AppContract
 
-class TicketsDataSource {
+object TicketsDataSource {
     private val liveTickets = MutableLiveData<List<BoughtTicket>>()
     private val tickets = arrayListOf<BoughtTicket>()
+    private var listenerRegistration: ListenerRegistration? = null
+    private var lastUid: String? = null
     private val TAG = TicketsDataSource::class.java.simpleName
 
     fun initListener(mFirestore: FirebaseFirestore, uid: String){
         Log.d(TAG, "initListener")
-        val query = mFirestore.collection(AppContract.FIREBASE_USER_TICKETS)
-        query.whereEqualTo(AppContract.BUYER_ID, uid)
-            .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
-                if (e != null) {
-                    Log.d(TAG, "onEvent:error", e)
-                    return@EventListener
-                }
+        if(lastUid != uid) {
+            tickets.clear()
+            listenerRegistration?.remove()
+            val query = mFirestore.collection(AppContract.FIREBASE_USER_TICKETS)
+            listenerRegistration = query.whereEqualTo(AppContract.BUYER_ID, uid)
+                .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
+                    if (e != null) {
+                        Log.d(TAG, "onEvent:error", e)
+                        return@EventListener
+                    }
 
-                // Dispatch the event
-                value?.documentChanges?.forEach {
-                    if (it.document.exists() && validate(it)) {
-                        // Snapshot of the changed document
-                        Log.d(TAG, it.document.toString())
-                        val snapshot = it.document.toObject(BoughtTicket::class.java)
+                    // Dispatch the event
+                    value?.documentChanges?.forEach {
+                        if (it.document.exists() && validate(it)) {
+                            // Snapshot of the changed document
+                            Log.d(TAG, it.document.toString())
+                            val snapshot = it.document.toObject(BoughtTicket::class.java)
 
-                        when (it.type) {
-                            DocumentChange.Type.ADDED -> {
-                                Log.d(TAG, "ChildAdded")
-                                tickets.add(snapshot)
-                            }
-                            DocumentChange.Type.MODIFIED -> {
-                                Log.d(TAG, "ChildModified")
-                                val index = indexOf(snapshot)
-                                if (index >= 0) {
-                                    tickets[index] = snapshot
+                            when (it.type) {
+                                DocumentChange.Type.ADDED -> {
+                                    Log.d(TAG, "ChildAdded")
+                                    tickets.add(snapshot)
                                 }
-                            }
-                            DocumentChange.Type.REMOVED -> {
-                                Log.d(TAG, "ChildRemoved")
-                                tickets.remove(snapshot)
+                                DocumentChange.Type.MODIFIED -> {
+                                    Log.d(TAG, "ChildModified")
+                                    val index = indexOf(snapshot)
+                                    if (index >= 0) {
+                                        tickets[index] = snapshot
+                                    }
+                                }
+                                DocumentChange.Type.REMOVED -> {
+                                    Log.d(TAG, "ChildRemoved")
+                                    tickets.remove(snapshot)
+                                }
                             }
                         }
                     }
-                }
-                liveTickets.postValue(tickets)
-            })
+                    liveTickets.postValue(tickets)
+                })
+            lastUid = uid
+        }
     }
 
     fun getTickets() = liveTickets
