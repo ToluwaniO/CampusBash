@@ -4,8 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -29,17 +27,16 @@ class FirebaseManager {
         storage = FirebaseStorage.getInstance()
     }
 
-    fun addEvent(event: Event) {
+    fun addEvent(event: Event): Task<Void>? {
         Log.d(TAG, "addEventCalled $event")
         val eventRef = db?.collection(AppContract.FIREBASE_EVENTS)
-        if(TextUtils.isEmpty(event.eventId)){
+        return if(TextUtils.isEmpty(event.eventId)){
             val document = eventRef?.document()
             event.eventId = document?.id ?: ""
             document?.set(event)
         } else{
             db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)?.set(event)
         }
-        //db?.collection(AppContract.FIREBASE_EVENTS)?.add(event)
     }
 
     fun updateFcmToken(context: Context) {
@@ -170,9 +167,11 @@ class FirebaseManager {
         fun getCreator(): Creator?{
             val user = auth.currentUser
             val name = user?.displayName
-            if(user == null) return null
-            else if(name == null) return Creator("Anonymous", user.photoUrl.toString(), user.uid)
-            else return Creator(name, user.photoUrl.toString(), user.uid)
+            return when {
+                user == null -> null
+                name == null -> Creator("Anonymous", user.photoUrl.toString(), user.uid)
+                else -> Creator(name, user.photoUrl.toString(), user.uid)
+            }
         }
 
     }

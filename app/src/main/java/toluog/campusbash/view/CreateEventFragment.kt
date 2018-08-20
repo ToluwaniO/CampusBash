@@ -331,10 +331,18 @@ class CreateEventFragment : Fragment(){
 
     private fun completeSave(dialog: ProgressDialog, event: Event) {
         fbasemanager.addEvent(event)
-        toast(R.string.event_saved)
-        viewModel.savePlace()
-        mCallback?.eventSaved(event)
-        dialog.dismiss()
+                ?.addOnSuccessListener {
+                    toast(R.string.event_saved)
+                    viewModel.savePlace()
+                    mCallback?.eventSaved(event)
+                    dialog.dismiss()
+                }
+                ?.addOnFailureListener {
+                    toast(R.string.event_save_failed)
+                    Log.d(TAG, "$event")
+                    Log.d(TAG, "Failed to save event")
+                    Log.d(TAG, it.message)
+                }
     }
 
     override fun onAttach(context: Context?) {
