@@ -24,6 +24,10 @@ class Repository(val context: Context){
     private val mFireStore = FirebaseFirestore.getInstance()
     private lateinit var stripeApi: StripeServerClient
     private var initializedStripeApi = false
+
+    fun downloadEvent(eventId: String, context: Context) {
+        EventDataSource.downloadEvent(eventId, FirebaseFirestore.getInstance(), context)
+    }
     
     fun getEvents(university: String): LiveData<List<Event>>? {
         Log.d(TAG, "getEvents(university= $university) called")

@@ -55,14 +55,15 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                 .addOnSuccessListener(this) { pendingDynamicLinkData ->
                     // Get deep link from result (may be null if no link is found)
                     val deepLink: Uri?
-                    if (pendingDynamicLinkData != null && bundle.getString(AppContract.MY_EVENT_BUNDLE) == null) {
+                    if (pendingDynamicLinkData != null && bundle?.getString(AppContract.MY_EVENT_BUNDLE) == null) {
                         deepLink = pendingDynamicLinkData.link
-                        eventId = deepLink.getQueryParameter("eventId")
+                        eventId = deepLink?.getQueryParameter("eventId") ?: ""
+                        viewModel.downloadEvent(eventId)
                         liveEvent = viewModel.getEvent(eventId)
                         observeEvent()
                     } else {
                         Log.d(TAG, "Deep link data is null")
-                        eventId = bundle.getString(AppContract.MY_EVENT_BUNDLE)
+                        eventId = bundle?.getString(AppContract.MY_EVENT_BUNDLE) ?: ""
                         liveEvent = viewModel.getEvent(eventId)
                         observeEvent()
                     }

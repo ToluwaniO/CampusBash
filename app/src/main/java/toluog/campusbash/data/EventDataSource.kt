@@ -49,6 +49,26 @@ object EventDataSource  {
         }
     }
 
+    fun downloadEvent(eventId: String, mFirestore: FirebaseFirestore, context: Context) {
+        db = AppDatabase.getDbInstance(context)
+        val ref = mFirestore.collection(AppContract.FIREBASE_EVENTS).document(eventId)
+        ref.get().addOnSuccessListener {
+            if (!it.exists()) {
+                Log.e(TAG, "Event does not exist")
+                return@addOnSuccessListener
+            }
+            val event = it.toObject(Event::class.java)
+            if (event != null) {
+                launch(dispatcher) {
+                    db?.eventDao()?.insertEvent(event)
+                }
+            }
+        }.addOnFailureListener {
+            Log.e(TAG, it.message)
+            Log.e(TAG, it.toString())
+        }
+    }
+
     private fun activateGeneralEventListener(context: Context, query: CollectionReference, university: String) {
         Log.d(TAG, "activateGeneralEventListener(context= $context, query= $query, university= $university)")
         listener = query.whereGreaterThanOrEqualTo("endTime", System.currentTimeMillis())
