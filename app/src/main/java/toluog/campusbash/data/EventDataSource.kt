@@ -61,6 +61,7 @@ object EventDataSource  {
             if (event != null) {
                 launch(dispatcher) {
                     db?.eventDao()?.insertEvent(event)
+                    savePlace(event.placeId, event, context)
                 }
             }
         }.addOnFailureListener {
