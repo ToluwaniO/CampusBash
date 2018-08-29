@@ -169,10 +169,14 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         event_get_ticket.setOnClickListener {
-            Analytics.logBuyTicketClicked(event)
-            val bundle = Bundle()
-            bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
-            startActivity(intentFor<BuyTicketActivity>().putExtras(bundle))
+            if (FirebaseManager.isSignedIn()) {
+                Analytics.logBuyTicketClicked(event)
+                val bundle = Bundle()
+                bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
+                startActivity(intentFor<BuyTicketActivity>().putExtras(bundle))
+            } else {
+                startActivity(intentFor<MainActivity>())
+            }
         }
     }
 

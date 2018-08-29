@@ -168,7 +168,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
 
     private fun saveData(map: Map<String, Any>){
         val task = fbaseManager.buyTicket(event, map)
-
+        Log.d(TAG, "$map")
         task?.addOnSuccessListener {
             event?.let { ev -> Analytics.logTicketBought(ev) }
             longToast(R.string.ticket_purchased)
