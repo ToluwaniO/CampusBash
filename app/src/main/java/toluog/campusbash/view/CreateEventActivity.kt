@@ -35,7 +35,7 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
         viewModel = ViewModelProviders.of(this).get(CreateEventViewModel::class.java)
         val bundle = intent.extras
         if(bundle != null) {
-            val event = intent.extras[AppContract.MY_EVENT_BUNDLE] as Event
+            val event = bundle[AppContract.MY_EVENT_BUNDLE] as Event
             createEvent.arguments = Bundle().apply {
                 putParcelable(AppContract.MY_EVENT_BUNDLE, event)
             }
