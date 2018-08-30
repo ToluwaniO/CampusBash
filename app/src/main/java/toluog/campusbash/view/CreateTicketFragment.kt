@@ -31,6 +31,7 @@ import java.lang.ClassCastException
 import java.math.BigDecimal
 import android.text.Spanned
 import android.text.InputFilter
+import toluog.campusbash.utils.isValidLong
 import java.util.regex.Pattern
 
 
@@ -169,7 +170,7 @@ class CreateTicketFragment: Fragment(){
         if(validate(name, description, quantity, price, currency)){
             ticket?.name = name
             ticket?.description = description
-            ticket?.quantity = quantity.toInt()
+            ticket?.quantity = quantity.toLong()
             if(ticketType == AppContract.TYPE_PAID) ticket?.price = price.toDouble()
             ticket?.type = ticketType
             ticket?.isVisible = visible
@@ -205,8 +206,12 @@ class CreateTicketFragment: Fragment(){
         if (quantity.isEmpty()){
             ticket_quantity.error = errMessage
             status = false
-        } else if(quantity.toInt() < 0){
+        } else if (!quantity.isValidLong()) {
+            ticket_quantity.error = getString(R.string.max_value_is_x, Long.MAX_VALUE)
+            status = false
+        } else if(quantity.toLong() < 0){
             ticket_quantity.error = errSize
+            status = false
         }
         if (price.isEmpty() && ticketType == AppContract.TYPE_PAID){
             ticket_price.error = errMessage
