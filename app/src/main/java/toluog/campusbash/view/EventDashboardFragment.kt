@@ -85,8 +85,8 @@ class EventDashboardFragment : Fragment() {
     private fun updateView() {
         val e = event
         var totalMade = 0.0
-        var ticketQuantity = 0
-        var ticketsSold = 0
+        var ticketQuantity = 0L
+        var ticketsSold = 0L
 
         if(e != null && e.tickets.size > 0) {
             e.tickets.forEach {

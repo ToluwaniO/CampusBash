@@ -10,3 +10,7 @@ fun Card.convertToJson(): JSONObject? {
         put(CARD_NUMBER, number)
     }
 }
+
+fun String.isValidInt() = this.toDouble() <= Int.MAX_VALUE && this.toDouble() >= Int.MIN_VALUE
+
+fun String.isValidLong() = this.toDouble() <= Long.MAX_VALUE && this.toDouble() >= Long.MIN_VALUE
