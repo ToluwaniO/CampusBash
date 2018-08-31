@@ -17,7 +17,6 @@ import com.google.android.gms.ads.formats.NativeAd
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.events_layout.*
 import kotlinx.android.synthetic.main.no_events_layout.*
-import org.jetbrains.anko.coroutines.experimental.bg
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
@@ -53,7 +52,7 @@ class EventsFragment : Fragment(){
         featured = Featured(title = getString(R.string.featured_emoji, AppContract.FIRE_EMOJI))
         arguments?.let {
             myEvents = it.getBoolean(MY_EVENTS_PARAM)
-            university = it.getString(UNIVERSITY_PARAM)
+            university = it.getString(UNIVERSITY_PARAM) ?: ""
             Log.d(TAG, "university=$university")
         }
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
