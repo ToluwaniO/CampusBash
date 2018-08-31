@@ -17,7 +17,6 @@ import com.google.android.gms.ads.formats.NativeAd
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.events_layout.*
 import kotlinx.android.synthetic.main.no_events_layout.*
-import org.jetbrains.anko.coroutines.experimental.bg
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
@@ -41,9 +40,11 @@ class EventsFragment : Fragment(){
     private val events: ArrayList<Any> = ArrayList()
     private val ads = ArrayList<NativeAd>()
     private var eventSize = 0
-    private  var places: LiveData<List<Place>>? = null
+    private var places: LiveData<List<Place>>? = null
     private lateinit var featured: Featured
     private lateinit var featuredTypes: Set<String>
+    private val froshGroup = HashSet<String>()
+    private var studentId = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.events_layout, container, false)
@@ -51,61 +52,16 @@ class EventsFragment : Fragment(){
         featured = Featured(title = getString(R.string.featured_emoji, AppContract.FIRE_EMOJI))
         arguments?.let {
             myEvents = it.getBoolean(MY_EVENTS_PARAM)
-            university = it.getString(UNIVERSITY_PARAM)
+            university = it.getString(UNIVERSITY_PARAM) ?: ""
             Log.d(TAG, "university=$university")
         }
-
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
-        viewModel.getEvents(university, myEvents)?.observe(this, Observer { eventsList ->
-            Log.d(TAG, "Events size is ${eventsList?.size}")
-            val user = FirebaseManager.getUser()
-            events.clear()
-            featured.events.clear()
-            eventSize = 0
-            if(eventsList != null) {
-                eventSize = eventsList.size
-
-                eventsList.forEach {
-                    if(myEvents) {
-                        if(it.creator.uid == user?.uid) events.add(it)
-                    } else {
-                        if(featuredTypes.contains(it.eventType)) {
-                            featured.events.add(it)
-                        } else {
-                            events.add(it)
-                        }
-                    }
-                }
-            }
-
-            copyAds(eventSize)
-            if(featured.events.isNotEmpty()) {
-                events.add(0, featured)
-            }
-            //event_recycler.stopScroll()
-            adapter?.notifyListChanged(events)
-            updateUiVisibility()
-        })
         places = viewModel.getPlaces()
-        places?.observe(this, Observer {
-            it?.let {
-                adapter?.notifyPlaceChanged(it)
-            }
-        })
-
-        if(configProvider.isAdsEventsFragmentEnabled()) {
-            Log.d(TAG, "Observing ads")
-            viewModel.getAds().observe(this, Observer {
-                if (it != null){
-                    ads.clear()
-                    ads.addAll(it)
-                    copyAds(eventSize)
-                    //event_recycler.stopScroll()
-                    adapter?.notifyListChanged(events)
-                }
-            })
-        }
-
+        observeFrosh()
+        observeProfile()
+        observeEvents()
+        observePlaces()
+        observeAds()
         return rootView
     }
 
@@ -154,6 +110,79 @@ class EventsFragment : Fragment(){
                 .forEach {
                     events.remove(it)
                 }
+    }
+
+    private fun observeProfile() {
+        val user = FirebaseManager.getUser() ?: return
+        viewModel.getProfileInfo(user)?.observe(this, Observer {
+            if (it != null) {
+                studentId = it[AppContract.FIREBASE_USER_STUDENT_ID] as String? ?: ""
+            }
+        })
+    }
+
+    private fun observeEvents() {
+        viewModel.getEvents(university, myEvents)?.observe(this, Observer { eventsList ->
+            Log.d(TAG, "Events size is ${eventsList?.size}")
+            val user = FirebaseManager.getUser()
+            events.clear()
+            featured.events.clear()
+            eventSize = 0
+            if(eventsList != null) {
+                eventSize = eventsList.size
+
+                eventsList.forEach {
+                    if(myEvents) {
+                        if(it.creator.uid == user?.uid) events.add(it)
+                    } else {
+                        if(featuredTypes.contains(it.eventType) && froshGroup.contains(studentId)) {
+                            featured.events.add(it)
+                        } else {
+                            events.add(it)
+                        }
+                    }
+                }
+            }
+
+            copyAds(eventSize)
+            if(featured.events.isNotEmpty()) {
+                events.add(0, featured)
+            }
+            //event_recycler.stopScroll()
+            adapter?.notifyListChanged(events)
+            updateUiVisibility()
+        })
+    }
+
+    private fun observeFrosh() {
+        viewModel.getFroshGroup().observe(this, Observer {
+            if (it != null) {
+                froshGroup.clear()
+                froshGroup.addAll(it)
+            }
+        })
+    }
+
+    private fun observePlaces() {
+        places?.observe(this, Observer {
+            it?.let {
+                adapter?.notifyPlaceChanged(it)
+            }
+        })
+    }
+
+    private fun observeAds() {
+        if(!configProvider.isAdsEventsFragmentEnabled()) return
+        Log.d(TAG, "Observing ads")
+        viewModel.getAds().observe(this, Observer {
+            if (it != null){
+                ads.clear()
+                ads.addAll(it)
+                copyAds(eventSize)
+                //event_recycler.stopScroll()
+                adapter?.notifyListChanged(events)
+            }
+        })
     }
 
     companion object {

@@ -96,7 +96,7 @@ class CreateEventFragment : Fragment(){
                 if(it != null) {
                     Log.d(TAG, "user -> $it")
                     updateCreator(it)
-                    val flags = it[AppContract.FIREBASE_USER_ACCOUNT_FLAGS] as List<String>
+                    val flags = it[AppContract.FIREBASE_USER_ACCOUNT_FLAGS] as List<String>? ?: emptyList()
                     eventTypes.clear()
                     eventTypes.addAll(resources.getStringArray(R.array.party_types))
                     if(flags.contains("facultyAccount")) {
