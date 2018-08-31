@@ -179,5 +179,6 @@
     <string name="featured_emoji">Featured %1s</string>
     <string name="student_id_entry_reason">This field helps us determine whether to show you faculty FROSH events.</string>
     <string name="field_can_not_be_empty">This field can not be empty</string>
-
+    <string name="student_id_exists">This student id already exists</string>
+    <string name="could_not_verify_student_id">Oops, we could not verify your student id</string>
 </resources>
