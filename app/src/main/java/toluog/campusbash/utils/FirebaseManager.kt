@@ -4,16 +4,21 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
+import com.google.android.gms.common.api.Result
+import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.HttpsCallableResult
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import org.jetbrains.anko.toast
+import org.json.JSONObject
 import toluog.campusbash.model.Creator
 
 
@@ -147,8 +152,9 @@ class FirebaseManager {
     }
 
     companion object {
-        var storage: FirebaseStorage? = null
+        private var storage: FirebaseStorage? = null
         val auth: FirebaseAuth = FirebaseAuth.getInstance()
+        private val functions = FirebaseFunctions.getInstance()
         private val TAG = FirebaseManager::class.java.simpleName
 
         fun isSignedIn() = auth.currentUser != null
@@ -172,6 +178,30 @@ class FirebaseManager {
                 name == null -> Creator("Anonymous", user.photoUrl.toString(), user.uid)
                 else -> Creator(name, user.photoUrl.toString(), user.uid)
             }
+        }
+
+        fun isNewStudentId(studentId: String): Task<String> {
+            val data = mapOf(
+                    "studentId" to studentId
+            )
+            return functions.getHttpsCallable("isNewStudentId").call(data)
+                    .continueWith { task ->
+                        try {
+                            if (!task.isSuccessful) return@continueWith JSONObject().toString()
+                            val map = task.result.data as Map<String, Any?>
+                            Log.d(TAG, map.toString())
+                            val json = JSONObject()
+                            for (key in map.keys) {
+                                val value = map[key]
+                                if (value != null) {
+                                    json.put(key, map[key])
+                                }
+                            }
+                            return@continueWith json.toString()
+                        } catch (e: Exception) {
+                            return@continueWith JSONObject().toString()
+                        }
+                    }
         }
 
     }
