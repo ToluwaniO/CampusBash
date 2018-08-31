@@ -17,4 +17,6 @@ open class GeneralViewModel(app: Application): AndroidViewModel(app) {
         }
         return profileInfo
     }
+
+    fun getFroshGroup(): LiveData<Set<String>> = repo.getFroshGroup()
 }

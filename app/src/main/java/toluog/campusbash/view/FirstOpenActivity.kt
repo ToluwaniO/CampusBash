@@ -36,6 +36,7 @@ PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInterac
     private var country: String? = null
     private var university: String? = null
     private var prefs: List<String>? = null
+    private val uOttawa = "University of Ottawa"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +48,9 @@ PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInterac
     }
 
     override fun universitySelectionDone(country: String, name: String) {
+        if (name == uOttawa) {
+            viewModel.getFroshGroup()
+        }
         Util.setPrefString(act, AppContract.PREF_UNIVERSITY_KEY, name)
         Util.setPrefString(act, AppContract.PREF_COUNTRY_KEY, country)
         user?.let {

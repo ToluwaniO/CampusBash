@@ -2,6 +2,7 @@ package toluog.campusbash.data
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
+import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.*
@@ -28,8 +29,10 @@ object EventDataSource  {
     private val TAG = EventDataSource::class.java.simpleName
     private var lastUniversityPulled = ""
     private var lastUid = ""
+    private val froshGroup = MutableLiveData<Set<String>>()
     private var listener: ListenerRegistration? = null
     private var myEventsListener: ListenerRegistration? = null
+    private var froshGroupListener: ListenerRegistration? = null
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val myEventsDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
@@ -47,6 +50,7 @@ object EventDataSource  {
             myEventsListener?.remove()
             activateMyEventListener(context, query)
         }
+        listenToFroshGroup(mFirestore)
     }
 
     fun downloadEvent(eventId: String, mFirestore: FirebaseFirestore, context: Context) {
@@ -68,6 +72,20 @@ object EventDataSource  {
             Log.e(TAG, it.message)
             Log.e(TAG, it.toString())
         }
+    }
+
+    fun listenToFroshGroup(mFirestore: FirebaseFirestore) {
+        if (froshGroupListener != null) return
+        val ref = mFirestore.collection("eventGroup").document("ess")
+        froshGroupListener = ref.addSnapshotListener { documentSnapshot, e ->
+                    if (e != null) {
+                        Log.e(TAG, e.message)
+                        return@addSnapshotListener
+                    }
+            Log.d(TAG, documentSnapshot.toString())
+                    val set = (documentSnapshot?.get("idList") as List<String>? ?: emptyList()).toHashSet()
+                    froshGroup.postValue(set)
+                }
     }
 
     private fun activateGeneralEventListener(context: Context, query: CollectionReference, university: String) {
@@ -182,4 +200,6 @@ object EventDataSource  {
         if (doc["timeZone"] == null) return false
         return true
     }
+
+    fun getFroshGroup() = froshGroup
 }

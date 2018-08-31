@@ -78,6 +78,11 @@ class Repository(val context: Context){
 
     fun getPlace(id: String) = db?.placeDao()?.getPlace(id)
 
+    fun getFroshGroup() : LiveData<Set<String>> {
+        EventDataSource.listenToFroshGroup(FirebaseFirestore.getInstance())
+        return EventDataSource.getFroshGroup()
+    }
+
     fun createStripeAccount(): LiveData<ServerResponse> {
         val user = FirebaseManager.getUser()
         if(!initializedStripeApi && user != null) {
