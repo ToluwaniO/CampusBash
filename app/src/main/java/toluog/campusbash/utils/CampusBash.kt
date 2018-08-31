@@ -78,25 +78,29 @@ object CampusBash {
     }
 
     private fun retrieveCustomer() {
-        Log.d(TAG, "Attempting to retrieve customer")
-        CustomerSession.getInstance().retrieveCurrentCustomer(object : CustomerSession.CustomerRetrievalListener {
-            override fun onCustomerRetrieved(customer: Customer) {
-                Log.d(TAG, "${customer.sources.size} cards found")
-                val cards = arrayListOf<BashCard>()
-                customer.sources.forEach {
-                    if(it != null) {
-                        cards.add(BashCard(it))
+        try {
+            Log.d(TAG, "Attempting to retrieve customer")
+            CustomerSession.getInstance().retrieveCurrentCustomer(object : CustomerSession.CustomerRetrievalListener {
+                override fun onCustomerRetrieved(customer: Customer) {
+                    Log.d(TAG, "${customer.sources.size} cards found")
+                    val cards = arrayListOf<BashCard>()
+                    customer.sources.forEach {
+                        if(it != null) {
+                            cards.add(BashCard(it))
+                        }
                     }
+                    bashCards.postValue(cards)
                 }
-                bashCards.postValue(cards)
-            }
 
-            override fun onError(errorCode: Int, errorMessage: String?) {
-                Log.d(TAG, errorMessage)
-                Crashlytics.log("$TAG ($errorCode) -> $errorMessage")
-            }
+                override fun onError(errorCode: Int, errorMessage: String?) {
+                    Log.d(TAG, errorMessage)
+                    Crashlytics.log("$TAG ($errorCode) -> $errorMessage")
+                }
 
-        })
+            })
+        } catch (e: IllegalStateException) {
+            Log.d(TAG, e.message)
+        }
     }
 
     fun getBashCards() = bashCards
