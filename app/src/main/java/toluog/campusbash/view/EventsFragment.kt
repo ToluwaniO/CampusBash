@@ -137,7 +137,7 @@ class EventsFragment : Fragment(){
                     } else {
                         if(featuredTypes.contains(it.eventType) && froshGroup.contains(studentId)) {
                             featured.events.add(it)
-                        } else {
+                        } else if (!featuredTypes.contains(it.eventType)) {
                             events.add(it)
                         }
                     }
