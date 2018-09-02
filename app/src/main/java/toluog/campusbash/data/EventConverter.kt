@@ -13,6 +13,9 @@ class EventConverter{
 
     @TypeConverter
     fun getTicketsString(tickets: ArrayList<Ticket>): String{
+        tickets.forEach {
+            it.type = it.type.toLowerCase()
+        }
         val gson = Gson()
         return gson.toJson(tickets)
     }

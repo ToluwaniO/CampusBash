@@ -124,10 +124,13 @@ class CardPaymentActivity : AppCompatActivity() {
             ADD_CARD -> {
                 if(resultCode == Activity.RESULT_OK) {
                     val bashCard = data?.extras?.get("card") as BashCard?
-                    if(bashCard != null && isNewCard(bashCard.card)) {
-                        cards.add(bashCard)
+//                    if(bashCard != null && isNewCard(bashCard.card)) {
+//                        cards.add(bashCard)
+//                    }
+//                    updateView()
+                    if (bashCard != null) {
+                        getToken(bashCard)
                     }
-                    updateView()
                 }
             }
         }
