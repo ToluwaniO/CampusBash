@@ -21,7 +21,9 @@
     <string name="university">University</string>
     <string name="next">Next</string>
     <string name="whats_happening">What\'s happening in</string>
-    <string name="Description1Onboarding">Campus Bash helps you find and host the hottest parties and events on your campus</string>
+    <string name="find_hottest_parties">Find the hottest parties</string>
+    <string name="host_coolest_parties">Host the coolest parties</string>
+    <string name="Description1Onboarding">CampusBash helps you find and host the hottest parties and events on your campus</string>
     <string name="Description2Onboarding">Take the work out of getting lit and just focus on getting lit</string>
     <string name="Description3Onboarding">Hosting parties are hard, lets make it dead easy. Trust us…</string>
     <string name="title_activity_onboard_sign_in">OnboardSignInActivity</string>
@@ -181,4 +183,5 @@
     <string name="field_can_not_be_empty">This field can not be empty</string>
     <string name="student_id_exists">This student id already exists</string>
     <string name="could_not_verify_student_id">Oops, we could not verify your student id</string>
+    <string name="exit_without_saving_card">Are you sure you want to leave without saving your card?</string>
 </resources>
