@@ -106,7 +106,7 @@ class CreateTicketFragment: Fragment(){
                 if(it != null) {
                     Log.d(TAG, "user -> $it")
                     val id = it[AppContract.STRIPE_ACCOUNT_ID] as String?
-                    isStripeActivated = id != null
+                    isStripeActivated = id != null && id.isNotBlank()
                 }
             })
         }
