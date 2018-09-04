@@ -175,7 +175,7 @@ class CreateEventFragment : Fragment(){
 
         event_tickets.setOnClickListener { mCallback?.createTicket() }
 
-        event_image.setOnClickListener { imagePicker?.choosePicture(true) }
+        event_image.setOnClickListener { eventImageClicked() }
 
         event_address.setOnClickListener {
             try {
@@ -480,8 +480,26 @@ class CreateEventFragment : Fragment(){
         creator.uid = cr[AppContract.FIREBASE_USER_UID] as String? ?: ""
     }
 
+    private fun eventImageClicked() {
+        val options = listOf("Add new image", "Remove image")
+        val link = viewModel.event.placeholderImage?.url
+        if ((link != null && link.isNotBlank()) || viewModel.imageUri != null) {
+            selector(null, options) { _, i ->
+                if (i == 0) {
+                    imagePicker?.choosePicture(true)
+                } else {
+                    event_image.setImageResource(R.drawable.ic_add_image)
+                    event_image.scaleType = ImageView.ScaleType.CENTER
+                    viewModel.event.placeholderImage = null
+                    viewModel.imageUri = null
+                }
+            }
+        } else {
+            imagePicker?.choosePicture(true)
+        }
+    }
+
     companion object {
-        private const val STRIPE_ACCOUNT_ID = "stripeAccountId"
         private const val MEDIA_TYPE_IMAGE = "image"
     }
 }
