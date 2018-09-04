@@ -25,14 +25,18 @@ import android.app.Activity.RESULT_CANCELED
 import android.app.ProgressDialog
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
+import android.net.Uri
 import android.widget.ImageView
 import com.crashlytics.android.Crashlytics
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
 import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.support.v4.toast
 import toluog.campusbash.model.*
 import toluog.campusbash.utils.*
+import java.io.File
+import java.net.URI
 import java.util.Calendar
 import kotlin.collections.ArrayList
 
@@ -166,10 +170,14 @@ class CreateEventFragment : Fragment(){
         }
         
         imagePicker = ImagePicker(activity, this@CreateEventFragment) { imageUri ->
-            viewModel.imageUri = imageUri
-            event_image.scaleType = ImageView.ScaleType.FIT_XY
-            event_image.loadImage(imageUri)
-        }
+            if (validSize(imageUri)) {
+                viewModel.imageUri = imageUri
+                event_image.scaleType = ImageView.ScaleType.FIT_XY
+                event_image.loadImage(imageUri)
+            } else {
+                snackbar(root_view, R.string.max_image_size)
+            }
+        }.setWithImageCrop(16, 9)
 
         event_save_button.setOnClickListener { save() }
 
@@ -499,7 +507,17 @@ class CreateEventFragment : Fragment(){
         }
     }
 
+    private fun validSize(uri: Uri): Boolean {
+        val jUri = URI(uri.toString())
+        val file = File(jUri.path)
+        if (!file.exists()) {
+            return false
+        }
+        return file.length() <= MAX_SIZE
+    }
+
     companion object {
         private const val MEDIA_TYPE_IMAGE = "image"
+        private val MAX_SIZE = 5 * Math.pow(10.0, 6.0)
     }
 }
