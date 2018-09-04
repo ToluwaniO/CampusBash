@@ -79,11 +79,11 @@ class SetupProfileActivity : AppCompatActivity() {
         val user = FirebaseManager.getUser()
         if(user != null) {
             fbManager.updateProfileField(AppContract.FIREBASE_USER_USERNAME,
-                    userNameView.text.toString(), user)
+                    userNameView.text.toString().trim(), user)
             fbManager.updateProfileField(AppContract.FIREBASE_USER_SUMMARY,
-                    summaryView.text.toString(), user)
+                    summaryView.text.toString().trim(), user)
             fbManager.updateProfileField(AppContract.FIREBASE_USER_STUDENT_ID,
-                    studentIdView.text.toString(), user)
+                    fixStudentId(studentIdView.text.toString().trim()), user)
         }
     }
 
@@ -99,7 +99,8 @@ class SetupProfileActivity : AppCompatActivity() {
         if(!validate()) return
         val dialog = indeterminateProgressDialog(message = R.string.please_wait)
         dialog.show()
-        val studentId = studentIdView.text.toString()
+        val studentId = fixStudentId(studentIdView.text.toString().trim())
+        Log.d(TAG, studentId)
         if (!studentId.isBlank()) {
             FirebaseManager.isNewStudentId(studentId).addOnSuccessListener {
                 Log.d(TAG, it)
@@ -129,6 +130,16 @@ class SetupProfileActivity : AppCompatActivity() {
             startActivity(intentFor<MainActivity>())
             finish()
         }
+    }
+
+    private fun fixStudentId(id: String): String {
+        Log.d(TAG, id)
+        var studentNumber = id
+        while (studentNumber.startsWith("0")) {
+            studentNumber = studentNumber.removePrefix("0")
+        }
+        Log.d(TAG, studentNumber)
+        return studentNumber
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
