@@ -1,5 +1,6 @@
 package toluog.campusbash.view
 
+import android.app.ProgressDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -15,11 +16,11 @@ import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.progressDialog
 import org.json.JSONObject
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.Util
 import toluog.campusbash.utils.loadImage
 
 class SetupProfileActivity : AppCompatActivity() {
@@ -27,16 +28,23 @@ class SetupProfileActivity : AppCompatActivity() {
     private lateinit var imagePicker: ImagePicker
     private lateinit var viewModel: GeneralViewModel
     private val fbManager = FirebaseManager()
+    private lateinit var dialog: ProgressDialog
     private val TAG = SetupProfileActivity::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setup_profile)
+        dialog = indeterminateProgressDialog(message = R.string.please_wait)
+        dialog.dismiss()
         viewModel = ViewModelProviders.of(this).get(GeneralViewModel::class.java)
         val user = FirebaseManager.getUser()
         imagePicker = ImagePicker(this, null) {
-            profileImage.loadImage(it)
-            updatePhoto(it)
+            if (Util.validImageSize(it, this)) {
+                profileImage.loadImage(it)
+                updatePhoto(it)
+            } else {
+                snackbar(container, R.string.max_image_size)
+            }
         }
 
         if(user != null) {
@@ -48,7 +56,11 @@ class SetupProfileActivity : AppCompatActivity() {
         nextButton.setOnClickListener {
             postData()
         }
+    }
 
+    override fun onDestroy() {
+        dialog.dismiss()
+        super.onDestroy()
     }
 
     private fun updatePhoto(imageUri: Uri) {
@@ -97,7 +109,6 @@ class SetupProfileActivity : AppCompatActivity() {
 
     private fun postData() {
         if(!validate()) return
-        val dialog = indeterminateProgressDialog(message = R.string.please_wait)
         dialog.show()
         val studentId = fixStudentId(studentIdView.text.toString().trim())
         Log.d(TAG, studentId)

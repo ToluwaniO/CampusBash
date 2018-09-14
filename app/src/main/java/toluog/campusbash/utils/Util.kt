@@ -3,12 +3,9 @@ package toluog.campusbash.utils
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import android.widget.ImageView
-import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.util.*
 import com.firebase.ui.auth.AuthUI
-import de.hdodenhof.circleimageview.CircleImageView
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import android.preference.PreferenceManager
 import android.view.inputmethod.InputMethodManager
@@ -20,21 +17,18 @@ import com.firebase.jobdispatcher.Constraint
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
 import toluog.campusbash.data.CurrencyDataSource
-import android.content.Intent
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.net.Uri
-import android.support.v4.content.ContextCompat.*
+import android.provider.OpenableColumns
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.stripe.android.model.Card
-import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.startActivity
 import org.json.JSONObject
 import toluog.campusbash.BuildConfig
-import toluog.campusbash.view.NoNetworkActivity
+import java.io.File
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.net.URI
 import kotlin.collections.HashMap
 
 
@@ -46,7 +40,7 @@ class Util{
 
         private val TAG = Util::class.java.simpleName
         private val configProvider = ConfigProvider(FirebaseRemoteConfig.getInstance())
-        private var mDispatcher: FirebaseJobDispatcher? = null
+        private val MAX_SIZE: Long = (5 * Math.pow(10.0, 6.0)).toLong()
         private val shortMonthsCaps = arrayOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG",
                 "SEP", "OCT", "NOV", "DEC")
         private val shortDays = arrayOf("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat")
@@ -336,6 +330,21 @@ class Util{
             val card = Card.fromJson(json)
             val number = json?.get(CARD_NUMBER) as String?
             return Card(number, card?.expMonth, card?.expYear, card?.cvc)
+        }
+
+        fun validImageSize(uri: Uri, context: Context?): Boolean {
+            return context?.contentResolver
+                    ?.query(uri, null, null, null, null)
+                    .use {
+                        val sizeIndex = it?.getColumnIndex(OpenableColumns.SIZE)
+                        it?.moveToFirst()
+                        val size: Long = if (sizeIndex != null) {
+                            it.getLong(sizeIndex)
+                        } else {
+                            MAX_SIZE
+                        }
+                        size <= MAX_SIZE
+                    }
         }
     }
 }
