@@ -2,6 +2,7 @@ package toluog.campusbash.utils
 
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
@@ -345,6 +346,19 @@ class Util{
                         }
                         size <= MAX_SIZE
                     }
+        }
+
+        fun getAppVersion(context: Context): String {
+            try {
+                val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+                if (BuildConfig.DEBUG) {
+                    return "${packageInfo.versionName} (DEV)"
+                }
+                return packageInfo.versionName
+            } catch (e: PackageManager.NameNotFoundException) {
+                Log.d(TAG, e.message)
+            }
+            return ""
         }
     }
 }

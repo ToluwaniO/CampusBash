@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.profile_fragment_layout.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.support.v4.act
 import org.jetbrains.anko.support.v4.intentFor
+import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
@@ -55,6 +56,12 @@ class ProfileFragment: Fragment() {
 
         get_lit_button.setOnClickListener {
             startActivity(intentFor<CreateEventActivity>())
+        }
+        if (BuildConfig.DEBUG) {
+            dev_view.visibility = View.VISIBLE
+            dev_view.text = Util.getAppVersion(view.context)
+        } else {
+            dev_view.visibility = View.GONE
         }
     }
 
