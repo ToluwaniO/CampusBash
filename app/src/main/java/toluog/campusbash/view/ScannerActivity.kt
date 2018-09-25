@@ -3,8 +3,10 @@ package toluog.campusbash.view
 import android.Manifest
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Vibrator
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.util.ArrayMap
@@ -93,6 +95,10 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     override fun handleResult(result: Result?) {
         val ticketCode = result?.text ?: ""
+        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (vibrator.hasVibrator()) {
+            vibrator.vibrate(500)
+        }
         if(ticketMap.containsKey(ticketCode) && ticketMap[ticketCode]?.isUsed == false) {
             ticketMap[ticketCode]?.isUsed = true
             updateTicketStatusView(TicketState.VALID)
@@ -103,7 +109,7 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             updateTicketStatusView(TicketState.INVALID)
         }
         doAsync {
-            Thread.sleep(500)
+            Thread.sleep(1000)
             uiThread {
                 resumePreview()
             }
