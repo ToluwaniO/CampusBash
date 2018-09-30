@@ -29,6 +29,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.UI
+import org.jetbrains.anko.startActivity
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.*
 
@@ -181,6 +182,12 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             } else {
                 startActivity(intentFor<MainActivity>())
             }
+        }
+
+        profile_layout.setOnClickListener {
+            startActivity(intentFor<ProfileActivity>().apply {
+                putExtra(AppContract.PROFILE_UID, event.creator.uid)
+            })
         }
     }
 

@@ -133,7 +133,9 @@
         <activity android:name=".view.NoNetworkActivity" />
         <activity android:name=".view.ImageViewerActivity" />
         <activity android:name=".view.AddCardActivity" />
-        <activity android:name=".view.ProfileActivity"></activity>
+        <activity
+            android:name=".view.ProfileActivity"
+            android:label="@string/profile"/>
     </application>
 
 </manifest>

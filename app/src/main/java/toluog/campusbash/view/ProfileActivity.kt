@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.activity_profile.*
 import org.jetbrains.anko.act
@@ -41,6 +42,7 @@ class ProfileActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
         val uid = intent?.extras?.getString(AppContract.PROFILE_UID)
         if (uid == null) {
@@ -97,6 +99,14 @@ class ProfileActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
             val p = profile
             if (p != null) updateProfileSection(p)
         })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val id = item?.itemId
+        when(id) {
+            android.R.id.home -> onBackPressed()
+        }
+        return true
     }
 
     override fun onDestroy() {
