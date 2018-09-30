@@ -110,4 +110,21 @@ class Repository(val context: Context){
         EventDashboardDataSource.initListener(FirebaseFirestore.getInstance(), eventId)
         return EventDashboardDataSource.getMetadatas()
     }
+
+    fun getPublicProfile(uid: String): LiveData<PublicProfile?> {
+        PublicProfileDataSource.initListener(uid)
+        return PublicProfileDataSource.liveProfile
+    }
+
+    fun getFollowers(uid: String): LiveData<List<PublicProfile>> {
+        PublicProfileDataSource.initListener(uid)
+        return PublicProfileDataSource.liveFollowers
+    }
+
+    fun getFollowing(uid: String): LiveData<List<PublicProfile>> {
+        PublicProfileDataSource.initListener(uid)
+        return PublicProfileDataSource.liveFollowing
+    }
+
+    fun getUserEvents(uid: String) = EventDataSource.getUserEvents(uid)
 }
