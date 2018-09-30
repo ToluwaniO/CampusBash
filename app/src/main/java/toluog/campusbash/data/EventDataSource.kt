@@ -29,12 +29,16 @@ object EventDataSource  {
     private val TAG = EventDataSource::class.java.simpleName
     private var lastUniversityPulled = ""
     private var lastUid = ""
+    private var lastUserEventsUid = ""
     private val froshGroup = MutableLiveData<Set<String>>()
     private var listener: ListenerRegistration? = null
     private var myEventsListener: ListenerRegistration? = null
     private var froshGroupListener: ListenerRegistration? = null
+    private var userEventsListener: ListenerRegistration? = null
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val myEventsDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+
+    private var userEvents = MutableLiveData<ArrayList<Event>?>()
 
     fun initListener(mFirestore: FirebaseFirestore, context: Context, university: String = ""){
         Log.d(TAG, "initListener")
@@ -82,10 +86,24 @@ object EventDataSource  {
                         Log.e(TAG, e.message)
                         return@addSnapshotListener
                     }
-            Log.d(TAG, documentSnapshot.toString())
+                    Log.d(TAG, documentSnapshot.toString())
                     val set = (documentSnapshot?.get("idList") as List<String>? ?: emptyList()).toHashSet()
                     froshGroup.postValue(set)
                 }
+    }
+
+    fun getUserEvents(uid: String): MutableLiveData<ArrayList<Event>?> {
+        if (uid == lastUserEventsUid) return userEvents
+        lastUserEventsUid = uid
+        userEventsListener?.remove()
+        fetchUserEvents(uid)
+        return userEvents
+    }
+
+    fun destroyUserEventListener() {
+        lastUserEventsUid = ""
+        userEventsListener?.remove()
+        userEvents = MutableLiveData<ArrayList<Event>?>()
     }
 
     private fun activateGeneralEventListener(context: Context, query: CollectionReference, university: String) {
@@ -168,6 +186,24 @@ object EventDataSource  {
             })
     }
 
+    private fun fetchUserEvents(uid: String) {
+        val query = FirebaseFirestore.getInstance().collection("events").whereEqualTo("creator.uid", uid)
+        userEventsListener = query.addSnapshotListener { querySnapshot, e ->
+            if (e != null) {
+                Log.d(TAG, e.message)
+            }
+
+            val uEvents = querySnapshot?.documents?.asSequence()?.map {
+                it.toObject(Event::class.java)
+            }?.mapNotNull { it }
+            userEvents.postValue(ArrayList<Event>().apply {
+                if (uEvents != null) {
+                    addAll(uEvents)
+                }
+            })
+        }
+    }
+
     @SuppressLint("RestrictedApi")
     private fun savePlace(id: String, event: Event, context: Context) {
         val place = db?.placeDao()?.getStaticPlace(id)
@@ -197,7 +233,7 @@ object EventDataSource  {
         if(doc["tickets"] == null) return false
         if(doc["creator"] == null) return false
         if(doc["ticketsSold"] == null) return false
-        if (doc["timeZone"] == null) return false
+        if(doc["timeZone"] == null) return false
         return true
     }
 

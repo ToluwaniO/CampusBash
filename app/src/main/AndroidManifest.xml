@@ -86,8 +86,7 @@
             android:resource="@array/preloaded_fonts" />
         <meta-data
             android:name="fontProviderRequests"
-            android:value="Noto Color Emoji Compat"
-            />
+            android:value="Noto Color Emoji Compat" />
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
@@ -133,7 +132,8 @@
         <activity android:name=".view.WebActivity" />
         <activity android:name=".view.NoNetworkActivity" />
         <activity android:name=".view.ImageViewerActivity" />
-        <activity android:name=".view.AddCardActivity"></activity>
+        <activity android:name=".view.AddCardActivity" />
+        <activity android:name=".view.ProfileActivity"></activity>
     </application>
 
 </manifest>

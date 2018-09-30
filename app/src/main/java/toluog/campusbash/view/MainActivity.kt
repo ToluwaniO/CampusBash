@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             R.id.navigation_search -> {
                 title = ""
                 (fab as View).visibility = GONE
-                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
+                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchPeopleFragment(), null)
                         .commit()
                 setAppBarState(null)
                 return@OnNavigationItemSelectedListener true
