@@ -177,11 +177,11 @@ class CreateEventFragment : Fragment(){
 
         event_save_button.setOnClickListener { save() }
 
-        event_tickets.setOnClickListener { mCallback?.createTicket() }
+        event_tickets_layout.setOnClickListener { mCallback?.createTicket() }
 
         event_image.setOnClickListener { eventImageClicked() }
 
-        event_address.setOnClickListener {
+        event_address_layout.setOnClickListener {
             try {
                 val intent = PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
                         .build(activity)
@@ -215,14 +215,14 @@ class CreateEventFragment : Fragment(){
             callTimeDialog()
         }
 
-        event_university.setOnClickListener {
+        event_university_layout.setOnClickListener {
             selector(getString(R.string.select_university), universities) { _, i ->
                 viewModel.event.university = universities[i]
                 event_university.updateTextSelector(viewModel.event.university, android.R.color.black)
             }
         }
 
-        event_type.setOnClickListener {
+        event_type_layout.setOnClickListener {
             selector(getString(R.string.select_type), eventTypes) { _, i ->
                 event_type.updateTextSelector(eventTypes[i], android.R.color.black)
                 viewModel.event.eventType = eventTypes[i]
