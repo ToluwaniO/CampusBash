@@ -6,25 +6,22 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Message
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.MenuItem
 import android.view.View
-import com.google.gson.annotations.SerializedName
 import kotlinx.android.synthetic.main.activity_stripe_setup.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 import toluog.campusbash.data.network.ServerResponse
-import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.Util
+import toluog.campusbash.viewmodel.StripeSetupViewModel
 
 class StripeSetupActivity : AppCompatActivity() {
 

@@ -24,6 +24,7 @@ import toluog.campusbash.R
 import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.viewmodel.EventDashboardViewModel
 
 class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 

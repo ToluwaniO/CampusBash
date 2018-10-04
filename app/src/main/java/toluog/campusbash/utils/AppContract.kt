@@ -35,6 +35,8 @@ class AppContract{
         const val WEB_VIEW_URL = "web_view_url"
         const val IMAGE_SRC = "imageSrc"
         const val IMAGE_NAME = "imageName"
+        const val PROFILE_UID = "profileUid"
+        const val UNIVERSITIES = "universities"
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"
@@ -126,5 +128,7 @@ class AppContract{
         const val TIME_SPENT = "timeSpent"
 
         const val FIRE_EMOJI = "\uD83D\uDD25"
+
+        val EVENT_VISIBILITY_LIST = listOf("Everyone", "Friends", "Friends of friends")
     }
 }

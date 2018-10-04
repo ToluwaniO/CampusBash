@@ -43,7 +43,7 @@ android {
     }
     lintOptions {
         abortOnError false
-        disable 'TypographyFractions','TypographyQuotes'
+        disable 'TypographyFractions', 'TypographyQuotes'
         warning 'InvalidPackage'
     }
 }
@@ -106,6 +106,7 @@ dependencies {
     implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:1.0.0"
 
     //Others
+    implementation "com.algolia:algoliasearch-android:$algolia_version"
     implementation "com.stripe:stripe-android:$stripe_version"
     implementation "com.google.android.gms:play-services-maps:$play_services_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"

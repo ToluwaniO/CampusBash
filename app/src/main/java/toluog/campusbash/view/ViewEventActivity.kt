@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
-import com.bumptech.glide.Glide
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -28,9 +27,9 @@ import com.google.android.gms.maps.model.CameraPosition
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.UI
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.*
+import toluog.campusbash.viewmodel.ViewEventViewModel
 
 class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -181,6 +180,12 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             } else {
                 startActivity(intentFor<MainActivity>())
             }
+        }
+
+        profile_layout.setOnClickListener {
+            startActivity(intentFor<ProfileActivity>().apply {
+                putExtra(AppContract.PROFILE_UID, event.creator.uid)
+            })
         }
     }
 

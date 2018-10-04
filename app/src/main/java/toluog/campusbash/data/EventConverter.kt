@@ -16,14 +16,21 @@ class EventConverter{
         tickets.forEach {
             it.type = it.type.toLowerCase()
         }
-        val gson = Gson()
-        return gson.toJson(tickets)
+        return Gson().toJson(tickets)
     }
 
     @TypeConverter
     fun getTicketsList(tickets: String):ArrayList<Ticket>{
         val listType = object : TypeToken<ArrayList<Ticket>>() {}.type
-        val gson = Gson()
-        return gson.fromJson(tickets, listType)
+        return Gson().fromJson(tickets, listType)
+    }
+
+    @TypeConverter
+    fun getUniversitiesString(universities: ArrayList<String>) = Gson().toJson(universities)
+
+    @TypeConverter
+    fun getUniversitiesList(universities: String): ArrayList<String> {
+        val listType = object : TypeToken<ArrayList<String>>() {}.type
+        return Gson().fromJson(universities, listType)
     }
 }

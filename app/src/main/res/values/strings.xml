@@ -185,4 +185,13 @@
     <string name="could_not_verify_student_id">Oops, we could not verify your student id</string>
     <string name="exit_without_saving_card">Are you sure you want to leave without saving your card?</string>
     <string name="max_image_size">Max image size is 5MB</string>
+    <string name="follow">Follow</string>
+    <string name="follow_back">Follow Back</string>
+    <string name="unfollow">unfollow</string>
+    <string name="everyone">Everyone</string>
+    <string name="my_friends">My Friends</string>
+    <string name="friends_of_my_friends">Friends of my Friends</string>
+    <string name="who_sees_this">Who can see this?</string>
+    <string name="one_university_selected">1 university selected</string>
+    <string name="x_universities_selected">%1d universities selected</string>
 </resources>

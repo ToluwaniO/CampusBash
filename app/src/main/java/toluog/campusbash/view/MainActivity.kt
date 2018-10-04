@@ -16,20 +16,16 @@ import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
-import android.os.Build
 import android.support.design.widget.CoordinatorLayout
 import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import org.jetbrains.anko.act
-import toluog.campusbash.ViewBehavior.BottomNavigationBehavior
 import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import kotlin.collections.ArrayList
 import android.support.design.widget.AppBarLayout
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import android.view.View.GONE
 import org.jetbrains.anko.doAsync
@@ -39,6 +35,7 @@ import io.fabric.sdk.android.Fabric
 import org.jetbrains.anko.backgroundColor
 import toluog.campusbash.adapters.BoughtTicketAdapter
 import toluog.campusbash.model.BoughtTicket
+import toluog.campusbash.viewmodel.MainActivityViewModel
 
 
 class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener,
@@ -72,7 +69,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
             R.id.navigation_search -> {
                 title = ""
                 (fab as View).visibility = GONE
-                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
+                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchPeopleFragment(), null)
                         .commit()
                 setAppBarState(null)
                 return@OnNavigationItemSelectedListener true

@@ -1,10 +1,6 @@
-package toluog.campusbash.view
+package toluog.campusbash.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
-import com.google.firebase.firestore.FirebaseFirestore
-import toluog.campusbash.data.Repository
 
 class StripeSetupViewModel(app: Application) : GeneralViewModel(app)  {
 

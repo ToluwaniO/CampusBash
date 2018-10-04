@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.tickets_fragment.*
 import toluog.campusbash.R
 import toluog.campusbash.adapters.BoughtTicketAdapter
 import toluog.campusbash.model.BoughtTicket
+import toluog.campusbash.viewmodel.TicketsViewModel
 
 class TicketsFragment : Fragment() {
 
