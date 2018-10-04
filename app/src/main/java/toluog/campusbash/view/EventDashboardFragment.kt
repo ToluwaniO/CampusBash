@@ -27,6 +27,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.github.mikephil.charting.utils.MPPointF
 import com.github.mikephil.charting.utils.ViewPortHandler
+import toluog.campusbash.viewmodel.EventDashboardViewModel
 
 /**
  * A simple [Fragment] subclass.

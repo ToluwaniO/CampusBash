@@ -1,11 +1,11 @@
-package toluog.campusbash.view
+package toluog.campusbash.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.LiveData
 import com.google.android.gms.tasks.Task
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.FirebaseManager
-import toluog.campusbash.view.GeneralViewModel
+import toluog.campusbash.viewmodel.GeneralViewModel
 
 class EventDashboardViewModel(app: Application): GeneralViewModel(app) {
 

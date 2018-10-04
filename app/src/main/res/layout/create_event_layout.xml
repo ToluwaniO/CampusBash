@@ -230,7 +230,6 @@
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:layout_marginBottom="@dimen/activity_horizontal_margin"
                 android:background="?android:attr/selectableItemBackground"
                 android:orientation="vertical">
 
@@ -245,10 +244,31 @@
                     android:id="@+id/event_tickets"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
                     android:text="@string/add_tickets"
                     android:textColor="@color/really_light_gray"
                     android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/event_visibility_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView25"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/section_title_bottom"
+                    android:text="@string/who_sees_this" />
+
+                <Spinner
+                    android:id="@+id/event_visibility_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
             </LinearLayout>
         </LinearLayout>
 

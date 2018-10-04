@@ -135,7 +135,8 @@
         <activity android:name=".view.AddCardActivity" />
         <activity
             android:name=".view.ProfileActivity"
-            android:label="@string/profile"/>
+            android:label="@string/profile" />
+        <activity android:name=".view.SelectUniversityActivity"></activity>
     </application>
 
 </manifest>

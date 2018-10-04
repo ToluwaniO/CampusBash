@@ -6,21 +6,19 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.FragmentActivity
 import android.util.Log
-import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.act
 import org.jetbrains.anko.intentFor
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
-import com.firebase.ui.auth.ErrorCodes.NO_NETWORK
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_first_open.*
 import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
+import toluog.campusbash.viewmodel.GeneralViewModel
 
 
 class FirstOpenActivity : AppCompatActivity(), PickUniversityFragment.PickUniversityListener,

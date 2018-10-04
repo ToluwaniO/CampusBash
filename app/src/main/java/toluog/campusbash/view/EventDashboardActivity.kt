@@ -1,24 +1,17 @@
 package toluog.campusbash.view
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AppCompatActivity
-import android.util.ArrayMap
-import android.view.Menu
 import android.view.MenuItem
-import com.google.zxing.Result
 
 import toluog.campusbash.R
 import kotlinx.android.synthetic.main.activity_event_dashboard.*
-import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.toast
-import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.utils.AppContract
+import toluog.campusbash.viewmodel.EventDashboardViewModel
 
 class EventDashboardActivity : AppCompatActivity() {
 

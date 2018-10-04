@@ -1,13 +1,11 @@
 package toluog.campusbash.view
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
 import android.net.Uri
-import com.google.firebase.firestore.FirebaseFirestore
-import toluog.campusbash.data.Repository
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Place
 import toluog.campusbash.model.Ticket
+import toluog.campusbash.viewmodel.GeneralViewModel
 
 /**
  * Created by oguns on 12/13/2017.

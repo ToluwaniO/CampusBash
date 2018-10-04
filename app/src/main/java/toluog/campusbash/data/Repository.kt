@@ -61,6 +61,16 @@ class Repository(val context: Context){
         return db?.universityDao()?.getUniversities(country)
     }
 
+    fun getUniversities(): LiveData<List<University>>? {
+        UniversityDataSource.initListener(context)
+        return db?.universityDao()?.getUniversities()
+    }
+
+    fun getUniversities(query: String): LiveData<List<University>>? {
+        UniversityDataSource.initListener(context)
+        return db?.universityDao()?.queryUniversities(query)
+    }
+
     fun getCurrencies(): LiveData<List<Currency>>? {
         Util.downloadCurrencies(context)
         return db?.currencyDao()?.getCurrencies()
