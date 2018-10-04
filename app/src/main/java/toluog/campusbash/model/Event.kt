@@ -25,7 +25,8 @@ data class Event(@PrimaryKey var eventId: String = "", var eventName: String = "
                  var startTime: Long = 0L, var endTime: Long = 0L, var timeZone: String = "",
                  var placeId: String = "", var tickets: ArrayList<Ticket> = ArrayList(),
                  @Embedded var creator: Creator = Creator(), var ticketsSold: Long = 0,
-                 @Exclude var address: String = ""): Parcelable {
+                 var eventVisibility: String = "", @Exclude var address: String = "",
+                 var universities: ArrayList<String> = ArrayList()): Parcelable {
 
     override fun equals(other: Any?): Boolean {
         val o = other as Event?

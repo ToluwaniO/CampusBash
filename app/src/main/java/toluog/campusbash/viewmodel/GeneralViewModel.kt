@@ -1,4 +1,4 @@
-package toluog.campusbash.view
+package toluog.campusbash.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel

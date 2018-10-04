@@ -22,6 +22,12 @@
         <item>United States</item>
     </string-array>
 
+    <string-array name="event_visibility_list">
+        <item>@string/everyone</item>
+        <item>@string/my_friends</item>
+        <item>@string/friends_of_my_friends</item>
+    </string-array>
+
     <integer-array name="colors">
         <item>@color/roseStart</item>
         <item>@color/roseEnd</item>

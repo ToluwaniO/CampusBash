@@ -1,4 +1,4 @@
-package toluog.campusbash.view
+package toluog.campusbash.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.MutableLiveData
@@ -8,7 +8,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import toluog.campusbash.model.PublicProfile
 import org.json.JSONObject
-
 
 
 class PeopleViewModel(app: Application): GeneralViewModel(app) {

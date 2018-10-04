@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.activity_profile.*
-import org.jetbrains.anko.act
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
@@ -17,12 +16,12 @@ import toluog.campusbash.R
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.data.CloudFunctions
 import toluog.campusbash.model.Event
-import toluog.campusbash.model.Place
 import toluog.campusbash.model.PublicProfile
 import toluog.campusbash.utils.Analytics
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.loadImage
+import toluog.campusbash.viewmodel.ProfileViewModel
 
 class ProfileActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
 

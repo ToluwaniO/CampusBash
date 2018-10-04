@@ -23,6 +23,7 @@ import toluog.campusbash.R
 import toluog.campusbash.model.dashboard.TicketQuantity
 import toluog.campusbash.model.dashboard.UserTicket
 import toluog.campusbash.utils.AppContract
+import toluog.campusbash.viewmodel.EventDashboardViewModel
 
 /**
  * A simple [Fragment] subclass.

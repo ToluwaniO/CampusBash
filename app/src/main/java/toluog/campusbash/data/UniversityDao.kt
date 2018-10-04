@@ -29,6 +29,9 @@ public interface UniversityDao{
     @Query("SELECT * FROM ${AppContract.UNIVERSITY_TABLE} WHERE country LIKE :country")
     fun getUniversities(country: String): LiveData<List<University>>
 
+    @Query("SELECT * FROM ${AppContract.UNIVERSITY_TABLE} WHERE name LIKE :query")
+    fun queryUniversities(query: String): LiveData<List<University>>
+
     @Query("SELECT * FROM ${AppContract.UNIVERSITY_TABLE}")
     fun getUniversities(): LiveData<List<University>>
 
