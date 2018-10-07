@@ -1,31 +1,40 @@
-package toluog.campusbash.data
+package toluog.campusbash.data.datasource
 
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.QuerySnapshot
+import kotlinx.coroutines.experimental.asCoroutineDispatcher
+import kotlinx.coroutines.experimental.cancel
+import kotlinx.coroutines.experimental.launch
 import toluog.campusbash.model.BoughtTicket
 import toluog.campusbash.utils.AppContract
+import java.util.concurrent.Executors
 
-object TicketsDataSource {
+class TicketsDataSource: DataSource {
+
     private val liveTickets = MutableLiveData<List<BoughtTicket>>()
     private val tickets = arrayListOf<BoughtTicket>()
-    private var listenerRegistration: ListenerRegistration? = null
-    private var lastUid: String? = null
+    private val firestore = FirebaseFirestore.getInstance()
+    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private var listener: ListenerRegistration? = null
     private val TAG = TicketsDataSource::class.java.simpleName
 
-    fun initListener(mFirestore: FirebaseFirestore, uid: String){
+    fun initListener(uid: String){
         Log.d(TAG, "initListener")
-        if(lastUid != uid) {
-            tickets.clear()
-            listenerRegistration?.remove()
-            val query = mFirestore.collection(AppContract.FIREBASE_USER_TICKETS)
-            listenerRegistration = query.whereEqualTo(AppContract.BUYER_ID, uid)
-                .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
-                    if (e != null) {
-                        Log.d(TAG, "onEvent:error", e)
-                        return@EventListener
-                    }
 
+        val query = firestore.collection(AppContract.FIREBASE_USER_TICKETS)
+        listener = query.whereEqualTo(AppContract.BUYER_ID, uid)
+            .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
+                if (e != null) {
+                    Log.d(TAG, "onEvent:error", e)
+                    return@EventListener
+                }
+                launch(dispatcher) {
+                    val tickets = arrayListOf<BoughtTicket>()
                     // Dispatch the event
                     value?.documentChanges?.forEach {
                         if (it.document.exists() && validate(it)) {
@@ -53,9 +62,8 @@ object TicketsDataSource {
                         }
                     }
                     liveTickets.postValue(tickets)
-                })
-            lastUid = uid
-        }
+                }
+            })
     }
 
     fun getTickets() = liveTickets
@@ -80,5 +88,10 @@ object TicketsDataSource {
         if(doc["ticketCodes"] == null) return false
         if(doc["timeSpent"] == null) return false
         return true
+    }
+
+    override fun clear() {
+        listener?.remove()
+        dispatcher.cancel()
     }
 }

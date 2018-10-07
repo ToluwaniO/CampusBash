@@ -1,0 +1,57 @@
+package toluog.campusbash.data.repository
+
+import android.arch.lifecycle.LiveData
+import android.content.Context
+import com.google.firebase.firestore.FirebaseFirestore
+import toluog.campusbash.data.AppDatabase
+import toluog.campusbash.data.FirestorePaths
+import toluog.campusbash.data.FirestoreQuery
+import toluog.campusbash.data.FirestoreQueryType
+import toluog.campusbash.data.datasource.EventsDataSource
+import toluog.campusbash.model.Event
+import toluog.campusbash.utils.FirebaseManager
+
+class EventsRepository(val context: Context): Repository {
+    private val TAG = EventsRepository::class.java.simpleName
+    private val dataSource = EventsDataSource(context)
+    private val myDataSource = EventsDataSource(context)
+    private val db = AppDatabase.getDbInstance(context)
+
+    fun getEvent(eventId: String) = db?.eventDao()?.getEvent(eventId)
+
+    fun getEvents(university: String): LiveData<List<Event>>? {
+        val now = System.currentTimeMillis()
+        val query = hashSetOf(FirestoreQuery(FirestorePaths.UNIVERSITY, university,
+                FirestoreQueryType.EQUAL_TO), FirestoreQuery(FirestorePaths.END_TIME, now,
+                FirestoreQueryType.GREATER_THAN_EQUAL_TO))
+        dataSource.listenForEvents(FirestorePaths.EVENTS_PATH, query)
+        return db?.eventDao()?.getEvents(university, now)
+    }
+
+    fun getMyEvents(): LiveData<List<Event>>? {
+        val uid = FirebaseManager.getUser()?.uid ?: ""
+        val query = hashSetOf(FirestoreQuery(FirestorePaths.UID, uid, FirestoreQueryType.EQUAL_TO))
+        myDataSource.listenForEvents(FirestorePaths.EVENTS_PATH, query)
+        return db?.eventDao()?.getMyEvents(uid)
+    }
+
+    fun getEventsWithQueryAndType(name: String, type: String, time: Long) =
+            db?.eventDao()?.getEventsWithQueryAndType(name, type, time)
+
+    fun getEventsWithQuery(name: String, time: Long) = db?.eventDao()?.getEventsWithQuery(name, time)
+
+    fun getPlace(id: String) = db?.placeDao()?.getPlace(id)
+
+    fun downloadEvent(eventId: String): LiveData<Event>? {
+        dataSource.downloadEvent(eventId)
+        return getEvent(eventId)
+    }
+
+    fun deleteOldEvents() = db?.eventDao()?.deleteEvents(System.currentTimeMillis())
+
+    override fun clear() {
+        dataSource.clear()
+        myDataSource.clear()
+    }
+
+}

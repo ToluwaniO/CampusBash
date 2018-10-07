@@ -24,6 +24,7 @@ import toluog.campusbash.model.Featured
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.ConfigProvider
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.view.viewmodel.EventsViewModel
 
 /**
  * Created by oguns on 12/13/2017.

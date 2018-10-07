@@ -8,14 +8,14 @@ import com.github.paolorotolo.appintro.AppIntro2
 import com.github.paolorotolo.appintro.AppIntroFragment
 
 import toluog.campusbash.R
-import toluog.campusbash.data.UniversityDataSource
+import toluog.campusbash.data.datasource.UniversityDataSource
 import toluog.campusbash.utils.Analytics
 
 class OnBoardingActivity : AppIntro2() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        UniversityDataSource.initListener(applicationContext)
+        UniversityDataSource(applicationContext).listenToUniversities()
         addSlide(AppIntroFragment.newInstance(getString(R.string.welcome_to_cbash),
                 getString(R.string.Description1Onboarding),
                 R.drawable.mug, resources.getColor(R.color.colorPrimary)))

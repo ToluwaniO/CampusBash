@@ -1,10 +1,7 @@
 package toluog.campusbash.data
 
-import android.app.Activity
-import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
-import android.content.Context
 import android.util.Log
 import com.stripe.android.EphemeralKeyProvider
 import com.stripe.android.EphemeralKeyUpdateListener

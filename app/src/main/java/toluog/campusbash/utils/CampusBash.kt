@@ -6,13 +6,12 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.util.Log
 import com.crashlytics.android.Crashlytics
-import com.google.firebase.firestore.FirebaseFirestore
 import com.stripe.android.CustomerSession
 import com.stripe.android.model.Customer
-import org.jetbrains.anko.doAsync
+import kotlinx.coroutines.experimental.launch
 import toluog.campusbash.data.ProgressListener
-import toluog.campusbash.data.Repository
 import toluog.campusbash.data.StripeEphemeralKeyProvider
+import toluog.campusbash.data.repository.GeneralRepository
 import toluog.campusbash.model.BashCard
 
 object CampusBash {
@@ -31,7 +30,7 @@ object CampusBash {
     @SuppressLint("RestrictedApi")
     fun init(c: Context) {
         if(!isInitialized) {
-            val repo = Repository(c)
+            val repo = GeneralRepository(c)
             val uid = FirebaseManager.auth.uid
             uid?.let {
                 user = repo.getUser(it)
@@ -43,7 +42,7 @@ object CampusBash {
                 }
             }
 
-            doAsync {
+            launch {
                 repo.deleteOldEvents()
                 DbManager.deleteInvalidPlaces(c)
             }

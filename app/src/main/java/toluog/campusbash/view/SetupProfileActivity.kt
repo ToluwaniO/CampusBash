@@ -22,6 +22,7 @@ import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import toluog.campusbash.utils.loadImage
+import toluog.campusbash.view.viewmodel.GeneralViewModel
 
 class SetupProfileActivity : AppCompatActivity() {
 

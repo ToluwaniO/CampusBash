@@ -23,6 +23,7 @@ import toluog.campusbash.R
 import toluog.campusbash.model.dashboard.TicketQuantity
 import toluog.campusbash.model.dashboard.UserTicket
 import toluog.campusbash.utils.AppContract
+import toluog.campusbash.view.viewmodel.EventDashboardViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -63,7 +64,7 @@ class TicketDashboardFragment : Fragment() {
 
 
         viewModel = ViewModelProviders.of(activity!!).get(EventDashboardViewModel::class.java)
-        viewModel.getUsersWithTickets(eventId ?: "").observe(this, Observer {
+        viewModel.getUsersWithTickets(eventId ?: "")?.observe(this, Observer {
             Log.d(TAG, "Tickets = $it")
             userTickets.clear()
             it?.let {
@@ -135,7 +136,7 @@ class TicketDashboardFragment : Fragment() {
                     buyer_name.text = userTicket.buyerName
                     buyer_email.text = userTicket.buyerEmail
                 }
-                var ticketNo: String = if(userTicket.quantity > 1) {
+                val ticketNo: String = if(userTicket.quantity > 1) {
                     containerView.context.getString(R.string.ticket_quantity_with_params, userTicket.quantity)
                 } else {
                     containerView.context.getString(R.string.ticket_quantity_one)

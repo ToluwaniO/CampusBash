@@ -8,5 +8,11 @@ class FirestorePaths {
         ////////KEYS
         ////////////////////////////////////////////////////////
         val EVENT_UID = "creator.uid"
+
+        val EVENTS_PATH = "events"
+
+        val UNIVERSITY = "university"
+        val END_TIME = "endTime"
+        val UID = "uid"
     }
 }

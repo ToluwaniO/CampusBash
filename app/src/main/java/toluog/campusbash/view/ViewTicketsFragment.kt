@@ -19,6 +19,7 @@ import toluog.campusbash.model.Ticket
 import java.lang.ClassCastException
 import android.support.v7.widget.DividerItemDecoration
 import toluog.campusbash.utils.AppContract
+import toluog.campusbash.view.viewmodel.CreateEventViewModel
 
 
 /**

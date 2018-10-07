@@ -24,6 +24,7 @@ import toluog.campusbash.R
 import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.view.viewmodel.EventDashboardViewModel
 
 class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
@@ -44,7 +45,7 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         eventId = intent.extras.getString(AppContract.EVENT_ID)
         viewModel = ViewModelProviders.of(this).get(EventDashboardViewModel::class.java)
 
-        viewModel.getTicketMetadatas(eventId).observe(this, Observer {
+        viewModel.getTicketMetadatas(eventId)?.observe(this, Observer {
             Log.d(TAG, "Data changed\n$it")
             if(it != null) {
                 ticketMap.clear()
