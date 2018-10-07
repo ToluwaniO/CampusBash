@@ -7,7 +7,9 @@ import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.model.Currency
 import toluog.campusbash.utils.AppContract
@@ -18,6 +20,8 @@ class CurrencyDataSource(context: Context): DataSource {
 
     companion object {
         private val TAG = CurrencyDataSource::class.java.simpleName
+        private val threadJob = Job()
+        private val threadScope = CoroutineScope(threadJob)
 
         fun downloadCurrencies(context: Context) {
             Log.d(TAG, "Attempting to download currencies")
@@ -25,7 +29,7 @@ class CurrencyDataSource(context: Context): DataSource {
             val query = FirebaseFirestore.getInstance().collection(AppContract.FIREBASE_CURRENCIES)
             query.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    launch {
+                    threadScope.launch {
                         for (document in task.result) {
                             if(document.exists() && validate(document)) {
                                 val snapshot = document.toObject(Currency::class.java)
@@ -64,7 +68,7 @@ class CurrencyDataSource(context: Context): DataSource {
             }
 
             // Dispatch the event
-            launch {
+            threadScope.launch {
                 value?.documentChanges?.forEach {
                     // Snapshot of the changed document
                     if(it.document.exists()) {
@@ -92,7 +96,7 @@ class CurrencyDataSource(context: Context): DataSource {
     }
 
     override fun clear() {
-
+        threadJob.cancel()
     }
 
 }

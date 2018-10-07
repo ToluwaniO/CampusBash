@@ -7,9 +7,10 @@ import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.QuerySnapshot
-import kotlinx.coroutines.experimental.asCoroutineDispatcher
-import kotlinx.coroutines.experimental.cancel
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import toluog.campusbash.model.BoughtTicket
 import toluog.campusbash.utils.AppContract
 import java.util.concurrent.Executors
@@ -19,7 +20,8 @@ class TicketsDataSource: DataSource {
     private val liveTickets = MutableLiveData<List<BoughtTicket>>()
     private val tickets = arrayListOf<BoughtTicket>()
     private val firestore = FirebaseFirestore.getInstance()
-    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val threadScope = CoroutineScope(threadJob)
     private var listener: ListenerRegistration? = null
     private val TAG = TicketsDataSource::class.java.simpleName
 
@@ -33,7 +35,7 @@ class TicketsDataSource: DataSource {
                     Log.d(TAG, "onEvent:error", e)
                     return@EventListener
                 }
-                launch(dispatcher) {
+                threadScope.launch {
                     val tickets = arrayListOf<BoughtTicket>()
                     // Dispatch the event
                     value?.documentChanges?.forEach {
@@ -92,6 +94,6 @@ class TicketsDataSource: DataSource {
 
     override fun clear() {
         listener?.remove()
-        dispatcher.cancel()
+        threadJob.cancel()
     }
 }

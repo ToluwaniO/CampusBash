@@ -8,7 +8,7 @@ import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.stripe.android.CustomerSession
 import com.stripe.android.model.Customer
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.launch
 import toluog.campusbash.data.ProgressListener
 import toluog.campusbash.data.StripeEphemeralKeyProvider
 import toluog.campusbash.data.repository.GeneralRepository

@@ -3,7 +3,7 @@ package toluog.campusbash.utils
 import android.util.Log
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.launch
 import toluog.campusbash.data.AppDatabase
 
 /**

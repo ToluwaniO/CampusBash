@@ -24,9 +24,9 @@ import android.view.View
 import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.*
 import toluog.campusbash.view.viewmodel.ViewEventViewModel

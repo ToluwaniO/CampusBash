@@ -7,9 +7,10 @@ import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.QuerySnapshot
-import kotlinx.coroutines.experimental.asCoroutineDispatcher
-import kotlinx.coroutines.experimental.cancel
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract
@@ -21,7 +22,8 @@ class UniversityDataSource(context: Context): DataSource {
     private val TAG = UniversityDataSource::class.java.simpleName
     private var listener: ListenerRegistration? = null
     private val firestore = FirebaseFirestore.getInstance()
-    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val threadScope = CoroutineScope(threadJob)
 
     fun listenToUniversities(){
         val query = firestore.collection(AppContract.FIREBASE_UNIVERSITIES)
@@ -35,7 +37,7 @@ class UniversityDataSource(context: Context): DataSource {
             }
 
             // Dispatch the event
-            launch(dispatcher) {
+            threadScope.launch {
                 value?.documentChanges?.forEach {
                     if(it.document.exists() && validate(it)) {
                         // Snapshot of the changed document
@@ -76,7 +78,7 @@ class UniversityDataSource(context: Context): DataSource {
 
     override fun clear() {
         listener?.remove()
-        dispatcher.cancel()
+        threadJob.cancel()
     }
 
 }

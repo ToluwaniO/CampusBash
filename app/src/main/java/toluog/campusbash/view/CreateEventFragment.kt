@@ -26,8 +26,8 @@ import android.arch.lifecycle.Observer
 import android.net.Uri
 import android.widget.ImageView
 import com.crashlytics.android.Crashlytics
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog

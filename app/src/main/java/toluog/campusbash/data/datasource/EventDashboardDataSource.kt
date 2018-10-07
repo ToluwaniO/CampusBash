@@ -4,9 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.support.v4.util.ArrayMap
 import android.util.Log
 import com.google.firebase.firestore.*
-import kotlinx.coroutines.experimental.asCoroutineDispatcher
-import kotlinx.coroutines.experimental.cancel
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.*
 import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.model.dashboard.TicketQuantity
 import toluog.campusbash.model.dashboard.UserTicket
@@ -20,7 +18,8 @@ class EventDashboardDataSource: DataSource {
     private val liveTickets = MutableLiveData<List<UserTicket>>()
     private val liveMetaDatas = MutableLiveData<Map<String, TicketMetaData>>()
     private var listener: ListenerRegistration? = null
-    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val threadJob = Job()
+    private val threadScope = CoroutineScope(threadJob)
 
     fun initListener(eventId: String){
         listener?.remove()
@@ -32,7 +31,7 @@ class EventDashboardDataSource: DataSource {
                 return@EventListener
             }
 
-            launch (dispatcher) {
+            threadScope.launch {
                 val tickets = arrayListOf<UserTicket>()
                 val metadatas = ArrayMap<String, TicketMetaData>()
                 value?.documentChanges?.forEach {
@@ -119,7 +118,7 @@ class EventDashboardDataSource: DataSource {
     
     override fun clear() {
         listener?.remove()
-        dispatcher.cancel()
+        threadJob.cancel()
     }
 
     private val CODE = "code"

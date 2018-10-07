@@ -9,9 +9,7 @@ import com.google.android.gms.location.places.Places
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import kotlinx.coroutines.experimental.asCoroutineDispatcher
-import kotlinx.coroutines.experimental.cancel
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.*
 import org.jetbrains.anko.doAsync
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.data.FirestorePaths
@@ -20,7 +18,7 @@ import java.util.concurrent.Executors
 class GeneralDataSource: DataSource {
     override fun clear() {
         listenerRegistration?.remove()
-        dispatcher.cancel()
+        threadJob.cancel()
     }
 
     companion object {
@@ -30,7 +28,8 @@ class GeneralDataSource: DataSource {
         private lateinit var userQuery: DocumentReference
         private var lastUid: String? = null
         private var listenerRegistration: ListenerRegistration? = null
-        private var dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+        private val threadJob = Job()
+        private val threadScope = CoroutineScope(threadJob)
 
         fun getUser(uid: String): LiveData<Map<String, Any>> {
             Log.d(TAG, "getting user")
@@ -38,7 +37,7 @@ class GeneralDataSource: DataSource {
                 listenerRegistration?.remove()
                 userQuery = FirebaseFirestore.getInstance().collection(FirestorePaths.USERS).document(uid)
                 listenerRegistration = userQuery.addSnapshotListener { documentSnapshot, err ->
-                    launch(dispatcher) {
+                    threadScope.launch {
                         if(documentSnapshot != null && documentSnapshot.exists()) {
                             user.postValue(documentSnapshot.data)
                         }
