@@ -28,7 +28,8 @@ class MyJobService: JobService() {
     private fun deleteOldEvents() {
         Log.d(TAG, "Deleting old events")
         val db = AppDatabase.getDbInstance(this)
-        launch { db?.eventDao()?.deleteEvents(System.currentTimeMillis()) }
+        val uid = FirebaseManager.getUser()?.uid ?: ""
+        launch { db?.eventDao()?.deleteOldEvents(System.currentTimeMillis(), uid) }
         Log.d(TAG, "Done deleting old events")
     }
 

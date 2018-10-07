@@ -41,7 +41,8 @@ class GeneralRepository(val context: Context): Repository {
     fun getUser(uid: String) = GeneralDataSource.getUser(uid)
 
     fun deleteOldEvents() {
-        db?.eventDao()?.deleteEvents(System.currentTimeMillis())
+        val uid = FirebaseManager.getUser()?.uid ?: ""
+        db?.eventDao()?.deleteOldEvents(System.currentTimeMillis(), uid)
     }
 
     fun getUnis(country: String): LiveData<List<University>>? {

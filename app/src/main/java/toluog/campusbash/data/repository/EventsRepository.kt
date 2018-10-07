@@ -47,8 +47,6 @@ class EventsRepository(val context: Context): Repository {
         return getEvent(eventId)
     }
 
-    fun deleteOldEvents() = db?.eventDao()?.deleteEvents(System.currentTimeMillis())
-
     override fun clear() {
         dataSource.clear()
         myDataSource.clear()
