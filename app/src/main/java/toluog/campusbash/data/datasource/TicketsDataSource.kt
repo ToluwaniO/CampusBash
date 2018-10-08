@@ -2,11 +2,7 @@ package toluog.campusbash.data.datasource
 
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
-import com.google.firebase.firestore.DocumentChange
-import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
@@ -18,7 +14,6 @@ import java.util.concurrent.Executors
 class TicketsDataSource: DataSource {
 
     private val liveTickets = MutableLiveData<List<BoughtTicket>>()
-    private val tickets = arrayListOf<BoughtTicket>()
     private val firestore = FirebaseFirestore.getInstance()
     private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val threadScope = CoroutineScope(threadJob)
@@ -38,28 +33,12 @@ class TicketsDataSource: DataSource {
                 threadScope.launch {
                     val tickets = arrayListOf<BoughtTicket>()
                     // Dispatch the event
-                    value?.documentChanges?.forEach {
-                        if (it.document.exists() && validate(it)) {
-                            // Snapshot of the changed document
-                            Log.d(TAG, it.document.toString())
-                            val snapshot = it.document.toObject(BoughtTicket::class.java)
-
-                            when (it.type) {
-                                DocumentChange.Type.ADDED -> {
-                                    Log.d(TAG, "ChildAdded")
-                                    tickets.add(snapshot)
-                                }
-                                DocumentChange.Type.MODIFIED -> {
-                                    Log.d(TAG, "ChildModified")
-                                    val index = indexOf(snapshot)
-                                    if (index >= 0) {
-                                        tickets[index] = snapshot
-                                    }
-                                }
-                                DocumentChange.Type.REMOVED -> {
-                                    Log.d(TAG, "ChildRemoved")
-                                    tickets.remove(snapshot)
-                                }
+                    value?.documents?.forEach {
+                        if (it.exists() && validate(it)) {
+                            Log.d(TAG, it.toString())
+                            val snapshot = it.toObject(BoughtTicket::class.java)
+                            if (snapshot != null) {
+                                tickets.add(snapshot)
                             }
                         }
                     }
@@ -70,15 +49,7 @@ class TicketsDataSource: DataSource {
 
     fun getTickets() = liveTickets
 
-    private fun indexOf(ticket: BoughtTicket): Int {
-        for (i in 0 until tickets.size) {
-            if(tickets[i].ticketId == ticket.ticketId) return i
-        }
-        return -1
-    }
-
-    private fun validate(snap: DocumentChange): Boolean {
-        val doc = snap.document
+    private fun validate(doc: DocumentSnapshot): Boolean {
         if(doc["ticketId"] == null) return false
         if(doc["buyerId"] == null) return false
         if(doc["eventId"] == null) return false
