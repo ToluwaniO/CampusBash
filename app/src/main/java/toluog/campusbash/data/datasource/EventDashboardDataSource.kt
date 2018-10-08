@@ -34,12 +34,11 @@ class EventDashboardDataSource: DataSource {
             threadScope.launch {
                 val tickets = arrayListOf<UserTicket>()
                 val metadatas = ArrayMap<String, TicketMetaData>()
-                value?.documentChanges?.forEach {
-                    if(it.document.exists()) {
+                value?.documents?.forEach {
+                    if(it.exists()) {
                         // Snapshot of the changed document
-                        Log.d(TAG, it.document.toString())
-                        val document = it.document
-                        processDocument(document, it.type, tickets, metadatas)
+                        Log.d(TAG, it.toString())
+                        processDocument(it, tickets, metadatas)
                     }
                 }
                 liveTickets.postValue(tickets)
@@ -49,21 +48,17 @@ class EventDashboardDataSource: DataSource {
         })
     }
 
-    private suspend fun processDocument(doc: QueryDocumentSnapshot, type: DocumentChange.Type,
-                                        tickets: ArrayList<UserTicket>, metadatas: ArrayMap<String, TicketMetaData>) {
+    private suspend fun processDocument(doc: DocumentSnapshot, tickets: ArrayList<UserTicket>,
+                                        metadatas: ArrayMap<String, TicketMetaData>) {
         Log.d(TAG, doc.toString())
         val codes = doc[TICKET_CODES] as List<HashMap<String, Any>>?
-        val total = (doc.data[BREAKDOWN] as HashMap<String, Any?>)[TOTAL]
+        val total = (doc[BREAKDOWN] as HashMap<String, Any?>)[TOTAL]
         Log.d(TAG, "$codes")
         val userTicket = UserTicket()
         codes?.forEach {
             Log.d(TAG, it.toString())
             val code = mapToTicketMetadata(it, doc.id)
-            if(type == DocumentChange.Type.ADDED || type == DocumentChange.Type.MODIFIED) {
-                metadatas[code.code] = code
-            } else {
-                metadatas.remove(code.code)
-            }
+            metadatas[code.code] = code
         }
         Log.d(TAG, "$metadatas")
 
@@ -79,30 +74,11 @@ class EventDashboardDataSource: DataSource {
             ticketPurchaseId = doc.id
             totalPrice = total?.toString()?.toDouble() ?: 0.0
         }
-        if(type == DocumentChange.Type.ADDED) {
-            tickets.add(userTicket)
-        } else if (type == DocumentChange.Type.MODIFIED) {
-            var index = -1
-            for (i in 0 until tickets.size) {
-                val u = tickets[i]
-                if(u.ticketPurchaseId == doc.id) {
-                    index = i
-                    break
-                }
-            }
-            if(index != -1) {
-                tickets[index] = userTicket
-            }
-        } else {
-            tickets.remove(userTicket)
-        }
+        tickets.add(userTicket)
         Log.d(TAG, "$tickets")
-
-        liveTickets.postValue(tickets)
-        liveMetaDatas.postValue(metadatas)
     }
 
-    private suspend fun mapToTicketMetadata(map: HashMap<String, Any>, id: String): TicketMetaData {
+    private fun mapToTicketMetadata(map: HashMap<String, Any>, id: String): TicketMetaData {
         return TicketMetaData().apply {
             code = map[CODE] as String? ?: ""
             qrUrl = map[QR_URL] as String? ?: ""
