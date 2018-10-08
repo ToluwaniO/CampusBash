@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.*
@@ -31,15 +32,34 @@ class EventsDataSource(val context: Context): DataSource {
                 return@addSnapshotListener
             }
             threadScope.launch {
-                querySnapshot?.forEach {
-                    if(it.exists()) {
-                        val event = it.toObject(Event::class.java)
-                        PlaceUtil.savePlace(event.placeId, this@EventsDataSource.context)
-                        db?.eventDao()?.insertEvent(event)
+                querySnapshot?.documentChanges?.forEach {
+                    if(it.document.exists()) {
+                        val event = it.document.toObject(Event::class.java)
+                        handleEventAction(event, it.type)
                     }
                 }
             }
         }
+    }
+
+    private suspend fun handleEventAction(event: Event, type: DocumentChange.Type) {
+        Log.d(TAG, "$event")
+
+        when (type) {
+            DocumentChange.Type.ADDED -> {
+                Log.d(TAG, "ChildAdded")
+                db?.eventDao()?.insertEvent(event)
+            }
+            DocumentChange.Type.MODIFIED -> {
+                Log.d(TAG, "ChildModified")
+                db?.eventDao()?.updateEvent(event)
+            }
+            DocumentChange.Type.REMOVED -> {
+                Log.d(TAG, "ChildRemoved")
+                db?.eventDao()?.deleteEvent(event)
+            }
+        }
+        PlaceUtil.savePlace(event.placeId, this@EventsDataSource.context)
     }
 
     fun downloadEvent(path: String) {
