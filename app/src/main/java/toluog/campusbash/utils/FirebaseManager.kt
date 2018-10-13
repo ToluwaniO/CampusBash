@@ -4,15 +4,12 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
-import com.google.android.gms.common.api.Result
-import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.functions.FirebaseFunctions
-import com.google.firebase.functions.HttpsCallableResult
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -20,6 +17,9 @@ import com.google.firebase.storage.UploadTask
 import org.jetbrains.anko.toast
 import org.json.JSONObject
 import toluog.campusbash.model.Creator
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 
 /**
@@ -166,7 +166,7 @@ class FirebaseManager {
             CampusBash.endCustomerSession()
         }
 
-        fun getAuthToken() = getUser()?.getIdToken(true)
+        //fun getAuthToken() = getUser()?.getIdToken(true)
 
         fun getFcmToken() = FirebaseInstanceId.getInstance().token
 
@@ -202,6 +202,16 @@ class FirebaseManager {
                             return@continueWith JSONObject().toString()
                         }
                     }
+        }
+
+        suspend fun getAuthToken(): String {
+            return suspendCoroutine { continuation ->
+                getUser()?.getIdToken(true)?.addOnSuccessListener {
+                    continuation.resume(it.token ?: "")
+                }?.addOnFailureListener {
+                    continuation.resumeWithException(it)
+                }
+            }
         }
 
     }

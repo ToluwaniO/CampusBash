@@ -4,18 +4,16 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.MenuItem
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.yesButton
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
+import toluog.campusbash.view.viewmodel.CreateEventViewModel
 import java.math.BigDecimal
 
 class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEventFragmentInterface,

@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
-import com.bumptech.glide.Glide
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -25,12 +24,12 @@ import android.view.View
 import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.UI
+import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.*
+import toluog.campusbash.view.viewmodel.ViewEventViewModel
 
 class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -250,11 +249,6 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             invalidateOptionsMenu()
         })
-        launch (UI) {
-            delay(5000)
-            val id = "dufhxb38"
-            observePlace(id)
-        }
     }
 
     private fun updateLocation(place: Place) {

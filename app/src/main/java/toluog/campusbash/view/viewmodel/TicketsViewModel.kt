@@ -1,8 +1,9 @@
-package toluog.campusbash.view
+package toluog.campusbash.view.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.LiveData
 import toluog.campusbash.model.BoughtTicket
+import toluog.campusbash.view.viewmodel.GeneralViewModel
 
 
 class TicketsViewModel(app: Application) : GeneralViewModel(app) {
@@ -10,7 +11,7 @@ class TicketsViewModel(app: Application) : GeneralViewModel(app) {
 
     fun getTickets(): LiveData<List<BoughtTicket>>? {
         if(tickets == null) {
-            tickets = repo.getTickets()
+            tickets = generalRepository.getTickets()
         }
         return tickets
     }

@@ -17,7 +17,6 @@ import com.firebase.jobdispatcher.RetryStrategy
 import com.firebase.jobdispatcher.Constraint
 import com.firebase.jobdispatcher.Lifetime
 import com.firebase.jobdispatcher.Trigger
-import toluog.campusbash.data.CurrencyDataSource
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -26,10 +25,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.stripe.android.model.Card
 import org.json.JSONObject
 import toluog.campusbash.BuildConfig
-import java.io.File
+import toluog.campusbash.data.datasource.CurrencyDataSource
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.net.URI
 import kotlin.collections.HashMap
 
 
@@ -214,7 +212,7 @@ class Util{
         }
 
         fun downloadCurrencies(context: Context) {
-            CurrencyDataSource.downloadCurrencies(FirebaseFirestore.getInstance(), context)
+            CurrencyDataSource.downloadCurrencies(context)
         }
 
         fun scheduleEventDeleteJob(context: Context) {

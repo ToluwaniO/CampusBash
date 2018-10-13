@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.google.firebase.storage.UploadTask
 import kotlinx.android.synthetic.main.create_event_layout.*
 import org.jetbrains.anko.support.v4.act
 import toluog.campusbash.R
@@ -23,13 +22,12 @@ import toluog.campusbash.utils.AppContract.Companion.PLACE_AUTOCOMPLETE_REQUEST_
 import com.google.android.gms.location.places.Place
 import android.app.Activity.RESULT_CANCELED
 import android.app.ProgressDialog
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.net.Uri
 import android.widget.ImageView
 import com.crashlytics.android.Crashlytics
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.android.UI
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
@@ -37,8 +35,7 @@ import org.jetbrains.anko.support.v4.selector
 import org.jetbrains.anko.support.v4.toast
 import toluog.campusbash.model.*
 import toluog.campusbash.utils.*
-import java.io.File
-import java.net.URI
+import toluog.campusbash.view.viewmodel.CreateEventViewModel
 import java.util.Calendar
 import kotlin.collections.ArrayList
 

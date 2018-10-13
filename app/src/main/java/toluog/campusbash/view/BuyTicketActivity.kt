@@ -24,6 +24,7 @@ import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.*
+import toluog.campusbash.view.viewmodel.ViewEventViewModel
 import java.math.BigDecimal
 
 

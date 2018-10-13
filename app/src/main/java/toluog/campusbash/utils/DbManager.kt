@@ -1,15 +1,11 @@
 package toluog.campusbash.utils
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import toluog.campusbash.data.AppDatabase
-import toluog.campusbash.data.GeneralDataSource
+import toluog.campusbash.data.datasource.GeneralDataSource
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Place
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 class DbManager {
@@ -17,7 +13,7 @@ class DbManager {
 
         private val TAG = DbManager::class.java.simpleName
 
-        fun deleteInvalidPlaces(context: Context) {
+        suspend fun deleteInvalidPlaces(context: Context) {
             val db = AppDatabase.getDbInstance(context)
             if(db != null) {
                 val places = db.placeDao().getStaticPlaces()
@@ -28,7 +24,7 @@ class DbManager {
                     val event = placeIsUsed(it.id, events ?: emptyList())
                     if(!placeIsValid(it) && event != null) {
                         Log.d(TAG, "RE-FETCHING PLACE -> $it")
-                        GeneralDataSource.fetchPlace(it.id, event, context)
+                        GeneralDataSource.fetchPlace(it.id, context)
                     } else if(!placeIsValid(it) || event == null) {
                         Log.d(TAG, "DELETING PLACE -> $it")
                         db.placeDao().deletePlace(it.id)

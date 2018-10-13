@@ -17,6 +17,8 @@ import com.google.android.gms.ads.formats.NativeAd
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.events_layout.*
 import kotlinx.android.synthetic.main.no_events_layout.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.android.UI
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter
@@ -24,6 +26,8 @@ import toluog.campusbash.model.Featured
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.ConfigProvider
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.view.viewmodel.EventsViewModel
+import java.util.concurrent.Executors
 
 /**
  * Created by oguns on 12/13/2017.
@@ -45,6 +49,8 @@ class EventsFragment : Fragment(){
     private lateinit var featuredTypes: Set<String>
     private val froshGroup = HashSet<String>()
     private var studentId = ""
+    private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val threadScope = CoroutineScope(threadJob)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.events_layout, container, false)
@@ -123,34 +129,38 @@ class EventsFragment : Fragment(){
 
     private fun observeEvents() {
         viewModel.getEvents(university, myEvents)?.observe(this, Observer { eventsList ->
-            Log.d(TAG, "Events size is ${eventsList?.size}")
-            val user = FirebaseManager.getUser()
-            events.clear()
-            featured.events.clear()
-            eventSize = 0
-            if(eventsList != null) {
-                eventSize = eventsList.size
+            threadScope.launch {
+                Log.d(TAG, "Events size is ${eventsList?.size}")
+                val user = FirebaseManager.getUser()
+                events.clear()
+                featured.events.clear()
+                eventSize = 0
+                if(eventsList != null) {
+                    eventSize = eventsList.size
 
-                eventsList.forEach {
-                    if(myEvents) {
-                        if(it.creator.uid == user?.uid) events.add(it)
-                    } else {
-                        if(featuredTypes.contains(it.eventType) && froshGroup.contains(studentId)) {
-                            featured.events.add(it)
-                        } else if (!featuredTypes.contains(it.eventType)) {
-                            events.add(it)
+                    eventsList.forEach {
+                        if(myEvents) {
+                            if(it.creator.uid == user?.uid) events.add(it)
+                        } else {
+                            if(featuredTypes.contains(it.eventType) && froshGroup.contains(studentId)) {
+                                featured.events.add(it)
+                            } else if (!featuredTypes.contains(it.eventType)) {
+                                events.add(it)
+                            }
                         }
                     }
                 }
-            }
 
-            copyAds(eventSize)
-            if(featured.events.isNotEmpty()) {
-                events.add(0, featured)
+                copyAds(eventSize)
+                if(featured.events.isNotEmpty()) {
+                    events.add(0, featured)
+                }
+                //event_recycler.stopScroll()
+                withContext(Dispatchers.Main) {
+                    adapter?.notifyListChanged(events)
+                    updateUiVisibility()
+                }
             }
-            //event_recycler.stopScroll()
-            adapter?.notifyListChanged(events)
-            updateUiVisibility()
         })
     }
 

@@ -16,20 +16,16 @@ import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
-import android.os.Build
 import android.support.design.widget.CoordinatorLayout
 import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
 import org.jetbrains.anko.act
-import toluog.campusbash.ViewBehavior.BottomNavigationBehavior
 import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import kotlin.collections.ArrayList
 import android.support.design.widget.AppBarLayout
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import android.view.View.GONE
 import org.jetbrains.anko.doAsync
@@ -39,6 +35,7 @@ import io.fabric.sdk.android.Fabric
 import org.jetbrains.anko.backgroundColor
 import toluog.campusbash.adapters.BoughtTicketAdapter
 import toluog.campusbash.model.BoughtTicket
+import toluog.campusbash.view.viewmodel.MainActivityViewModel
 
 
 class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, AdapterView.OnItemSelectedListener,
@@ -116,6 +113,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         Fabric.with(this, Crashlytics())
         Util.cancelAllJobs(this)
         firstOpen()
+        Log.d(TAG, "init started")
 
         setSupportActionBar(toolbar)
 
@@ -128,14 +126,18 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         }
 
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+        Log.d(TAG, "Viewmodel init")
         country = Util.getPrefString(act, AppContract.PREF_COUNTRY_KEY)
         university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
+        Log.d(TAG, "Pref string gotten")
 
         updateUi()
+        Log.d(TAG, "UI Drawn")
         if(savedInstanceState == null) {
             fragManager.beginTransaction().replace(R.id.fragment_frame,
                     EventsFragment.newInstance(university, false), null).commit()
         }
+        Log.d(TAG, "fragment started")
     }
 
     override fun onStart() {
