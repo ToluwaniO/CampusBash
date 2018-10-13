@@ -1,16 +1,13 @@
 package toluog.campusbash.data.network
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
-import org.json.JSONObject
 import retrofit2.converter.gson.GsonConverterFactory
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.stripe.android.EphemeralKeyProvider
-import com.stripe.android.EphemeralKeyUpdateListener
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -53,75 +50,43 @@ class StripeServerClient {
                 .create(StripeClientAPI::class.java)
     }
 
-    fun createStripeAccount(body: StripeAccountBody, uid: String): MutableLiveData<ServerResponse> {
+    suspend fun createStripeAccount(body: StripeAccountBody, uid: String): ServerResponse {
         httpClientAPI = createStripeClient()
-        FirebaseManager.getAuthToken()
-                ?.addOnCompleteListener {
-                    val token = it.result.token
-                    if(token != null) {
-                        launch {
-                            handleAccountResponse(body, uid, token)
-                        }
-                    } else {
-                        Log.d(TAG, "Could not get token")
-                    }
-                }
-                ?.addOnFailureListener {
-                    Log.d(TAG, it.message)
-                }
-
-        return result
+        val token = FirebaseManager.getAuthToken()
+        return handleAccountResponse(body, uid, token)
     }
 
-    private suspend fun handleAccountResponse(body: StripeAccountBody, uid: String, token: String) {
+    private suspend fun handleAccountResponse(body: StripeAccountBody, uid: String, token: String): ServerResponse {
         try {
             response = httpClientAPI.createStripeAccount(uid, token, body)
             val sResponse = response.await()
             Log.d(TAG, "$sResponse")
-            result.postValue(sResponse)
+            return sResponse
         } catch (e: HttpException) {
             Log.d(TAG, e.message())
         } catch (e: Throwable) {
             Log.d(TAG, e.message)
         }
+        return ServerResponse(400, "An error occurred")
     }
 
-    fun createEphemeralKey(customerId: String, apiVersion: String, uid: String) {
+    suspend fun createEphemeralKey(customerId: String, apiVersion: String, uid: String): String {
         httpClientAPI = createStripeClient()
-        FirebaseManager.getAuthToken()
-                ?.addOnCompleteListener {
-                    val token = it.result.token
-                    if(token != null) {
-                        Log.d(TAG, token)
-                        launch {
-                            handleEphemeralKeyResponse(customerId, apiVersion, uid, token)
-                        }
-                    } else {
-                        Log.d(TAG, "Could not get token")
-                    }
-                }
-                ?.addOnFailureListener {
-                    Log.d(TAG, it.message)
-                }
+        val token = FirebaseManager.getAuthToken()
+        return handleEphemeralKeyResponse(customerId, apiVersion, uid, token)
     }
 
     fun getEphemeralKey() = ephemeralKey
 
-    private suspend fun handleEphemeralKeyResponse(customerId: String, apiVersion: String, uid: String, token: String) {
-            try {
-                val body = mapOf(
-                        "customerId" to customerId,
-                        "apiVersion" to apiVersion
-                )
-                ephemeralResponse = httpClientAPI.createEphemeralKey(uid, token, body)
-                val eResponse = ephemeralResponse.await()
-                Log.d(TAG, "$eResponse")
-                ephemeralKey.postValue(eResponse.key)
-            } catch (e: HttpException) {
-                Log.d(TAG, e.message())
-            } catch (e: Throwable) {
-                Log.d(TAG, e.message)
-            }
+    private suspend fun handleEphemeralKeyResponse(customerId: String, apiVersion: String, uid: String, token: String): String {
+        val body = mapOf(
+                "customerId" to customerId,
+                "apiVersion" to apiVersion
+        )
+        ephemeralResponse = httpClientAPI.createEphemeralKey(uid, token, body)
+        val eResponse = ephemeralResponse.await()
+        Log.d(TAG, "$eResponse")
+        return eResponse.key
     }
 
     interface StripeClientAPI {

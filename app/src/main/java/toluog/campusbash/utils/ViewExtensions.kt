@@ -1,8 +1,6 @@
 package toluog.campusbash.utils
 
-import android.app.Activity
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.ImageView

@@ -8,6 +8,7 @@ import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.stripe.android.CustomerSession
 import com.stripe.android.model.Customer
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import toluog.campusbash.data.ProgressListener
@@ -27,6 +28,7 @@ object CampusBash {
         field = value
     }
     private var bashCards = MutableLiveData<List<BashCard>>()
+    private val threadScope = CoroutineScope(Dispatchers.Default)
 
     @SuppressLint("RestrictedApi")
     fun init(c: Context) {
@@ -43,7 +45,7 @@ object CampusBash {
                 }
             }
 
-            launch {
+            threadScope.launch {
                 repo.deleteOldEvents()
                 DbManager.deleteInvalidPlaces(c)
             }
@@ -55,7 +57,7 @@ object CampusBash {
     fun initCustomerSession(customerId: String?, context: Context) {
         Log.d(TAG,"Initializing customer session")
         if(!stripeSessionStarted && customerId != null
-                && customerSessionRetries < MAX_CUSTOMER_SESSION_RETRIES && Util.isConnected(context)){
+                && customerSessionRetries < MAX_CUSTOMER_SESSION_RETRIES &&  Util.isConnected(context)){
             CustomerSession.initCustomerSession(StripeEphemeralKeyProvider(object : ProgressListener {
                 override fun onStringResponse(message: String) {
                     if(!message.startsWith("Error:")) {

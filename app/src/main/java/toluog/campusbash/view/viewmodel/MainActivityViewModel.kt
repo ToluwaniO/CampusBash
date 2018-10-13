@@ -9,11 +9,7 @@ import toluog.campusbash.view.viewmodel.GeneralViewModel
  */
 class MainActivityViewModel(app: Application) : GeneralViewModel(app){
 
-    val db: AppDatabase?
-
-    init {
-        db = AppDatabase.getDbInstance(app.applicationContext)
-    }
+    private val db = AppDatabase.getDbInstance(app.applicationContext)
 
     fun getEvents() = db?.eventDao()?.getEvents()
 

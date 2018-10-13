@@ -113,6 +113,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         Fabric.with(this, Crashlytics())
         Util.cancelAllJobs(this)
         firstOpen()
+        Log.d(TAG, "init started")
 
         setSupportActionBar(toolbar)
 
@@ -125,14 +126,18 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         }
 
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+        Log.d(TAG, "Viewmodel init")
         country = Util.getPrefString(act, AppContract.PREF_COUNTRY_KEY)
         university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
+        Log.d(TAG, "Pref string gotten")
 
         updateUi()
+        Log.d(TAG, "UI Drawn")
         if(savedInstanceState == null) {
             fragManager.beginTransaction().replace(R.id.fragment_frame,
                     EventsFragment.newInstance(university, false), null).commit()
         }
+        Log.d(TAG, "fragment started")
     }
 
     override fun onStart() {

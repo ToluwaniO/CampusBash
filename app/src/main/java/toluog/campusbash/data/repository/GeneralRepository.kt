@@ -54,7 +54,7 @@ class GeneralRepository(val context: Context, override val coroutineContext: Cor
 
     fun getFroshGroup() = EventsDataSource(context, coroutineContext).listenToFroshGroup()
 
-    fun createStripeAccount(): LiveData<ServerResponse> {
+    suspend fun createStripeAccount(): ServerResponse {
         val user = FirebaseManager.getUser()
         val stripeApi = StripeServerClient()
         val body = StripeAccountBody(user?.uid ?: "", user?.email ?: "", "CA")

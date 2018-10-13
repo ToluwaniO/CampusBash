@@ -32,6 +32,7 @@ open class GeneralViewModel(val app: Application): AndroidViewModel(app), Corout
 
     override fun onCleared() {
         super.onCleared()
+        generalRepository.clear()
         job.cancel()
     }
 }

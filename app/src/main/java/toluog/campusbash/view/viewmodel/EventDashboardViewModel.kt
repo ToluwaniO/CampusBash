@@ -43,4 +43,9 @@ class EventDashboardViewModel(app: Application): GeneralViewModel(app) {
             repository = EventDashboardRepository(eventId, coroutineContext)
         }
     }
+
+    override fun onCleared() {
+        repository?.clear()
+        super.onCleared()
+    }
 }
