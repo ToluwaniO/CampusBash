@@ -13,8 +13,9 @@ import kotlinx.coroutines.launch
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.model.Currency
 import toluog.campusbash.utils.AppContract
+import kotlin.coroutines.CoroutineContext
 
-class CurrencyDataSource(context: Context): DataSource {
+class CurrencyDataSource(context: Context, override val coroutineContext: CoroutineContext): DataSource() {
     private val firestore = FirebaseFirestore.getInstance()
     private val db = AppDatabase.getDbInstance(context)
 

@@ -249,11 +249,6 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             invalidateOptionsMenu()
         })
-        launch (UI) {
-            delay(5000)
-            val id = "dufhxb38"
-            observePlace(id)
-        }
     }
 
     private fun updateLocation(place: Place) {

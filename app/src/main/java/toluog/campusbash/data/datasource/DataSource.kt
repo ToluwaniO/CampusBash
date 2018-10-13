@@ -1,5 +1,7 @@
 package toluog.campusbash.data.datasource
 
-interface DataSource {
-    fun clear()
+import kotlinx.coroutines.CoroutineScope
+
+abstract class DataSource: CoroutineScope {
+    abstract fun clear()
 }

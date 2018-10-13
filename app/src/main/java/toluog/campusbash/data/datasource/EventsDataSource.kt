@@ -12,14 +12,14 @@ import kotlinx.coroutines.*
 import toluog.campusbash.data.*
 import toluog.campusbash.model.Event
 import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
-class EventsDataSource(val context: Context): DataSource {
+class EventsDataSource(val context: Context, override val coroutineContext: CoroutineContext): DataSource() {
     private val TAG = EventsDataSource::class.java.simpleName
     private val firestore = FirebaseFirestore.getInstance()
     private val db = AppDatabase.getDbInstance(context)
     private var eventListener: ListenerRegistration? = null
     private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val threadScope = CoroutineScope(threadJob)
     private val froshGroup = MutableLiveData<Set<String>>()
 
     fun listenForEvents(path: String, queries: Set<FirestoreQuery>) {
@@ -31,7 +31,7 @@ class EventsDataSource(val context: Context): DataSource {
                 Log.d(TAG, e.message)
                 return@addSnapshotListener
             }
-            threadScope.launch {
+            this.launch(threadJob) {
                 querySnapshot?.documentChanges?.forEach {
                     if(it.document.exists()) {
                         val event = it.document.toObject(Event::class.java)
@@ -66,7 +66,7 @@ class EventsDataSource(val context: Context): DataSource {
         val ref = firestore.document(path)
         ref.get().addOnSuccessListener {
             if (!it.exists()) return@addOnSuccessListener
-            threadScope.launch {
+            this.launch(threadJob) {
                 val event = it.toObject(Event::class.java)
                 if (event != null) {
                     PlaceUtil.savePlace(event.placeId, this@EventsDataSource.context)
@@ -85,9 +85,11 @@ class EventsDataSource(val context: Context): DataSource {
                 Log.e(TAG, e.message)
                 return@addSnapshotListener
             }
-            Log.d(TAG, documentSnapshot.toString())
-            val set = (documentSnapshot?.get("idList") as List<String>? ?: emptyList()).toHashSet()
-            froshGroup.postValue(set)
+            this.launch(threadJob) {
+                Log.d(TAG, documentSnapshot.toString())
+                val set = (documentSnapshot?.get("idList") as List<String>? ?: emptyList()).toHashSet()
+                froshGroup.postValue(set)
+            }
         }
         return froshGroup
     }

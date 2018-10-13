@@ -2,7 +2,6 @@ package toluog.campusbash.data.repository
 
 import android.arch.lifecycle.LiveData
 import android.content.Context
-import com.google.firebase.firestore.FirebaseFirestore
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.data.FirestorePaths
 import toluog.campusbash.data.FirestoreQuery
@@ -10,11 +9,12 @@ import toluog.campusbash.data.FirestoreQueryType
 import toluog.campusbash.data.datasource.EventsDataSource
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.FirebaseManager
+import kotlin.coroutines.CoroutineContext
 
-class EventsRepository(val context: Context): Repository {
+class EventsRepository(val context: Context, override val coroutineContext: CoroutineContext): Repository() {
     private val TAG = EventsRepository::class.java.simpleName
-    private val dataSource = EventsDataSource(context)
-    private val myDataSource = EventsDataSource(context)
+    private val dataSource = EventsDataSource(context, coroutineContext)
+    private val myDataSource = EventsDataSource(context, coroutineContext)
     private val db = AppDatabase.getDbInstance(context)
 
     fun getEvent(eventId: String) = db?.eventDao()?.getEvent(eventId)

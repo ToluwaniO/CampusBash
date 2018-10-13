@@ -1,5 +1,7 @@
 package toluog.campusbash.data.repository
 
-interface Repository {
-    fun clear()
+import kotlinx.coroutines.CoroutineScope
+
+abstract class Repository: CoroutineScope {
+    abstract fun clear()
 }

@@ -13,9 +13,12 @@ import kotlinx.coroutines.*
 import org.jetbrains.anko.doAsync
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.data.FirestorePaths
-import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
-class GeneralDataSource: DataSource {
+class GeneralDataSource(override val coroutineContext: CoroutineContext) : DataSource() {
     override fun clear() {
         listenerRegistration?.remove()
         threadJob.cancel()
@@ -54,10 +57,9 @@ class GeneralDataSource: DataSource {
         suspend fun fetchPlace(id: String, context: Context) {
             db = AppDatabase.getDbInstance(context)
             val geoClient = Places.getGeoDataClient(context)
-            geoClient.getPlaceById(id).addOnCompleteListener {task ->
-                if(task.isSuccessful) {
-                    val places =  task.result
-                    val myPlace = places[0]
+            return suspendCoroutine { continuation ->  
+                geoClient.getPlaceById(id).addOnSuccessListener {
+                    val myPlace = it[0]
                     val place = toluog.campusbash.model.Place().apply {
                         this.id = myPlace.id
                         this.address = myPlace.address.toString()
@@ -68,15 +70,16 @@ class GeneralDataSource: DataSource {
                     doAsync {
                         db?.placeDao()?.insertPlace(place)
                         val events = db?.eventDao()?.getStaticEventsByPlace(id)
-                        events?.forEach {
-                            it.address = place.address
-                            db?.eventDao()?.updateEvent(it)
+                        events?.forEach {event ->
+                            event.address = place.address
+                            db?.eventDao()?.updateEvent(event)
                         }
                     }
                     Log.i(TAG, "Place found: " + myPlace.name)
-                    places.release()
-                } else {
-                    Crashlytics.log("$TAG -> Could not get place\n${task.exception?.message}")
+                    continuation.resume(Unit)
+                }.addOnFailureListener {
+                    Crashlytics.log("$TAG -> Could not get place\n${it.message}")
+                    continuation.resumeWithException(it)
                 }
             }
         }

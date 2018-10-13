@@ -11,7 +11,7 @@ import toluog.campusbash.view.viewmodel.GeneralViewModel
  */
 class ViewEventViewModel(app: Application): GeneralViewModel(app){
 
-    private val repository = EventsRepository(app.applicationContext)
+    private val repository = EventsRepository(app.applicationContext, coroutineContext)
 
     fun getEvent(eventId: String) = repository.getEvent(eventId)
 

@@ -16,14 +16,15 @@ import toluog.campusbash.model.BoughtTicket
 import toluog.campusbash.model.Place
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.FirebaseManager
+import kotlin.coroutines.CoroutineContext
 
-class GeneralRepository(val context: Context): Repository {
+class GeneralRepository(val context: Context, override val coroutineContext: CoroutineContext): Repository() {
     private val TAG = GeneralRepository::class.java.simpleName
     private val db = AppDatabase.getDbInstance(context)
-    private val ticketsDataSource = TicketsDataSource()
+    private val ticketsDataSource = TicketsDataSource(coroutineContext)
 
     fun listenForUniversities() {
-        UniversityDataSource(context).listenToUniversities()
+        UniversityDataSource(context, coroutineContext).listenToUniversities()
     }
 
     fun getUniversities(country: String) = db?.universityDao()?.getUniversities(country)
@@ -47,11 +48,11 @@ class GeneralRepository(val context: Context): Repository {
 
     fun getUnis(country: String): LiveData<List<University>>? {
         Log.d(TAG, "get unis called")
-        UniversityDataSource(context).listenToUniversities()
+        UniversityDataSource(context, coroutineContext).listenToUniversities()
         return db?.universityDao()?.getUniversities(country)
     }
 
-    fun getFroshGroup() = EventsDataSource(context).listenToFroshGroup()
+    fun getFroshGroup() = EventsDataSource(context, coroutineContext).listenToFroshGroup()
 
     fun createStripeAccount(): LiveData<ServerResponse> {
         val user = FirebaseManager.getUser()

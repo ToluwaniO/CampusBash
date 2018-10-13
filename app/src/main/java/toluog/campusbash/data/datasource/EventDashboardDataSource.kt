@@ -10,16 +10,16 @@ import toluog.campusbash.model.dashboard.TicketQuantity
 import toluog.campusbash.model.dashboard.UserTicket
 import toluog.campusbash.utils.AppContract
 import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
-class EventDashboardDataSource: DataSource {
+class EventDashboardDataSource(override val coroutineContext: CoroutineContext) : DataSource() {
 
     private val TAG = EventDashboardDataSource::class.java.simpleName
     private val firestore = FirebaseFirestore.getInstance()
     private val liveTickets = MutableLiveData<List<UserTicket>>()
     private val liveMetaDatas = MutableLiveData<Map<String, TicketMetaData>>()
     private var listener: ListenerRegistration? = null
-    private val threadJob = Job()
-    private val threadScope = CoroutineScope(threadJob)
+    private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
     fun initListener(eventId: String){
         listener?.remove()
@@ -31,7 +31,7 @@ class EventDashboardDataSource: DataSource {
                 return@EventListener
             }
 
-            threadScope.launch {
+            this.launch(threadJob) {
                 val tickets = arrayListOf<UserTicket>()
                 val metadatas = ArrayMap<String, TicketMetaData>()
                 value?.documents?.forEach {
@@ -48,7 +48,7 @@ class EventDashboardDataSource: DataSource {
         })
     }
 
-    private suspend fun processDocument(doc: DocumentSnapshot, tickets: ArrayList<UserTicket>,
+    private fun processDocument(doc: DocumentSnapshot, tickets: ArrayList<UserTicket>,
                                         metadatas: ArrayMap<String, TicketMetaData>) {
         Log.d(TAG, doc.toString())
         val codes = doc[TICKET_CODES] as List<HashMap<String, Any>>?

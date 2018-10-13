@@ -74,10 +74,6 @@ class TicketDashboardFragment : Fragment() {
         })
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
     override fun onDetach() {
         super.onDetach()
         listener = null
@@ -94,9 +90,7 @@ class TicketDashboardFragment : Fragment() {
      * (http://developer.android.com/training/basics/fragments/communicating.html)
      * for more information.
      */
-    interface OnFragmentInteractionListener {
-
-    }
+    interface OnFragmentInteractionListener {}
 
     inner class UserTicketAdapter(var userTickets: ArrayList<UserTicket>):
             ExpandableRecyclerAdapter<UserTicket, TicketQuantity, UserTicketAdapter.UserViewHolder,

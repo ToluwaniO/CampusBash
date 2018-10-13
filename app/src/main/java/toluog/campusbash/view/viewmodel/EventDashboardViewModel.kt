@@ -40,7 +40,7 @@ class EventDashboardViewModel(app: Application): GeneralViewModel(app) {
 
     private fun checkRepository(eventId: String) {
         if (repository == null) {
-            repository = EventDashboardRepository(eventId)
+            repository = EventDashboardRepository(eventId, coroutineContext)
         }
     }
 }

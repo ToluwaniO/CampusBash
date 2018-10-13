@@ -3,20 +3,19 @@ package toluog.campusbash.data.datasource
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import com.google.firebase.firestore.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import toluog.campusbash.model.BoughtTicket
 import toluog.campusbash.utils.AppContract
 import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
-class TicketsDataSource: DataSource {
+class TicketsDataSource(override val coroutineContext: CoroutineContext) : DataSource() {
 
     private val liveTickets = MutableLiveData<List<BoughtTicket>>()
     private val firestore = FirebaseFirestore.getInstance()
     private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val threadScope = CoroutineScope(threadJob)
     private var listener: ListenerRegistration? = null
     private val TAG = TicketsDataSource::class.java.simpleName
 
@@ -30,7 +29,7 @@ class TicketsDataSource: DataSource {
                     Log.d(TAG, "onEvent:error", e)
                     return@EventListener
                 }
-                threadScope.launch {
+                this.launch(threadJob) {
                     val tickets = arrayListOf<BoughtTicket>()
                     // Dispatch the event
                     value?.documents?.forEach {

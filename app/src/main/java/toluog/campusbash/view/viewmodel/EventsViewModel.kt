@@ -5,8 +5,6 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import com.google.android.gms.ads.formats.NativeAd
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import toluog.campusbash.data.repository.EventsRepository
 import toluog.campusbash.model.Event
@@ -22,10 +20,8 @@ class EventsViewModel(app: Application) : GeneralViewModel(app) {
     private val ads: ArrayList<NativeAd> = ArrayList()
     private val adsList = MutableLiveData<ArrayList<NativeAd>>()
     private val TAG = EventsViewModel::class.java.simpleName
-    private val repository = EventsRepository(app.applicationContext)
+    private val repository = EventsRepository(app.applicationContext, coroutineContext)
     private val adManager: AdManager
-    private var adsJob: Job = Job()
-    private val threadScope = CoroutineScope(adsJob)
 
     init {
         AdManager.initializeAds(app.applicationContext)
@@ -36,7 +32,7 @@ class EventsViewModel(app: Application) : GeneralViewModel(app) {
 
     private fun loadAds() {
         Log.d(TAG, "loading ads...")
-        threadScope.launch { adManager.loadAds() }
+        this.launch { adManager.loadAds() }
     }
 
     fun getEvents(university: String, myEvents: Boolean = false): LiveData<List<Event>>? {
@@ -80,7 +76,6 @@ class EventsViewModel(app: Application) : GeneralViewModel(app) {
     }
 
     override fun onCleared() {
-        adsJob.cancel()
         repository.clear()
         super.onCleared()
     }

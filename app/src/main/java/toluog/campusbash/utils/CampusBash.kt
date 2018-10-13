@@ -8,6 +8,7 @@ import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.stripe.android.CustomerSession
 import com.stripe.android.model.Customer
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import toluog.campusbash.data.ProgressListener
 import toluog.campusbash.data.StripeEphemeralKeyProvider
@@ -30,7 +31,7 @@ object CampusBash {
     @SuppressLint("RestrictedApi")
     fun init(c: Context) {
         if(!isInitialized) {
-            val repo = GeneralRepository(c)
+            val repo = GeneralRepository(c, Dispatchers.Default)
             val uid = FirebaseManager.auth.uid
             uid?.let {
                 user = repo.getUser(it)

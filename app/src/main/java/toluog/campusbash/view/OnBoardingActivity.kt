@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 
 import com.github.paolorotolo.appintro.AppIntro2
 import com.github.paolorotolo.appintro.AppIntroFragment
+import kotlinx.coroutines.Dispatchers
 
 import toluog.campusbash.R
 import toluog.campusbash.data.datasource.UniversityDataSource
@@ -15,7 +16,7 @@ class OnBoardingActivity : AppIntro2() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        UniversityDataSource(applicationContext).listenToUniversities()
+        UniversityDataSource(applicationContext, Dispatchers.Default).listenToUniversities()
         addSlide(AppIntroFragment.newInstance(getString(R.string.welcome_to_cbash),
                 getString(R.string.Description1Onboarding),
                 R.drawable.mug, resources.getColor(R.color.colorPrimary)))

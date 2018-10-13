@@ -7,7 +7,6 @@ import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.QuerySnapshot
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -15,15 +14,15 @@ import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract
 import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
-class UniversityDataSource(context: Context): DataSource {
+class UniversityDataSource(context: Context, override val coroutineContext: CoroutineContext): DataSource() {
 
     private var db = AppDatabase.getDbInstance(context)
     private val TAG = UniversityDataSource::class.java.simpleName
     private var listener: ListenerRegistration? = null
     private val firestore = FirebaseFirestore.getInstance()
     private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val threadScope = CoroutineScope(threadJob)
 
     fun listenToUniversities(){
         val query = firestore.collection(AppContract.FIREBASE_UNIVERSITIES)
@@ -37,7 +36,7 @@ class UniversityDataSource(context: Context): DataSource {
             }
 
             // Dispatch the event
-            threadScope.launch {
+            this.launch(threadJob) {
                 value?.documentChanges?.forEach {
                     if(it.document.exists() && validate(it)) {
                         // Snapshot of the changed document
