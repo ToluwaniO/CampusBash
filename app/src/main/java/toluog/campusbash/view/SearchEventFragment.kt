@@ -24,7 +24,7 @@ import toluog.campusbash.R
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.Util
-import toluog.campusbash.viewmodel.EventsViewModel
+import toluog.campusbash.view.viewmodel.EventsViewModel
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList

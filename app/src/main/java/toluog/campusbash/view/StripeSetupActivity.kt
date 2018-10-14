@@ -21,7 +21,7 @@ import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 import toluog.campusbash.data.network.ServerResponse
 import toluog.campusbash.utils.Util
-import toluog.campusbash.viewmodel.StripeSetupViewModel
+import toluog.campusbash.view.viewmodel.StripeSetupViewModel
 
 class StripeSetupActivity : AppCompatActivity() {
 

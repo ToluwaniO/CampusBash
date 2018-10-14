@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_first_open.*
 import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
-import toluog.campusbash.viewmodel.GeneralViewModel
+import toluog.campusbash.view.viewmodel.GeneralViewModel
 
 
 class FirstOpenActivity : AppCompatActivity(), PickUniversityFragment.PickUniversityListener,

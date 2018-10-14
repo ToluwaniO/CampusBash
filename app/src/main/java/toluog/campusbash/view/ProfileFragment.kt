@@ -18,7 +18,7 @@ import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
 import toluog.campusbash.utils.loadImage
-import toluog.campusbash.viewmodel.ProfileViewModel
+import toluog.campusbash.view.viewmodel.ProfileViewModel
 
 /**
  * Created by oguns on 12/26/2017.

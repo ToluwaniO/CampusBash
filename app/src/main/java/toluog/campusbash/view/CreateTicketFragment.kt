@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,15 +13,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import com.facebook.share.internal.GameRequestValidation.validate
 import toluog.campusbash.R
 import kotlinx.android.synthetic.main.create_ticket_layout.*
-import org.jetbrains.anko.noButton
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.selector
-import org.jetbrains.anko.yesButton
-import toluog.campusbash.R.string.currency
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
@@ -32,7 +27,7 @@ import java.math.BigDecimal
 import android.text.Spanned
 import android.text.InputFilter
 import toluog.campusbash.utils.isValidLong
-import java.util.regex.Pattern
+import toluog.campusbash.view.viewmodel.CreateEventViewModel
 
 
 /**

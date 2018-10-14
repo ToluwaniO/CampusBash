@@ -20,8 +20,8 @@ abstract class AppDatabase(): RoomDatabase() {
     abstract fun placeDao(): PlaceDao
 
     companion object {
-        var dbInstance: AppDatabase? = null
-        val dbName = "CampusBashDB"
+        private var dbInstance: AppDatabase? = null
+        private val dbName = "CampusBashDB"
 
         fun getDbInstance(context: Context): AppDatabase?{
             if(dbInstance == null){

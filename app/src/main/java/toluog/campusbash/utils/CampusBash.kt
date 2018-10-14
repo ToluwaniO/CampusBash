@@ -6,13 +6,14 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.util.Log
 import com.crashlytics.android.Crashlytics
-import com.google.firebase.firestore.FirebaseFirestore
 import com.stripe.android.CustomerSession
 import com.stripe.android.model.Customer
-import org.jetbrains.anko.doAsync
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import toluog.campusbash.data.ProgressListener
-import toluog.campusbash.data.Repository
 import toluog.campusbash.data.StripeEphemeralKeyProvider
+import toluog.campusbash.data.repository.GeneralRepository
 import toluog.campusbash.model.BashCard
 
 object CampusBash {
@@ -27,11 +28,12 @@ object CampusBash {
         field = value
     }
     private var bashCards = MutableLiveData<List<BashCard>>()
+    private val threadScope = CoroutineScope(Dispatchers.Default)
 
     @SuppressLint("RestrictedApi")
     fun init(c: Context) {
         if(!isInitialized) {
-            val repo = Repository(c)
+            val repo = GeneralRepository(c, Dispatchers.Default)
             val uid = FirebaseManager.auth.uid
             uid?.let {
                 user = repo.getUser(it)
@@ -43,7 +45,7 @@ object CampusBash {
                 }
             }
 
-            doAsync {
+            threadScope.launch {
                 repo.deleteOldEvents()
                 DbManager.deleteInvalidPlaces(c)
             }
@@ -55,7 +57,7 @@ object CampusBash {
     fun initCustomerSession(customerId: String?, context: Context) {
         Log.d(TAG,"Initializing customer session")
         if(!stripeSessionStarted && customerId != null
-                && customerSessionRetries < MAX_CUSTOMER_SESSION_RETRIES && Util.isConnected(context)){
+                && customerSessionRetries < MAX_CUSTOMER_SESSION_RETRIES &&  Util.isConnected(context)){
             CustomerSession.initCustomerSession(StripeEphemeralKeyProvider(object : ProgressListener {
                 override fun onStringResponse(message: String) {
                     if(!message.startsWith("Error:")) {

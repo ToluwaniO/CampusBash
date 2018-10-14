@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.university_search_layout.*
 import toluog.campusbash.R
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract
-import toluog.campusbash.viewmodel.SelectUniversityViewModel
+import toluog.campusbash.view.viewmodel.SelectUniversityViewModel
 
 class SelectUniversityActivity : AppCompatActivity() {
 

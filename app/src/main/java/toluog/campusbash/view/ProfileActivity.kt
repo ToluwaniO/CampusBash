@@ -21,7 +21,7 @@ import toluog.campusbash.utils.Analytics
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.loadImage
-import toluog.campusbash.viewmodel.ProfileViewModel
+import toluog.campusbash.view.viewmodel.ProfileViewModel
 
 class ProfileActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
 
@@ -156,14 +156,14 @@ class ProfileActivity : AppCompatActivity(), EventAdapter.OnItemClickListener {
                 followers.add(myUid)
                 profile?.followers = (profile?.followers ?: 0)+1
                 profile?.let { updateProfileSection(it) }
-                cloudFunctions.followUser(uid)
+                viewModel.followUser(uid)
             }
             ProfileAction.MY_PROFILE -> startActivity<SetupProfileActivity>()
             ProfileAction.UNFOLLOW -> {
                 followers.remove(myUid)
                 profile?.followers = (profile?.followers ?: 1)-1
                 profile?.let { updateProfileSection(it) }
-                cloudFunctions.unfollowUser(uid)
+                viewModel.unfollowUser(uid)
             }
         }
     }

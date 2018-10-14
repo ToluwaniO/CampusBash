@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.search_people_layout.*
 import toluog.campusbash.R
 import toluog.campusbash.ViewHolder.SearchPeopleViewHolder
 import toluog.campusbash.model.PublicProfile
-import toluog.campusbash.viewmodel.PeopleViewModel
+import toluog.campusbash.view.viewmodel.PeopleViewModel
 
 class SearchPeopleFragment: Fragment() {
 

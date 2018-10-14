@@ -1,9 +1,15 @@
 package toluog.campusbash.data
 
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.HttpsCallableResult
 import toluog.campusbash.model.CallableResponse
 import toluog.campusbash.model.fromMap
+import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class CloudFunctions {
 
@@ -11,56 +17,67 @@ class CloudFunctions {
     private val functions = FirebaseFunctions.getInstance()
     private val TAG = CloudFunctions::class.java.simpleName
 
-    fun followUser(uid: String) {
+    suspend fun followUser(uid: String) {
         if (running.contains(FOLLOW_USER)) return
         running.add(FOLLOW_USER)
-        functions.getHttpsCallable(FOLLOW_USER).call(mapOf("uid" to uid))
-                .continueWith {
-                    running.remove(FOLLOW_USER)
-                    if (!it.isSuccessful) return@continueWith
-                    val map = it.result.data as Map<String, Any?>
-                    val result = CallableResponse().fromMap(map)
-                    Log.d(TAG, "$result")
-                }
+        val task = functions.getHttpsCallable(FOLLOW_USER).call(mapOf("uid" to uid))
+        val callback: (HttpsCallableResult) -> Unit = { httpResult ->
+                running.remove(FOLLOW_USER)
+                val map = httpResult.data as Map<String, Any?>
+                val result = CallableResponse().fromMap(map)
+                Log.d(TAG, "$result")
+        }
+        runCallback(task, callback)
     }
 
-    fun unfollowUser(uid: String) {
+    suspend fun unfollowUser(uid: String) {
         if (running.contains(UNFOLLOW_USER)) return
         running.add(UNFOLLOW_USER)
-        functions.getHttpsCallable(UNFOLLOW_USER).call(mapOf("uid" to uid))
-                .continueWith {
-                    running.remove(UNFOLLOW_USER)
-                    if (!it.isSuccessful) return@continueWith
-                    val map = it.result.data as Map<String, Any?>
-                    val result = CallableResponse().fromMap(map)
-                    Log.d(TAG, "$result")
-                }
+        val task = functions.getHttpsCallable(UNFOLLOW_USER).call(mapOf("uid" to uid))
+        val callback: (HttpsCallableResult) -> Unit = {
+            running.remove(UNFOLLOW_USER)
+            val map = it.data as Map<String, Any?>
+            val result = CallableResponse().fromMap(map)
+            Log.d(TAG, "$result")
+        }
+        runCallback(task, callback)
     }
 
-    fun blockUser(uid: String) {
+    suspend fun blockUser(uid: String) {
         if (running.contains(BLOCK_USER)) return
         running.add(BLOCK_USER)
-        functions.getHttpsCallable(BLOCK_USER).call(mapOf("uid" to uid))
-                .continueWith {
-                    running.remove(BLOCK_USER)
-                    if (!it.isSuccessful) return@continueWith
-                    val map = it.result.data as Map<String, Any?>
-                    val result = CallableResponse().fromMap(map)
-                    Log.d(TAG, "$result")
-                }
+        val task = functions.getHttpsCallable(BLOCK_USER).call(mapOf("uid" to uid))
+        val callback: (HttpsCallableResult) -> Unit = {
+            running.remove(BLOCK_USER)
+            val map = it.data as Map<String, Any?>
+            val result = CallableResponse().fromMap(map)
+            Log.d(TAG, "$result")
+        }
+        runCallback(task, callback)
     }
 
-    fun unblockUser(uid: String) {
+    suspend fun unblockUser(uid: String) {
         if (running.contains(UNBLOCK_USER)) return
         running.add(UNBLOCK_USER)
-        functions.getHttpsCallable(UNBLOCK_USER).call(mapOf("uid" to uid))
-                .continueWith {
-                    running.remove(UNBLOCK_USER)
-                    if (!it.isSuccessful) return@continueWith
-                    val map = it.result.data as Map<String, Any?>
-                    val result = CallableResponse().fromMap(map)
-                    Log.d(TAG, "$result")
-                }
+        val task = functions.getHttpsCallable(UNBLOCK_USER).call(mapOf("uid" to uid))
+        val callback: (HttpsCallableResult) -> Unit = {
+            running.remove(UNBLOCK_USER)
+            val map = it.data as Map<String, Any?>
+            val result = CallableResponse().fromMap(map)
+            Log.d(TAG, "$result")
+        }
+        runCallback(task, callback)
+    }
+
+    private suspend fun <T> runCallback(task: Task<HttpsCallableResult>,
+                                        callbackAction: (HttpsCallableResult) -> T): T {
+        return suspendCoroutine { continuation ->
+            task.addOnSuccessListener {
+                continuation.resume(callbackAction(it))
+            }.addOnFailureListener {
+                continuation.resumeWithException(it)
+            }
+        }
     }
 
     companion object {

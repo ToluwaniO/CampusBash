@@ -1,12 +1,9 @@
 package toluog.campusbash.data
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.*
 import toluog.campusbash.model.Event
-import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract
-import java.util.*
 
 /**
  * Created by oguns on 12/4/2017.
@@ -41,6 +38,9 @@ public interface EventDao{
     @Query("SELECT * FROM $TABLE WHERE endTime > :date")
     fun getEvents(date: Long): LiveData<List<Event>>
 
+    @Query("SELECT * FROM $TABLE WHERE placeId LIKE :placeId")
+    fun getStaticEventsByPlace(placeId: String): List<Event>?
+
     @Query("SELECT * FROM $TABLE WHERE uid LIKE :uid")
     fun getMyEvents(uid: String): LiveData<List<Event>>
 
@@ -53,8 +53,8 @@ public interface EventDao{
     @Delete()
     fun deleteEvent(event: Event)
 
-    @Query("DELETE FROM $TABLE WHERE endTime < :date")
-    fun deleteEvents(date: Long)
+    @Query("DELETE FROM $TABLE WHERE endTime < :date AND uid != :uid")
+    fun deleteOldEvents(date: Long, uid: String)
 
     @Query("DELETE FROM $TABLE")
     fun nukeTable()

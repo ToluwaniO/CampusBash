@@ -24,12 +24,9 @@ import android.view.View
 import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.*
-import toluog.campusbash.viewmodel.ViewEventViewModel
+import toluog.campusbash.view.viewmodel.ViewEventViewModel
 
 class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -255,11 +252,6 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             invalidateOptionsMenu()
         })
-        launch (UI) {
-            delay(5000)
-            val id = "dufhxb38"
-            observePlace(id)
-        }
     }
 
     private fun updateLocation(place: Place) {
