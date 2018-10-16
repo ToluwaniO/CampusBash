@@ -14,7 +14,7 @@ import kotlin.coroutines.CoroutineContext
 open class GeneralViewModel(val app: Application): AndroidViewModel(app), CoroutineScope {
     private val job = Job()
     override val coroutineContext: CoroutineContext
-        get() = job + Dispatchers.Main
+        get() = job + Dispatchers.Default
     val generalRepository = GeneralRepository(app.applicationContext, coroutineContext)
     private var lastUser = ""
     private var profileInfo: LiveData<Map<String, Any>>? = null
