@@ -63,11 +63,7 @@ class EventsFragment : Fragment(){
         }
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
         places = viewModel.getPlaces()
-        observeFrosh()
-        observeProfile()
-        observeEvents()
-        observePlaces()
-        observeAds()
+
         return rootView
     }
 
@@ -79,6 +75,12 @@ class EventsFragment : Fragment(){
         event_recycler.layoutManager = layoutManager
         event_recycler.itemAnimator = DefaultItemAnimator()
         event_recycler.adapter = adapter
+
+        observeFrosh()
+        observeProfile()
+        observeEvents()
+        observePlaces()
+        observeAds()
     }
 
     private fun updateUiVisibility() {
