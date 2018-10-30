@@ -76,12 +76,15 @@ class PickUniversityFragment(): Fragment(){
 
         }
 
+        university_picker.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
 
-        university_picker.onItemSelectedListener {
-            this.onItemSelected { adapterView, view, i, l ->
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, i: Int, p3: Long) {
                 Log.d(TAG, "UNIVERSITIES -> ${universities.size}")
                 university = universities[i]
             }
+
         }
 
         next_button.setOnClickListener {
