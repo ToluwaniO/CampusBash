@@ -18,7 +18,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.android.synthetic.main.events_layout.*
 import kotlinx.android.synthetic.main.no_events_layout.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.android.UI
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.adapters.EventAdapter

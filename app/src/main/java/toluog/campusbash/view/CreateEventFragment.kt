@@ -26,8 +26,7 @@ import android.arch.lifecycle.Observer
 import android.net.Uri
 import android.widget.ImageView
 import com.crashlytics.android.Crashlytics
-import kotlinx.coroutines.android.UI
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.support.v4.indeterminateProgressDialog
@@ -37,6 +36,7 @@ import toluog.campusbash.model.*
 import toluog.campusbash.utils.*
 import toluog.campusbash.view.viewmodel.CreateEventViewModel
 import java.util.Calendar
+import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 
 /**
@@ -64,6 +64,9 @@ class CreateEventFragment : Fragment(){
     private val user = FirebaseManager.getUser()
     private val creator = Creator()
     private val eventTypes = arrayListOf<String>()
+
+    private val threadJob = Dispatchers.Default
+    private val threadScope = CoroutineScope(threadJob)
 
 
     interface CreateEventFragmentInterface {
@@ -501,13 +504,17 @@ class CreateEventFragment : Fragment(){
     }
 
     private fun updateImage(imageUri: Uri) {
-        launch (UI) {
+        threadScope.launch {
             if (Util.validImageSize(imageUri, activity?.applicationContext)) {
-                viewModel.imageUri = imageUri
-                event_image.scaleType = ImageView.ScaleType.FIT_XY
-                event_image.loadImage(imageUri)
+                withContext(Dispatchers.Main) {
+                    viewModel.imageUri = imageUri
+                    event_image.scaleType = ImageView.ScaleType.FIT_XY
+                    event_image.loadImage(imageUri)
+                }
             } else {
-                snackbar(root_view, R.string.max_image_size)
+                withContext(Dispatchers.Main) {
+                    snackbar(root_view, R.string.max_image_size)
+                }
             }
         }
     }

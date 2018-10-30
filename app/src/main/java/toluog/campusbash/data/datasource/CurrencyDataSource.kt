@@ -31,7 +31,8 @@ class CurrencyDataSource(context: Context, override val coroutineContext: Corout
             query.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     threadScope.launch {
-                        for (document in task.result) {
+                        val result = task.result ?: return@launch
+                        for (document in result) {
                             if(document.exists() && validate(document)) {
                                 val snapshot = document.toObject(Currency::class.java)
                                 db?.currencyDao()?.insertCurrency(snapshot)

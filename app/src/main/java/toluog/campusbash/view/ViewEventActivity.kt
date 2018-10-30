@@ -24,9 +24,6 @@ import android.view.View
 import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
-import kotlinx.coroutines.android.UI
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.*
 import toluog.campusbash.view.viewmodel.ViewEventViewModel
@@ -221,8 +218,9 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                 .setLongLink(Uri.parse(finalUrl))
                 .buildShortDynamicLink()
                 .addOnCompleteListener {task ->
-                    if(task.isSuccessful) {
-                        val shortLink = task.result.shortLink
+                    val result = task.result
+                    if(task.isSuccessful && result != null) {
+                        val shortLink = result.shortLink
                         val shortUrl = shortLink.toString()
                         //val flowchartLink = task.result.previewLink
                         Log.d(TAG, shortUrl)

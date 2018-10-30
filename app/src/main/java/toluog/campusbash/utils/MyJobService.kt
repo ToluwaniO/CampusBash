@@ -3,6 +3,7 @@ package toluog.campusbash.utils
 import android.util.Log
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import toluog.campusbash.data.AppDatabase
 
@@ -29,7 +30,7 @@ class MyJobService: JobService() {
         Log.d(TAG, "Deleting old events")
         val db = AppDatabase.getDbInstance(this)
         val uid = FirebaseManager.getUser()?.uid ?: ""
-        launch { db?.eventDao()?.deleteOldEvents(System.currentTimeMillis(), uid) }
+        GlobalScope.launch { db?.eventDao()?.deleteOldEvents(System.currentTimeMillis(), uid) }
         Log.d(TAG, "Done deleting old events")
     }
 

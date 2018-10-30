@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.jetbrains.anko.doAsync
 
 /**
@@ -20,7 +20,9 @@ class MyBootReceiver: BroadcastReceiver() {
             Log.d(TAG, "Scheduling job")
             Util.scheduleEventDeleteJob(context)
             Log.d(TAG, "CHECKING FOR VALID PLACES")
-            launch { DbManager.deleteInvalidPlaces(context) }
+            GlobalScope.launch {
+                DbManager.deleteInvalidPlaces(context)
+            }
         }
     }
 }

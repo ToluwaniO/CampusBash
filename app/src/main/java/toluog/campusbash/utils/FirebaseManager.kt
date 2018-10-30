@@ -188,7 +188,7 @@ class FirebaseManager {
                     .continueWith { task ->
                         try {
                             if (!task.isSuccessful) return@continueWith JSONObject().toString()
-                            val map = task.result.data as Map<String, Any?>
+                            val map = task.result?.data as Map<String, Any?>? ?: return@continueWith JSONObject().toString()
                             Log.d(TAG, map.toString())
                             val json = JSONObject()
                             for (key in map.keys) {
