@@ -313,6 +313,8 @@ class Util{
 
         fun debugMode() = BuildConfig.DEBUG
 
+        fun devFlavor() = BuildConfig.FLAVOR == "dev"
+
         fun isConnected(context: Context?): Boolean {
             val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
             val activeNetwork = cm?.activeNetworkInfo

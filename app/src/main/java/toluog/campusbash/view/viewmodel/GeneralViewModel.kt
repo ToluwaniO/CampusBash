@@ -3,12 +3,17 @@ package toluog.campusbash.view.viewmodel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import toluog.campusbash.data.datasource.UniversityDataSource
+import toluog.campusbash.data.network.ProfileServerClient
+import toluog.campusbash.data.network.ServerResponseState
 import toluog.campusbash.data.repository.GeneralRepository
+import toluog.campusbash.utils.FirebaseManager
 import kotlin.coroutines.CoroutineContext
 
 open class GeneralViewModel(val app: Application): AndroidViewModel(app), CoroutineScope {
@@ -29,6 +34,15 @@ open class GeneralViewModel(val app: Application): AndroidViewModel(app), Corout
     fun getFroshGroup(): LiveData<Set<String>> = generalRepository.getFroshGroup()
 
     fun listenForUniversities() = UniversityDataSource(app.applicationContext, coroutineContext).listenToUniversities()
+
+    fun isValidStudentId(studentId: String): LiveData<ServerResponseState>? {
+        val uid = FirebaseManager.getUser()?.uid ?: return null
+        val liveResponse = MutableLiveData<ServerResponseState>()
+        this.launch {
+            liveResponse.postValue(ProfileServerClient().isNewStudentId(uid, studentId))
+        }
+        return liveResponse
+    }
 
     override fun onCleared() {
         super.onCleared()
