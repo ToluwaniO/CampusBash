@@ -18,6 +18,7 @@ import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.intentFor
 import org.json.JSONObject
 import toluog.campusbash.R
+import toluog.campusbash.data.network.ServerResponseState
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
@@ -114,34 +115,37 @@ class SetupProfileActivity : AppCompatActivity() {
         val studentId = fixStudentId(studentIdView.text.toString().trim())
         Log.d(TAG, studentId)
         if (!studentId.isBlank()) {
-            FirebaseManager.isNewStudentId(studentId).addOnSuccessListener {
-                Log.d(TAG, it)
-                val obj = JSONObject(it)
-                val isNew: Boolean? = if (obj.has("isNew")) {
-                    obj.getBoolean("isNew")
-                } else {
-                    null
-                }
-                when {
-                    isNew == null -> longSnackbar(container, R.string.could_not_verify_student_id)
-                    isNew -> {
-                        updateFields()
-                        startActivity(intentFor<MainActivity>())
-                        finish()
-                    }
-                    else -> studentIdView.error = getString(R.string.student_id_exists)
-                }
-                dialog.dismiss()
-            }.addOnFailureListener {
-                Log.d(TAG, it.message)
-                dialog.dismiss()
-            }
+            validateId(studentId)
         } else {
             updateFields()
             dialog.dismiss()
             startActivity(intentFor<MainActivity>())
             finish()
         }
+    }
+
+    private fun validateId(studentId: String) {
+        viewModel.isValidStudentId(studentId)?.observe(this, Observer {
+            when (it) {
+                null -> Log.d(TAG, "state is null")
+                is ServerResponseState.Success<*> -> {
+                    if (it.data as Boolean) {
+                        updateFields()
+                        startActivity(intentFor<MainActivity>())
+                        finish()
+                    } else {
+                        dialog.dismiss()
+                        studentIdView.error = getString(R.string.student_id_exists)
+                    }
+                }
+                is ServerResponseState.Error -> {
+                    dialog.dismiss()
+                    longSnackbar(container, R.string.could_not_verify_student_id)
+                }
+                else -> {}
+            }
+
+        })
     }
 
     private fun fixStudentId(id: String): String {

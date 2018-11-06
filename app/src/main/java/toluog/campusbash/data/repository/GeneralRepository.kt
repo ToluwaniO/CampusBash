@@ -58,7 +58,7 @@ class GeneralRepository(val context: Context, override val coroutineContext: Cor
         val user = FirebaseManager.getUser()
         val stripeApi = StripeServerClient()
         val body = StripeAccountBody(user?.uid ?: "", user?.email ?: "", "CA")
-        return stripeApi.createStripeAccount(body, user?.uid ?: "")
+        return stripeApi.createStripeAccount(body)
     }
 
     fun getTickets(): LiveData<List<BoughtTicket>> {
