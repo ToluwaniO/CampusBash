@@ -1,6 +1,6 @@
 package toluog.campusbash.data.datasource
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.util.Log
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.asCoroutineDispatcher

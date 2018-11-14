@@ -1,9 +1,9 @@
 package toluog.campusbash.adapters
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
-import android.support.v4.util.ArrayMap
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.collection.ArrayMap
+import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log

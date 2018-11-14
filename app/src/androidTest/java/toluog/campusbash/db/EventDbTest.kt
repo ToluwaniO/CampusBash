@@ -1,13 +1,13 @@
 package toluog.campusbash.db
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.runner.AndroidJUnit4
 import org.junit.runner.RunWith
 import toluog.campusbash.data.EventDao
-import android.support.test.InstrumentationRegistry
+import androidx.test.InstrumentationRegistry
 import org.junit.Before
 import toluog.campusbash.data.AppDatabase
-import android.arch.persistence.room.Room
+import androidx.room.Room
 import android.util.Log
 import org.hamcrest.Matchers.`is`
 import org.junit.After

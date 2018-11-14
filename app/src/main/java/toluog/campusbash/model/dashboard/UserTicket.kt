@@ -1,7 +1,7 @@
 package toluog.campusbash.model.dashboard
 
 import android.os.Parcelable
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import com.bignerdranch.expandablerecyclerview.model.Parent
 import com.google.firebase.firestore.Exclude
 import kotlinx.android.parcel.Parcelize

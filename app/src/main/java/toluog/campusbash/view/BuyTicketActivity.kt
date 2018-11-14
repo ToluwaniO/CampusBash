@@ -2,17 +2,21 @@ package toluog.campusbash.view
 
 import android.app.Activity
 import android.app.ProgressDialog
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.util.ArrayMap
-import android.support.v7.widget.*
+import androidx.collection.ArrayMap
+import androidx.appcompat.widget.*
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.snackbar

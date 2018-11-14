@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     tools:context="toluog.campusbash.view.SeeMoreActivity">
 
-    <android.support.text.emoji.widget.EmojiTextView
+    <androidx.emoji.widget.EmojiTextView
         android:id="@+id/more_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

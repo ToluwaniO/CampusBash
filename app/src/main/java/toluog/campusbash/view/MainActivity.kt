@@ -2,10 +2,10 @@ package toluog.campusbash.view
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.design.widget.BottomNavigationView
-import android.support.v7.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.appcompat.app.AppCompatActivity
 import android.view.View.VISIBLE
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import kotlinx.android.synthetic.main.activity_main.*
 import toluog.campusbash.R
 import android.content.Intent
@@ -14,9 +14,9 @@ import android.widget.ArrayAdapter
 import org.jetbrains.anko.intentFor
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.graphics.Color
-import android.support.design.widget.CoordinatorLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
@@ -25,8 +25,8 @@ import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
 import kotlin.collections.ArrayList
-import android.support.design.widget.AppBarLayout
-import android.support.v4.content.ContextCompat
+import com.google.android.material.appbar.AppBarLayout
+import androidx.core.content.ContextCompat
 import android.view.View.GONE
 import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.*
@@ -153,6 +153,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     private fun updateUi() {
         uniAdapter = ArrayAdapter(this, R.layout.text_view_layout, uniChar)
+        viewModel.getUniversities(country)?.observe(this, Observer {
+
+        })
         viewModel.getUniversities(country)?.observe(this, Observer { unis ->
             if(unis != null && uniList.isEmpty()){
                 for (i in unis){

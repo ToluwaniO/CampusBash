@@ -1,10 +1,10 @@
 package toluog.campusbash.model
 
 import android.annotation.SuppressLint
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import android.os.Parcelable
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import kotlinx.android.parcel.Parcelize
 import toluog.campusbash.utils.AppContract
 

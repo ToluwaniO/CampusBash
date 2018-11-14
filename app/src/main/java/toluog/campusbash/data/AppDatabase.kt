@@ -1,6 +1,6 @@
 package toluog.campusbash.data
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import android.content.Context
 import toluog.campusbash.model.Currency
 import toluog.campusbash.model.Event

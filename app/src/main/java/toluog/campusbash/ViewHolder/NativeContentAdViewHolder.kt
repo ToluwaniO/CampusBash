@@ -1,7 +1,7 @@
 package toluog.campusbash.ViewHolder
 
 import com.google.android.gms.ads.formats.NativeContentAdView
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import com.google.android.gms.ads.formats.NativeContentAd
 import kotlinx.android.extensions.LayoutContainer
