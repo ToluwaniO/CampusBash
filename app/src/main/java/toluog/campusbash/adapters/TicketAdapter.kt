@@ -30,6 +30,9 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
 
     private val listener: OnTicketClickListener
     private val queryMap = ArrayMap<String, Any>()
+    private val priceMap = ArrayMap<String, Double>()
+    var total = 0.0
+    private set
 
     init {
         listener = context as OnTicketClickListener
@@ -38,6 +41,7 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
     interface OnTicketClickListener {
         fun onTicketClick(ticket: Ticket)
         fun onTicketQuantityChanged(queryMap: ArrayMap<String, Any>)
+        fun onTotalChanged(total: Double)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder{
@@ -91,23 +95,35 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
                 }
             }
 
-            ticket_quantity.setOnClickListener {
+            quantity_layout.setOnClickListener {
                 context.selector(context.getString(R.string.select_quantity),
                         selectableQuantity) { _, i ->
-                    updateMap(selectableQuantity[i].toInt(), ticket.name)
-                    (it as TextView).text = selectableQuantity[i]
+                    updateMap(selectableQuantity[i].toInt(), ticket)
+                    ticket_quantity.text = selectableQuantity[i]
                 }
             }
         }
 
-        private fun updateMap(quantity: Int, name: String) {
+        private fun updateMap(quantity: Int, ticket: Ticket) {
             when (quantity) {
-                0 -> queryMap.remove(name)
-                else -> queryMap[name] = quantity
+                0 -> {
+                    queryMap.remove(ticket.name)
+                    priceMap.remove(ticket.name)
+                }
+                else -> {
+                    queryMap[ticket.name] = quantity
+                    priceMap[ticket.name] = ticket.price * quantity
+                }
+            }
+            total = 0.0
+            for (v in priceMap.values) {
+                total += v
             }
             listener.onTicketQuantityChanged(queryMap)
+            listener.onTotalChanged(total)
         }
 
     }
+
 
 }

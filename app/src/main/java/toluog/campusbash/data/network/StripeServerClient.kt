@@ -10,13 +10,18 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import retrofit2.*
 import retrofit2.http.*
+import toluog.campusbash.model.TicketPriceBreakdown
 import toluog.campusbash.utils.Util
 
 class StripeServerClient {
 
-    private lateinit var httpClientAPI: StripeClientAPI
+    private var httpClientAPI: StripeClientAPI
     private val TAG = StripeServerClient::class.java.simpleName
     private lateinit var response: Deferred<ServerResponse>
+
+    init {
+        httpClientAPI = createStripeClient()
+    }
 
     private fun createStripeClient(): StripeClientAPI {
         val gson = GsonBuilder()
@@ -66,6 +71,17 @@ class StripeServerClient {
         return handleEphemeralKeyResponse(customerId, apiVersion)
     }
 
+    suspend fun getTicketBreakdown(total: Int): TicketPriceBreakdown? {
+        return try {
+            val breakdown = httpClientAPI.getTicketBreakdown(total).await()
+            Log.d(TAG, "$breakdown")
+            breakdown
+        } catch (e: Exception) {
+            Log.d(TAG, e.message)
+            null
+        }
+    }
+
     private suspend fun handleEphemeralKeyResponse(customerId: String, apiVersion: String): String {
         val body = mapOf(
                 "customerId" to customerId,
@@ -83,5 +99,8 @@ class StripeServerClient {
 
         @POST("createEphemeralKey")
         fun createEphemeralKey(@Body options: Map<String, String>): Deferred<ServerResponse>
+
+        @GET("ticketBreakDown")
+        fun getTicketBreakdown(@Query("price") price: Int): Deferred<TicketPriceBreakdown>
     }
 }

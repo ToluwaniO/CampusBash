@@ -35,6 +35,7 @@ class AppContract{
         const val WEB_VIEW_URL = "web_view_url"
         const val IMAGE_SRC = "imageSrc"
         const val IMAGE_NAME = "imageName"
+        const val BUNDLE_PRICE = "price"
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"

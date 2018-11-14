@@ -38,6 +38,8 @@
 -dontwarn javax.servlet.**
 -dontwarn org.slf4j.**
 
+-keep class com.stripe.android.** { *; }
+
 #Log removal
 -assumenosideeffects class android.util.Log {
   public static *** v(...);

@@ -31,12 +31,16 @@ import com.stripe.android.CustomerSession
 import com.stripe.android.PaymentSession
 import com.stripe.android.model.Customer
 import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.add_new_card_button.*
 import kotlinx.android.synthetic.main.credit_card_view.*
+import kotlinx.coroutines.*
 import org.jetbrains.anko.*
 import toluog.campusbash.model.BashCard
+import toluog.campusbash.model.TicketPriceBreakdown
 import toluog.campusbash.utils.CampusBash
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
+import toluog.campusbash.view.viewmodel.GeneralViewModel
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -50,24 +54,48 @@ class CardPaymentActivity : AppCompatActivity() {
     private lateinit var currency: String
     private val cards = ArrayList<BashCard>()
     private val adapter = CardAdapter()
-    private lateinit var pleaseWait: ProgressDialog
+    private var pleaseWait: ProgressDialog? = null
+    private lateinit var viewModel: GeneralViewModel
+    private val threadJob = Dispatchers.Default
+    private val threadScope = CoroutineScope(threadJob)
+
+    private var breakdown: TicketPriceBreakdown? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_card_payment)
-        currency = intent.extras.getString(AppContract.CURRENCY)
+
+        viewModel = ViewModelProviders.of(this).get(GeneralViewModel::class.java)
+        val price = intent.extras?.getInt(AppContract.BUNDLE_PRICE) ?: 0
+
+        threadScope.launch {
+            val bd = viewModel.getTicketBreakdown(price)
+            withContext(Dispatchers.Main) {
+                if (bd != null) {
+                    initCardAndPricing(bd)
+                    progress_bar.visibility = View.GONE
+                    main_layout.visibility = View.VISIBLE
+                } else {
+                    toast(R.string.error_occurred)
+                    finish()
+                }
+            }
+        }
+    }
+
+    private fun initCardAndPricing(breakdown: TicketPriceBreakdown) {
+        this.breakdown = breakdown
+        currency = intent.extras?.getString(AppContract.CURRENCY) ?: "CB$"
         manageCards()
 
         pleaseWait = indeterminateProgressDialog(R.string.please_wait)
-        pleaseWait.dismiss()
+        pleaseWait?.dismiss()
         googlePayAlert = alert(getString(R.string.use_google_pay)) {
             positiveButton(getString(R.string.yes)) {
                 Log.d(TAG, "Yes clicked for Google Pay")
                 val request = createPaymentDataRequest()
-                if (request != null) {
-                    AutoResolveHelper.resolveTask(paymentsClient.loadPaymentData(request),
-                            this@CardPaymentActivity, LOAD_PAYMENT_DATA_REQUEST_CODE)
-                }
+                AutoResolveHelper.resolveTask(paymentsClient.loadPaymentData(request),
+                        this@CardPaymentActivity, LOAD_PAYMENT_DATA_REQUEST_CODE)
             }
             negativeButton(getString(R.string.no)) {
                 Log.d(TAG, "User returned no for google pay request")
@@ -75,7 +103,7 @@ class CardPaymentActivity : AppCompatActivity() {
             }
         }
 
-        val environment = if(BuildConfig.DEBUG) {
+        val environment = if(Util.devFlavor()) {
             WalletConstants.ENVIRONMENT_TEST
         } else {
             WalletConstants.ENVIRONMENT_PRODUCTION
@@ -88,11 +116,11 @@ class CardPaymentActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this)
         card_recycler.layoutManager = layoutManager
 
-        add_card.setOnClickListener {
-            startActivityForResult(intentFor<AddCardActivity>(), ADD_CARD)
-        }
-
-        //isReadyToPay()
+        main_currency.text = currency
+        ticket_fee.text = getString(R.string.one_ticket_price, breakdown.ticketFee.toDouble()/100)
+        service_fee.text = getString(R.string.one_ticket_price, breakdown.serviceFee.toDouble()/100)
+        payment_fee.text = getString(R.string.one_ticket_price, breakdown.paymentFee.toDouble()/100)
+        total_fee.text = getString(R.string.one_ticket_price, breakdown.totalFee.toDouble()/100)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -124,10 +152,6 @@ class CardPaymentActivity : AppCompatActivity() {
             ADD_CARD -> {
                 if(resultCode == Activity.RESULT_OK) {
                     val bashCard = data?.extras?.get("card") as BashCard?
-//                    if(bashCard != null && isNewCard(bashCard.card)) {
-//                        cards.add(bashCard)
-//                    }
-//                    updateView()
                     if (bashCard != null) {
                         getToken(bashCard)
                     }
@@ -137,7 +161,7 @@ class CardPaymentActivity : AppCompatActivity() {
     }
 
     private fun getToken(bashCard: BashCard) {
-        pleaseWait.show()
+        pleaseWait?.show()
         val source = bashCard.customerSource
         val card = bashCard.card
         when {
@@ -169,6 +193,7 @@ class CardPaymentActivity : AppCompatActivity() {
             intent.putExtras(Bundle().apply {
                 putString(AppContract.TOKEN_ID, tokenId)
                 putBoolean(AppContract.NEW_CARD, newCard)
+                putParcelable(AppContract.BREAKDOWN, breakdown)
             })
             setResult(Activity.RESULT_OK, intent)
         } else {
@@ -179,7 +204,8 @@ class CardPaymentActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        pleaseWait.dismiss()
+        pleaseWait?.dismiss()
+        threadJob.cancel()
         super.onDestroy()
     }
 
@@ -240,10 +266,10 @@ class CardPaymentActivity : AppCompatActivity() {
         if(cards.size > 0) {
             adapter.notifyDataSetChanged()
             card_recycler.visibility = View.VISIBLE
-            no_card_layout.visibility = View.GONE
+//            no_card_layout.visibility = View.GONE
         } else {
             card_recycler.visibility = View.GONE
-            no_card_layout.visibility = View.VISIBLE
+//            no_card_layout.visibility = View.VISIBLE
         }
     }
 
@@ -270,21 +296,41 @@ class CardPaymentActivity : AppCompatActivity() {
         const val ADD_CARD = 3628
     }
 
-    inner class CardAdapter: RecyclerView.Adapter<CardAdapter.ViewHolder>() {
+    inner class CardAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardAdapter.ViewHolder {
-            val view = LayoutInflater.from(this@CardPaymentActivity)
-                    .inflate(R.layout.credit_card_view, parent, false)
-            return ViewHolder(view)
+        private val CARD_VIEW_TYPE = 0
+        private val ADD_CARD_VIEW_TYPE = 1
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            return if (viewType == CARD_VIEW_TYPE) {
+                val view = LayoutInflater.from(this@CardPaymentActivity)
+                        .inflate(R.layout.credit_card_view, parent, false)
+                BashCardViewHolder(view)
+            } else {
+                val view = LayoutInflater.from(this@CardPaymentActivity)
+                        .inflate(R.layout.add_new_card_button, parent, false)
+                AddCardViewHolder(view)
+            }
         }
 
-        override fun getItemCount() = cards.size
+        override fun getItemCount() = cards.size+1
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(cards[position])
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            if (position == cards.size) {
+                (holder as AddCardViewHolder).bind()
+            } else {
+                (holder as BashCardViewHolder).bind(cards[position])
+            }
         }
 
-        inner class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),
+        override fun getItemViewType(position: Int): Int {
+            if (position == cards.size) {
+                return ADD_CARD_VIEW_TYPE
+            }
+            return CARD_VIEW_TYPE
+        }
+
+        inner class BashCardViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),
                 LayoutContainer {
 
             fun bind(bCard: BashCard) {
@@ -302,6 +348,15 @@ class CardPaymentActivity : AppCompatActivity() {
                 }
             }
 
+        }
+
+        inner class AddCardViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),
+                LayoutContainer {
+            fun bind() {
+                add_new_card.setOnClickListener {
+                    startActivityForResult(intentFor<AddCardActivity>(), ADD_CARD)
+                }
+            }
         }
 
     }

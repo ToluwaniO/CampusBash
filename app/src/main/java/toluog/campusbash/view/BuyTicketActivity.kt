@@ -23,6 +23,8 @@ import toluog.campusbash.R
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
+import toluog.campusbash.model.TicketPriceBreakdown
+import toluog.campusbash.model.toMap
 import toluog.campusbash.utils.*
 import toluog.campusbash.view.viewmodel.ViewEventViewModel
 import java.math.BigDecimal
@@ -40,6 +42,8 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private var tokenId: String? = null
     private var user: LiveData<Map<String, Any>>? = null
     private lateinit var pleaseWait: ProgressDialog
+    private var currency = "$"
+    private var breakdown = TicketPriceBreakdown()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,10 +62,16 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         updateUi()
         
         val bundle = intent.extras
-        eventId = bundle.getString(AppContract.MY_EVENT_BUNDLE)
+        eventId = bundle?.getString(AppContract.MY_EVENT_BUNDLE) ?: ""
         val viewModel: ViewEventViewModel = ViewModelProviders.of(this).get(ViewEventViewModel::class.java)
         viewModel.getEvent(eventId)?.observe(this, Observer { event ->
             if(event != null) {
+                for (t in event.tickets) {
+                    if (t.currency.isNotBlank()) {
+                        currency = t.currency
+                        break
+                    }
+                }
                 this.event = event
                 Log.d(TAG, "$event")
                 tickets.clear()
@@ -91,12 +101,13 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
 
         tickets_buy_button.setOnClickListener {
             val purchase = getData()
-            val price = purchase[AppContract.TOTAL] as Double
+            val price = adapter.total
             val currency = purchase[AppContract.CURRENCY] as String?
             if(price > 0 && currency != null) {
                 val cardPaymentIntent = Intent(this, CardPaymentActivity::class.java)
                 cardPaymentIntent.putExtras(Bundle().apply {
                     putString(AppContract.CURRENCY, currency)
+                    putInt(AppContract.BUNDLE_PRICE, (price*100).toInt())
                 })
                 startActivityForResult(cardPaymentIntent, TOKEN_REQUEST)
             } else {
@@ -109,8 +120,9 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         if(requestCode == TOKEN_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 if(data != null) {
-                    tokenId = data.extras.getString(AppContract.TOKEN_ID)
-                    val newCard = data.extras.getBoolean(AppContract.NEW_CARD)
+                    tokenId = data.extras?.getString(AppContract.TOKEN_ID) ?: ""
+                    breakdown = data.extras?.getParcelable(AppContract.BREAKDOWN) ?: TicketPriceBreakdown()
+                    val newCard = data.extras?.getBoolean(AppContract.NEW_CARD) ?: false
                     buyTickets(tokenId, newCard)
                 }
             }
@@ -130,40 +142,41 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     }
 
     override fun onTicketQuantityChanged(queryMap: ArrayMap<String, Any>) {
-        Log.d(TAG, "Ticket quantity changed")
-        val breakdown = getData()["breakdown"] as HashMap<String, Double>
-        Log.d(TAG, "Breakdown -> $breakdown")
-        val total = breakdown[AppContract.TOTAL_FEE]
-        if(total != null && total > 0) {
-            price_breakdown_layout.visibility = View.VISIBLE
-            ticket_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.TICKET_FEE])
-            payment_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.PAYMENT_FEE])
-            service_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.SERVICE_FEE])
-            total_fee_text.text = getString(R.string.price_value, "$", total)
-        } else {
-            price_breakdown_layout.visibility = View.GONE
-        }
+//        Log.d(TAG, "Ticket quantity changed")
+//        val breakdown = getData()["breakdown"] as HashMap<String, Double>
+//        Log.d(TAG, "Breakdown -> $breakdown")
+//        val total = breakdown[AppContract.TOTAL_FEE]
+//        if(total != null && total > 0) {
+//            price_breakdown_layout.visibility = View.VISIBLE
+//            ticket_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.TICKET_FEE])
+//            payment_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.PAYMENT_FEE])
+//            service_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.SERVICE_FEE])
+//            total_fee_text.text = getString(R.string.price_value, "$", total)
+//        } else {
+//            price_breakdown_layout.visibility = View.GONE
+//        }
+    }
+
+    override fun onTotalChanged(total: Double) {
+        ticket_fee_text.text = getString(R.string.price_value, currency, total)
     }
 
     private fun getData(): HashMap<String, Any> {
         val map: ArrayMap<String, Any> = adapter.getPurchaseMap()
         val purchaseMap = HashMap<String, Any>()
         var totalQuantity = 0
-        var totalPrice = 0.0
         for (key in map.keys) {
             val quantity = map[key] as Int
             totalQuantity += quantity
-            totalPrice += getPriceFromName(key) * quantity
         }
-        val priceBreakDown = Util.getFinalFee(totalPrice)
         val currency = getCurrency()
         if(currency != null) {
             purchaseMap[AppContract.CURRENCY] = currency
         }
         purchaseMap[AppContract.TICKETS] = map
         purchaseMap[AppContract.QUANTITY] = totalQuantity
-        purchaseMap[AppContract.TOTAL] = priceBreakDown[AppContract.TOTAL_FEE]?.toDouble() ?: 0.0
-        purchaseMap[AppContract.BREAKDOWN] = convertBigDecimalToDoubleMap(priceBreakDown)
+        purchaseMap[AppContract.TOTAL] = breakdown.totalFee
+        purchaseMap[AppContract.BREAKDOWN] = breakdown.toMap()
         return purchaseMap
     }
 

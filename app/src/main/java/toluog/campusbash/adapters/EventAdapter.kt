@@ -41,7 +41,6 @@ class EventAdapter(var events: ArrayList<Any>, var places: List<Place>, var cont
 
     interface OnItemClickListener {
         fun onItemClick(event: Event, view: View)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

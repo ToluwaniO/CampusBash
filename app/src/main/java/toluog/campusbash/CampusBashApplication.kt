@@ -7,6 +7,7 @@ import android.support.text.emoji.FontRequestEmojiCompatConfig
 import android.support.v4.provider.FontRequest
 import android.util.Log
 import com.crashlytics.android.Crashlytics
+import toluog.campusbash.utils.Analytics
 
 class CampusBashApplication: Application() {
     private val TAG = CampusBashApplication::class.java.simpleName
@@ -32,5 +33,6 @@ class CampusBashApplication: Application() {
                     }
                 })
         EmojiCompat.init(config)
+        Analytics.init(applicationContext)
     }
 }
