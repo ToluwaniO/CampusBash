@@ -30,13 +30,13 @@
             android:id="@+id/ticket_quantity_left"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Ticket description" />
+            android:layout_margin="5dp" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/ticket_quantity"
+
+    <LinearLayout
+        android:id="@+id/quantity_layout"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
@@ -44,9 +44,22 @@
         android:layout_weight="1"
         android:background="?android:attr/selectableItemBackground"
         android:gravity="center_vertical"
-        android:inputType="number"
-        android:text="0"
-        android:textAlignment="center"
-        android:textSize="18sp" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/ticket_quantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="0"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="5dp"
+            android:background="@android:color/darker_gray" />
+    </LinearLayout>
 
 </LinearLayout>

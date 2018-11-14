@@ -12,7 +12,9 @@ import kotlinx.coroutines.launch
 import toluog.campusbash.data.datasource.UniversityDataSource
 import toluog.campusbash.data.network.ProfileServerClient
 import toluog.campusbash.data.network.ServerResponseState
+import toluog.campusbash.data.network.StripeServerClient
 import toluog.campusbash.data.repository.GeneralRepository
+import toluog.campusbash.model.TicketPriceBreakdown
 import toluog.campusbash.utils.FirebaseManager
 import kotlin.coroutines.CoroutineContext
 
@@ -42,6 +44,11 @@ open class GeneralViewModel(val app: Application): AndroidViewModel(app), Corout
             liveResponse.postValue(ProfileServerClient().isNewStudentId(uid, studentId))
         }
         return liveResponse
+    }
+
+    suspend fun getTicketBreakdown(price: Int): TicketPriceBreakdown? {
+        val client = StripeServerClient()
+        return client.getTicketBreakdown(price)
     }
 
     override fun onCleared() {

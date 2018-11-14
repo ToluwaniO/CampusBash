@@ -185,4 +185,5 @@
     <string name="could_not_verify_student_id">Oops, we could not verify your student id</string>
     <string name="exit_without_saving_card">Are you sure you want to leave without saving your card?</string>
     <string name="max_image_size">Max image size is 5MB</string>
+    <string name="add_new_card">Add a new card</string>
 </resources>

@@ -9,7 +9,7 @@ buildscript {
         fcb_sdk_version = '4.27.0'
         fbase_version = '12.0.1'
         play_services_version = '15.0.1'
-        stripe_version = '7.0.1'
+        stripe_version = '8.0.0'
         glide_version = '4.3.1'
         rxjava_version = '2.1.7'
         rxand_version = '2.0.1'

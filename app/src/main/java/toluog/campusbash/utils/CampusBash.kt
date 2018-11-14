@@ -91,6 +91,7 @@ object CampusBash {
                             cards.add(BashCard(it))
                         }
                     }
+                    Log.d(TAG, "$cards")
                     bashCards.postValue(cards)
                 }
 
