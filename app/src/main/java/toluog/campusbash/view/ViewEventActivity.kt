@@ -21,9 +21,11 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import android.content.Intent
 import android.util.Log
 import android.view.View
+import com.crashlytics.android.Crashlytics
 import org.jetbrains.anko.toast
 import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
+import kotlinx.coroutines.*
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.*
 import toluog.campusbash.view.viewmodel.ViewEventViewModel
@@ -38,6 +40,9 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
     private var liveEvent: LiveData<Event>? = null
     private lateinit var viewModel: ViewEventViewModel
 
+    private val threadJob = Dispatchers.Default
+    private val threadScope = CoroutineScope(threadJob)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_event)
@@ -48,29 +53,34 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         viewModel = ViewModelProviders.of(this).get(ViewEventViewModel::class.java)
+        threadScope.launch {
+            checkForDynamicLink()
+            withContext(Dispatchers.Main) { observeEvent() }
+        }
+    }
+
+    private suspend fun checkForDynamicLink() {
         val bundle = intent.extras
 
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(intent)
-                .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                    // Get deep link from result (may be null if no link is found)
-                    val deepLink: Uri?
-                    if (pendingDynamicLinkData != null && bundle?.getString(AppContract.MY_EVENT_BUNDLE) == null) {
-                        deepLink = pendingDynamicLinkData.link
-                        eventId = deepLink?.getQueryParameter("eventId") ?: ""
-                        viewModel.downloadEvent(eventId)
-                        liveEvent = viewModel.getEvent(eventId)
-                        observeEvent()
-                    } else {
-                        Log.d(TAG, "Deep link data is null")
-                        eventId = bundle?.getString(AppContract.MY_EVENT_BUNDLE) ?: ""
-                        liveEvent = viewModel.getEvent(eventId)
-                        observeEvent()
-                    }
-                }
-                .addOnFailureListener(this) { e ->
-                    Log.d(TAG, "getDynamicLink:onFailure", e)
-                }
+        try {
+            val pendingDynamicLinkData = FirebaseManager.getDynamicLinkData(intent)
+            val deepLink: Uri?
+            if (bundle?.getString(AppContract.MY_EVENT_BUNDLE) == null) {
+                deepLink = pendingDynamicLinkData.link
+                eventId = deepLink?.getQueryParameter("eventId") ?: ""
+                viewModel.downloadEvent(eventId)
+                liveEvent = viewModel.getEvent(eventId)
+            } else {
+                Log.d(TAG, "Deep link data is null")
+                eventId = bundle.getString(AppContract.MY_EVENT_BUNDLE) ?: ""
+                liveEvent = viewModel.getEvent(eventId)
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, e.message)
+            Crashlytics.logException(e)
+            toast(R.string.error_occurred)
+            finish()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
@@ -92,7 +102,13 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         val id = item?.itemId
         when(id) {
             android.R.id.home -> onBackPressed()
-            R.id.action_share -> share()
+            R.id.action_share -> {
+                startActivity(intentFor<ShareEventActivity>().apply {
+                    putExtras(Bundle().apply {
+                        putParcelable(AppContract.MY_EVENT_BUNDLE, event)
+                    })
+                })
+            }
             R.id.action_edit -> {
                 val bundle = Bundle()
                 bundle.putParcelable(AppContract.MY_EVENT_BUNDLE, event)
@@ -180,64 +196,6 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun share() {
-        val event = this.event
-        if(event != null) {
-            val domain = if(BuildConfig.FLAVOR.equals("dev")) {
-                DEBUG_DYNAMIC_LINK
-            } else {
-                PROD_DYNAMIC_URL
-            }
-            val builder = Uri.Builder()
-                    .scheme("https")
-                    .authority(CAMPUSBASH_LINK)
-                    .path("/")
-                    .appendQueryParameter("eventId", eventId)
-            val url = builder.build()
-            Log.d(TAG, url.toString())
-            val dynamicLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                    .setLink(url)
-                    .setDynamicLinkDomain(domain)
-                    // Open links with this app on Android
-                    .setAndroidParameters(DynamicLink.AndroidParameters.Builder().build())
-                    .setSocialMetaTagParameters(DynamicLink.SocialMetaTagParameters.Builder()
-                            .setTitle(event.eventName)
-                            .setDescription(event.description)
-                            .setImageUrl(Uri.parse(event.placeholderImage?.url ?: ""))
-                            .build())
-                    .buildDynamicLink()
-            val dynamicLinkUri = dynamicLink.uri
-            var finalUrl = dynamicLinkUri.toString()
-            finalUrl = Util.fixLink(finalUrl)
-            if(BuildConfig.DEBUG) {
-                finalUrl += "&d=1"
-            }
-            Log.d(TAG, finalUrl)
-
-            FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLongLink(Uri.parse(finalUrl))
-                .buildShortDynamicLink()
-                .addOnCompleteListener {task ->
-                    val result = task.result
-                    if(task.isSuccessful && result != null) {
-                        val shortLink = result.shortLink
-                        val shortUrl = shortLink.toString()
-                        //val flowchartLink = task.result.previewLink
-                        Log.d(TAG, shortUrl)
-                        val shareIntent = Intent(Intent.ACTION_SEND)
-                        shareIntent.type = "text/plain"
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, shortUrl)
-                        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_with)))
-                    } else {
-                        Log.d(TAG, "An error occurred getting the shortLink\n${task.exception?.message}")
-                        toast(R.string.error_occurred)
-                    }
-                }
-
-        }
-
-    }
-
     private fun observeEvent() {
         liveEvent?.observe(this, Observer { event ->
             this.event = event
@@ -278,7 +236,12 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
     }
-    
+
+    override fun onDestroy() {
+        threadJob.cancel()
+        super.onDestroy()
+    }
+
     companion object {
         private const val DEBUG_DYNAMIC_LINK = "m88p6.app.goo.gl"
         private const val PROD_DYNAMIC_URL = "hx87a.app.goo.gl"

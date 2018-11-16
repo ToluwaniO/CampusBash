@@ -1,12 +1,16 @@
 package toluog.campusbash.utils
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData
+import com.google.firebase.dynamiclinks.ShortDynamicLink
 import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.functions.FirebaseFunctions
@@ -211,6 +215,33 @@ class FirebaseManager {
                 }?.addOnFailureListener {
                     continuation.resumeWithException(it)
                 }
+            }
+        }
+
+        suspend fun getDynamicLinkData(intent: Intent): PendingDynamicLinkData {
+            return suspendCoroutine { continuation ->
+                FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
+                        ?.addOnSuccessListener {
+                            continuation.resume(it)
+                        }
+                        ?.addOnFailureListener {
+                            continuation.resumeWithException(it)
+                        }
+            }
+        }
+
+        suspend fun getShortDynamicLink(url: String): ShortDynamicLink? {
+            return suspendCoroutine { continuation ->
+                FirebaseDynamicLinks.getInstance().createDynamicLink()
+                        .setLongLink(Uri.parse(url))
+                        .buildShortDynamicLink()
+                        ?.addOnSuccessListener {
+                            continuation.resume(it)
+                        }
+                        ?.addOnFailureListener {
+                            Log.e(TAG, it.message)
+                            continuation.resume(null)
+                        }
             }
         }
 

@@ -62,8 +62,8 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
         PlaceUtil.savePlace(event.placeId, this@EventsDataSource.context)
     }
 
-    fun downloadEvent(path: String) {
-        val ref = firestore.document(path)
+    fun downloadEvent(eventId: String) {
+        val ref = firestore.collection("events").document(eventId)
         ref.get().addOnSuccessListener {
             if (!it.exists()) return@addOnSuccessListener
             this.launch(threadJob) {
