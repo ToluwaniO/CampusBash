@@ -202,10 +202,11 @@ class ShareEventActivity : AppCompatActivity() {
         private const val PROD_DYNAMIC_URL = "https://hx87a.app.goo.gl"
         private const val CAMPUSBASH_LINK = "campusbash-e0ca8.firebaseapp.com"
         private val priorityAppNames = arrayListOf(
-                "instagram",
-                "snap",
-                "messenger",
-                "facebook"
+                "com.instagram.android",
+                "com.snapchat.android",
+                "com.facebook.orca",
+                "com.facebook.mlite",
+                "com.facebook.katana"
         )
     }
 }
