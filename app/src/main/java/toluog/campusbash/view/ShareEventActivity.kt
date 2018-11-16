@@ -25,10 +25,7 @@ import kotlinx.android.synthetic.main.activity_share_event.*
 import kotlinx.android.synthetic.main.share_action_view.*
 import android.content.ComponentName
 import android.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import toluog.campusbash.utils.FirebaseManager
 
 
@@ -62,6 +59,11 @@ class ShareEventActivity : AppCompatActivity() {
                 updateUi(it)
             }
         })
+    }
+
+    override fun onDestroy() {
+        threadJob.cancel()
+        super.onDestroy()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
