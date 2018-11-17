@@ -172,12 +172,12 @@ class CreateTicketFragment: Fragment(){
             if(ticketType == AppContract.TYPE_PAID) ticket?.currency = this.currency
             else ticket?.currency = ""
             if(viewModel.selectedTicket == null && ticket != null && ticketType == AppContract.TYPE_FREE) {
-                viewModel.event.tickets.add(ticket)
+                viewModel.tickets.add(ticket)
                 callback.ticketComplete(ticket)
             } else if(!isStripeActivated && ticketType == AppContract.TYPE_PAID) {
                 setupStripe()
             } else if(viewModel.selectedTicket == null && ticket != null && ticketType == AppContract.TYPE_PAID) {
-                viewModel.event.tickets.add(ticket)
+                viewModel.tickets.add(ticket)
                 callback.ticketComplete(ticket)
             } else if(viewModel.selectedTicket != null) {
                 viewModel.selectedTicket = null

@@ -34,8 +34,10 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
         val bundle = intent.extras
         if(bundle != null) {
             val event = bundle[AppContract.MY_EVENT_BUNDLE] as Event
+            val tickets = bundle[AppContract.TICKETS] as ArrayList<Ticket>
             createEvent.arguments = Bundle().apply {
                 putParcelable(AppContract.MY_EVENT_BUNDLE, event)
+                putParcelableArrayList(AppContract.TICKETS, tickets)
             }
         }
         fragManager.beginTransaction().replace(R.id.fragment_frame, createEvent, AppContract.CREATE_EVENT_TAG)

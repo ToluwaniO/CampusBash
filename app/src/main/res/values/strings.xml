@@ -187,4 +187,6 @@
     <string name="max_image_size">Max image size is 5MB</string>
     <string name="add_new_card">Add a new card</string>
     <string name="share_event">Share Event</string>
+    <string name="one_university_selected">1 university selected</string>
+    <string name="x_universities_selected">%1d universities selected</string>
 </resources>

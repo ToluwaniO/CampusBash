@@ -27,6 +27,7 @@ import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
 import kotlinx.coroutines.*
 import toluog.campusbash.model.Place
+import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.*
 import toluog.campusbash.view.viewmodel.ViewEventViewModel
 
@@ -34,6 +35,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var eventId: String = ""
     private var event: Event? = null
+    private var tickets = arrayListOf<Ticket>()
     private var place: Place? = null
     private var mMap: GoogleMap? = null
     private val TAG = ViewEventActivity::class.java.simpleName
@@ -55,7 +57,10 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         viewModel = ViewModelProviders.of(this).get(ViewEventViewModel::class.java)
         threadScope.launch {
             checkForDynamicLink()
-            withContext(Dispatchers.Main) { observeEvent() }
+            withContext(Dispatchers.Main) {
+                observeEvent()
+                observeTickets()
+            }
         }
     }
 
@@ -112,6 +117,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             R.id.action_edit -> {
                 val bundle = Bundle()
                 bundle.putParcelable(AppContract.MY_EVENT_BUNDLE, event)
+                bundle.putParcelableArrayList(AppContract.TICKETS, tickets)
                 startActivity(intentFor<CreateEventActivity>().putExtras(bundle))
             }
             R.id.action_dashboard -> {
@@ -135,47 +141,6 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         event_creator.text = getString(R.string.hosted_by_x, event.creator.name)
         event_time.text = Util.getPeriod(event.startTime, event.endTime)
 
-        if(event.tickets.isNotEmpty()) {
-            get_ticket_layout.visibility = View.VISIBLE
-        } else {
-            get_ticket_layout.visibility = View.GONE
-        }
-
-        when {
-            event.tickets.isEmpty() -> {
-                ticket_text.text = this.getString(R.string.free_event)
-            }
-            event.tickets.size == 1 && event.tickets[0].isVisible -> {
-                val ticket = event.tickets[0]
-                if(ticket.type == AppContract.TYPE_FREE) {
-                    ticket_text.text = this.getString(R.string.free_event)
-                } else {
-                    ticket_text.text = getString(R.string.price, event.tickets[0].currency, event.tickets[0].price)
-                }
-            }
-            else -> {
-                var min = event.tickets[0].price
-                var max = event.tickets[0].price
-                var currency = event.tickets[0].currency
-                event.tickets.forEach {
-                    if(it.price < min && it.isVisible) {
-                        min = it.price
-                    }
-                    if (it.price > max && it.isVisible) {
-                        max = it.price
-                        currency = it.currency
-                    }
-                }
-                Log.d(TAG, "$currency $max")
-
-                if(min < max) {
-                    ticket_text.text = getString(R.string.minPrice_to_maxPrice, currency, min, currency, max)
-                } else {
-                    ticket_text.text = getString(R.string.price, currency, max)
-                }
-            }
-        }
-
         see_more_button.setOnClickListener {
             startActivity(intentFor<SeeMoreActivity>().putExtras(
                     Bundle().apply {
@@ -196,6 +161,49 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun updateTickets(tickets: List<Ticket>) {
+        if(tickets.isNotEmpty()) {
+            get_ticket_layout.visibility = View.VISIBLE
+        } else {
+            get_ticket_layout.visibility = View.GONE
+        }
+
+        when {
+            tickets.isEmpty() -> {
+                ticket_text.text = this.getString(R.string.free_event)
+            }
+            tickets.size == 1 && tickets[0].isVisible -> {
+                val ticket = tickets[0]
+                if(ticket.type == AppContract.TYPE_FREE) {
+                    ticket_text.text = this.getString(R.string.free_event)
+                } else {
+                    ticket_text.text = getString(R.string.price, tickets[0].currency, tickets[0].price)
+                }
+            }
+            else -> {
+                var min = tickets[0].price
+                var max = tickets[0].price
+                var currency = tickets[0].currency
+                tickets.forEach {
+                    if(it.price < min && it.isVisible) {
+                        min = it.price
+                    }
+                    if (it.price > max && it.isVisible) {
+                        max = it.price
+                        currency = it.currency
+                    }
+                }
+                Log.d(TAG, "$currency $max")
+
+                if(min < max) {
+                    ticket_text.text = getString(R.string.minPrice_to_maxPrice, currency, min, currency, max)
+                } else {
+                    ticket_text.text = getString(R.string.price, currency, max)
+                }
+            }
+        }
+    }
+
     private fun observeEvent() {
         liveEvent?.observe(this, Observer { event ->
             this.event = event
@@ -204,6 +212,14 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                 observePlace(event.placeId)
             }
             invalidateOptionsMenu()
+        })
+    }
+
+    private fun observeTickets() {
+        viewModel.getTickets(eventId).observe(this, Observer {
+            this.tickets.clear()
+            this.tickets.addAll(it ?: emptyList())
+            updateTickets(it ?: emptyList())
         })
     }
 

@@ -11,6 +11,8 @@ import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.*
 import toluog.campusbash.data.*
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.Ticket
+import toluog.campusbash.utils.AppContract
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
@@ -19,6 +21,7 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
     private val firestore = FirebaseFirestore.getInstance()
     private val db = AppDatabase.getDbInstance(context)
     private var eventListener: ListenerRegistration? = null
+    private var ticketListener: ListenerRegistration? = null
     private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val froshGroup = MutableLiveData<Set<String>>()
 
@@ -60,6 +63,30 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
             }
         }
         PlaceUtil.savePlace(event.placeId, this@EventsDataSource.context)
+    }
+
+    fun getTicketData(eventId: String): LiveData<List<Ticket>> {
+        val tickets = MutableLiveData<List<Ticket>>()
+        ticketListener?.remove()
+        val ref = firestore.collection(AppContract.FIREBASE_EVENTS)
+                .document(eventId).collection(AppContract.FIREBASE_EVENT_TICKETS)
+        ticketListener = ref.addSnapshotListener { querySnapshot, err ->
+            if (err != null) {
+                Log.d(TAG, err.message)
+                return@addSnapshotListener
+            }
+            this.launch {
+                val tks = arrayListOf<Ticket>()
+                for (doc in querySnapshot?.documents ?: emptyList()) {
+                    val tk = doc.toObject(Ticket::class.java)
+                    if (tk != null) {
+                        tks.add(tk)
+                    }
+                }
+                tickets.postValue(tks)
+            }
+        }
+        return tickets
     }
 
     fun downloadEvent(eventId: String) {
@@ -113,6 +140,7 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
 
     override fun clear() {
         eventListener?.remove()
+        ticketListener?.remove()
         eventListener = null
         threadJob.cancel()
     }

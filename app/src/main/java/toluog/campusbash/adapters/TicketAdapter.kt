@@ -107,12 +107,12 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
         private fun updateMap(quantity: Int, ticket: Ticket) {
             when (quantity) {
                 0 -> {
-                    queryMap.remove(ticket.name)
-                    priceMap.remove(ticket.name)
+                    queryMap.remove(ticket.ticketId)
+                    priceMap.remove(ticket.ticketId)
                 }
                 else -> {
-                    queryMap[ticket.name] = quantity
-                    priceMap[ticket.name] = ticket.price * quantity
+                    queryMap[ticket.ticketId] = quantity
+                    priceMap[ticket.ticketId] = ticket.price * quantity
                 }
             }
             total = 0.0
