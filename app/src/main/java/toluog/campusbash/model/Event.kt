@@ -3,9 +3,7 @@ package toluog.campusbash.model
 import android.annotation.SuppressLint
 import android.arch.persistence.room.Embedded
 import android.arch.persistence.room.Entity
-import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
-import android.os.Parcel
 import android.os.Parcelable
 import android.support.annotation.Keep
 import com.google.firebase.firestore.Exclude
@@ -21,11 +19,11 @@ import toluog.campusbash.utils.AppContract
 @Parcelize
 data class Event(@PrimaryKey var eventId: String = "", var eventName: String = "", var eventType: String = "",
                  var description: String = "", @Embedded(prefix = "placeholderImage_") var placeholderImage: Media? = null,
-                 @Embedded(prefix = "eventVideo_") var eventVideo: Media? = null, var university: String = "",
+                 @Embedded(prefix = "eventVideo_") var eventVideo: Media? = null, @Exclude var university: String = "",
                  var startTime: Long = 0L, var endTime: Long = 0L, var timeZone: String = "",
-                 var placeId: String = "", var tickets: ArrayList<Ticket> = ArrayList(),
-                 @Embedded var creator: Creator = Creator(), var ticketsSold: Long = 0,
-                 @Exclude var address: String = "", var universities: ArrayList<String> = arrayListOf()): Parcelable {
+                 var placeId: String = "", @Embedded var creator: Creator = Creator(),
+                 var ticketsSold: Long = 0, @Exclude var address: String = "",
+                 var universities: ArrayList<String> = arrayListOf()): Parcelable {
 
     override fun equals(other: Any?): Boolean {
         val o = other as Event?
@@ -51,7 +49,6 @@ data class Event(@PrimaryKey var eventId: String = "", var eventName: String = "
         result = 31 * result + endTime.hashCode()
         result = 31 * result + timeZone.hashCode()
         result = 31 * result + placeId.hashCode()
-        result = 31 * result + tickets.hashCode()
         result = 31 * result + creator.hashCode()
         result = 31 * result + address.hashCode()
         return result

@@ -47,6 +47,8 @@ abstract class AppDatabase(): RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE ${AppContract.EVENT_TABLE} ADD COLUMN " +
                         " ${AppContract.UNIVERSITIES} TEXT NOT NULL")
+                database.execSQL("ALTER TABLE ${AppContract.EVENT_TABLE} DROP COLUMN " +
+                        " ${AppContract.TICKETS} TEXT NOT NULL")
             }
 
         }

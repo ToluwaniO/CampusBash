@@ -171,11 +171,11 @@ class CreateEventFragment : BaseFragment() {
             event_address.updateTextSelector(place.address, android.R.color.black)
         }
 
-        if(viewModel.event.tickets.size == 1) {
+        if(viewModel.tickets.size == 1) {
             event_tickets.updateTextSelector(getString(R.string.ticket_quantity_one), android.R.color.black)
-        } else if(viewModel.event.tickets.size > 1) {
+        } else if(viewModel.tickets.size > 1) {
             event_tickets.updateTextSelector(getString(R.string.ticket_quantity_with_params,
-                    viewModel.event.tickets.size), android.R.color.black)
+                    viewModel.tickets.size), android.R.color.black)
         }
         
         imagePicker = ImagePicker(activity, this@CreateEventFragment) { imageUri ->
@@ -429,11 +429,11 @@ class CreateEventFragment : BaseFragment() {
 
         updateAddress(event.placeId)
 
-        if(event.tickets.size == 1) {
+        if(viewModel.tickets.size == 1) {
             event_tickets.updateTextSelector(getString(R.string.ticket_quantity_one), android.R.color.black)
-        } else if(event.tickets.size > 1) {
+        } else if(viewModel.tickets.size > 1) {
             event_tickets.updateTextSelector(getString(R.string.ticket_quantity_with_params,
-                    viewModel.event.tickets.size), android.R.color.black)
+                    viewModel.tickets.size), android.R.color.black)
         }
 
     }
@@ -459,12 +459,11 @@ class CreateEventFragment : BaseFragment() {
             this.startTime = startTime
             this.endTime = endTime
             this.creator = AppContract.CREATOR
-            this.tickets = tickets
             this.timeZone = Calendar.getInstance().timeZone.displayName
             this.university = university
         }
 
-        Log.d(TAG, "${event.tickets}")
+        Log.d(TAG, "${viewModel.tickets}")
     }
 
     private fun validate(event: Event): Boolean {

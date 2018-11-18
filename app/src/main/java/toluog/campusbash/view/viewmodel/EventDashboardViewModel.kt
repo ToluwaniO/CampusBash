@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.Task
 import toluog.campusbash.data.datasource.EventsDataSource
 import toluog.campusbash.data.repository.EventDashboardRepository
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.Ticket
 import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.model.dashboard.UserTicket
 import toluog.campusbash.utils.FirebaseManager
@@ -21,6 +22,10 @@ class EventDashboardViewModel(app: Application): GeneralViewModel(app) {
             event = repository?.getEvent(eventId, app.applicationContext)
         }
         return event
+    }
+
+    fun getEventTickets(eventId: String): LiveData<List<Ticket>>? {
+        return repository?.getTickets(eventId, app.applicationContext)
     }
 
     fun getUsersWithTickets(eventId: String): LiveData<List<UserTicket>>? {

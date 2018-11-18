@@ -31,11 +31,11 @@ class CreateEventViewModel(app: Application) : GeneralViewModel(app){
     }
 
     fun deleteTicket(index: Int) {
-        event.tickets.removeAt(index)
+        tickets.removeAt(index)
     }
 
     fun addTicket(ticket: Ticket) {
-        event.tickets.add(ticket)
+        tickets.add(ticket)
     }
 
     fun getCurrencies() = generalRepository.getCurrencies()

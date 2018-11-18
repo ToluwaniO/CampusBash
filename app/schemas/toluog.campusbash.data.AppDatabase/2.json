@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "474d606946300ca81ca0148f31f573c4",
+    "identityHash": "c1ccb80214d87000f29e144207da8436",
     "entities": [
       {
         "tableName": "Events",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`eventId` TEXT NOT NULL, `eventName` TEXT NOT NULL, `eventType` TEXT NOT NULL, `description` TEXT NOT NULL, `university` TEXT NOT NULL, `startTime` INTEGER NOT NULL, `endTime` INTEGER NOT NULL, `timeZone` TEXT NOT NULL, `placeId` TEXT NOT NULL, `tickets` TEXT NOT NULL, `ticketsSold` INTEGER NOT NULL, `address` TEXT NOT NULL, `universities` TEXT NOT NULL, `placeholderImage_url` TEXT, `placeholderImage_path` TEXT, `placeholderImage_type` TEXT, `eventVideo_url` TEXT, `eventVideo_path` TEXT, `eventVideo_type` TEXT, `name` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `uid` TEXT NOT NULL, `stripeAccountId` TEXT, PRIMARY KEY(`eventId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`eventId` TEXT NOT NULL, `eventName` TEXT NOT NULL, `eventType` TEXT NOT NULL, `description` TEXT NOT NULL, `university` TEXT NOT NULL, `startTime` INTEGER NOT NULL, `endTime` INTEGER NOT NULL, `timeZone` TEXT NOT NULL, `placeId` TEXT NOT NULL, `ticketsSold` INTEGER NOT NULL, `address` TEXT NOT NULL, `universities` TEXT NOT NULL, `placeholderImage_url` TEXT, `placeholderImage_path` TEXT, `placeholderImage_type` TEXT, `eventVideo_url` TEXT, `eventVideo_path` TEXT, `eventVideo_type` TEXT, `name` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `uid` TEXT NOT NULL, `stripeAccountId` TEXT, PRIMARY KEY(`eventId`))",
         "fields": [
           {
             "fieldPath": "eventId",
@@ -59,12 +59,6 @@
           {
             "fieldPath": "placeId",
             "columnName": "placeId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "tickets",
-            "columnName": "tickets",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -327,7 +321,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"474d606946300ca81ca0148f31f573c4\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"c1ccb80214d87000f29e144207da8436\")"
     ]
   }
 }

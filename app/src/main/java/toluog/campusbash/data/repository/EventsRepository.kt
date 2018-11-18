@@ -22,10 +22,10 @@ class EventsRepository(val context: Context, override val coroutineContext: Coro
 
     fun getEvents(university: String): LiveData<List<Event>>? {
         val now = System.currentTimeMillis()
-        val query = hashSetOf(FirestoreQuery(FirestorePaths.UNIVERSITY, university,
-                FirestoreQueryType.EQUAL_TO), FirestoreQuery(FirestorePaths.END_TIME, now,
+        val query = hashSetOf(FirestoreQuery(FirestorePaths.UNIVERSITIES, university,
+                FirestoreQueryType.ARRAY_CONTAINS), FirestoreQuery(FirestorePaths.END_TIME, now,
                 FirestoreQueryType.GREATER_THAN_EQUAL_TO))
-        dataSource.listenForEvents(FirestorePaths.EVENTS_PATH, query)
+        dataSource.listenForEvents(FirestorePaths.EVENTS_PATH, query, university)
         return db?.eventDao()?.getEvents(university, now)
     }
 

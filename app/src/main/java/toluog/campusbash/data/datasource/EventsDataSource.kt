@@ -25,11 +25,11 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
     private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val froshGroup = MutableLiveData<Set<String>>()
 
-    fun listenForEvents(path: String, queries: Set<FirestoreQuery>) {
+    fun listenForEvents(path: String, queries: Set<FirestoreQuery>, university: String? = null) {
         eventListener?.remove()
         val ref = firestore.collection(path)
-        constructQuery(ref, queries)
-        eventListener = ref.addSnapshotListener { querySnapshot, e ->
+        val query = FirestoreUtils.buildQuery(ref, queries)
+        eventListener = query.addSnapshotListener { querySnapshot, e ->
             if (e != null) {
                 Log.d(TAG, e.message)
                 return@addSnapshotListener
@@ -38,6 +38,10 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
                 querySnapshot?.documentChanges?.forEach {
                     if(it.document.exists()) {
                         val event = it.document.toObject(Event::class.java)
+                        if (event.university.isNotBlank() && event.universities.isEmpty()) {
+                            event.universities.add(event.university)
+                        }
+                        event.university = university ?: ""
                         handleEventAction(event, it.type)
                     }
                 }
@@ -136,6 +140,13 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
             FirestoreQueryType.GREATER_THAN_EQUAL_TO -> ref.whereGreaterThanOrEqualTo(query.key, query.value ?: Any())
             FirestoreQueryType.LESS_THAN_EQUAL_TO -> ref.whereLessThanOrEqualTo(query.key, query.value ?: Any())
         }
+    }
+
+    private fun getUniversity(queries: Set<FirestoreQuery>): String? {
+        for (query in queries) {
+            if (query.key == "university") return query.value as String?
+        }
+        return null
     }
 
     override fun clear() {
