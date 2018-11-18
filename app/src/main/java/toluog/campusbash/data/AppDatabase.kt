@@ -46,9 +46,17 @@ abstract class AppDatabase(): RoomDatabase() {
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE ${AppContract.EVENT_TABLE} ADD COLUMN " +
-                        " ${AppContract.UNIVERSITIES} TEXT NOT NULL")
-                database.execSQL("ALTER TABLE ${AppContract.EVENT_TABLE} DROP COLUMN " +
-                        " ${AppContract.TICKETS} TEXT NOT NULL")
+                        " ${AppContract.UNIVERSITIES} TEXT NOT NULL DEFAULT '[]'")
+                database.execSQL("CREATE TABLE  ${AppContract.EVENT_TABLE}_backup (eventId TEXT NOT NULL," +
+                        " eventName TEXT NOT NULL, eventType TEXT NOT NULL, description TEXT NOT NULL," +
+                        " university TEXT NOT NULL, startTime INTEGER NOT NULL, endTime INTEGER NOT NULL," +
+                        " timeZone TEXT NOT NULL, placeId TEXT NOT NULL, ticketsSold INTEGER NOT NULL," +
+                        " address TEXT NOT NULL, universities TEXT NOT NULL, placeholderImage_url TEXT," +
+                        " placeholderImage_path TEXT, placeholderImage_type TEXT, eventVideo_url TEXT," +
+                        " eventVideo_path TEXT, eventVideo_type TEXT, name TEXT NOT NULL, imageUrl " +
+                        "TEXT NOT NULL, uid TEXT NOT NULL, stripeAccountId TEXT, PRIMARY KEY(eventId))")
+                database.execSQL("DROP TABLE ${AppContract.EVENT_TABLE}")
+                database.execSQL("ALTER TABLE ${AppContract.EVENT_TABLE}_backup RENAME TO ${AppContract.EVENT_TABLE}")
             }
 
         }
