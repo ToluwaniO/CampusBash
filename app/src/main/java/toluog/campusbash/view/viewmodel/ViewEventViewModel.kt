@@ -24,6 +24,8 @@ class ViewEventViewModel(app: Application): GeneralViewModel(app){
 
     fun getPlace(id: String) = repository.getPlace(id)
 
+    fun getTickets(eventId: String) = repository.getEventTickets(eventId)
+
     override fun onCleared() {
         repository.clear()
         super.onCleared()

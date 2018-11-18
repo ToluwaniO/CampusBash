@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData
 import com.google.firebase.dynamiclinks.ShortDynamicLink
+import com.google.firebase.firestore.DocumentReference
 import toluog.campusbash.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.functions.FirebaseFunctions
@@ -18,9 +19,14 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import org.jetbrains.anko.toast
 import org.json.JSONObject
 import toluog.campusbash.model.Creator
+import toluog.campusbash.model.Ticket
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -31,20 +37,61 @@ import kotlin.coroutines.suspendCoroutine
  */
 class FirebaseManager {
     var db: FirebaseFirestore? = null
+    private val threadJob = Dispatchers.IO
+    private val threadScope = CoroutineScope(threadJob)
     init {
         db = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
     }
 
-    fun addEvent(event: Event): Task<Void>? {
+    suspend fun addEvent(event: Event): FirebaseOperationResult {
         Log.d(TAG, "addEventCalled $event")
         val eventRef = db?.collection(AppContract.FIREBASE_EVENTS)
-        return if(TextUtils.isEmpty(event.eventId)){
-            val document = eventRef?.document()
+        return suspendCoroutine { continuation ->
+            val document = if (event.eventId.isBlank()) {
+                eventRef?.document()
+            } else {
+                db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)
+            }
             event.eventId = document?.id ?: ""
             document?.set(event)
-        } else{
-            db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)?.set(event)
+                    ?.addOnSuccessListener {
+                        continuation.resume(FirebaseOperationResult.Success)
+                    }
+                    ?.addOnFailureListener {
+                        continuation.resumeWithException(it)
+                    }
+            ?: FirebaseOperationResult.Error(Exception("An error occurred"))
+        }
+    }
+
+    suspend fun addTickets(tickets: ArrayList<Ticket>, eventId: String): FirebaseOperationResult {
+        Log.d(TAG, "addTicketsCalled $tickets")
+        val toWait = arrayListOf<Deferred<Unit>>()
+        for (ticket in tickets) {
+            if (ticket.ticketId.isNotBlank()) continue
+            val ref = db?.collection(AppContract.FIREBASE_EVENTS)?.document(eventId)
+                    ?.collection(AppContract.FIREBASE_EVENT_TICKETS)?.document()
+            if (ref != null) {
+                ticket.apply {
+                    this.ticketId = ref.id
+                    this.eventId = eventId
+                }
+                val def = threadScope.async { uploadTickets(ref, ticket) }
+                toWait.add(def)
+            }
+        }
+        for (d in toWait) d.await()
+        return FirebaseOperationResult.Success
+    }
+
+    private suspend fun uploadTickets(ref: DocumentReference, ticket: Ticket) {
+        return suspendCoroutine { continuation ->
+            ref.set(ticket).addOnSuccessListener {
+                continuation.resume(Unit)
+            }.addOnFailureListener {
+                continuation.resumeWithException(it)
+            }
         }
     }
 
@@ -153,6 +200,11 @@ class FirebaseManager {
         if(event == null) return null
         return db?.collection(AppContract.FIREBASE_EVENTS)?.document(event.eventId)?.collection("tickets")
                 ?.document()?.set(map)
+    }
+
+    sealed class FirebaseOperationResult {
+        object Success: FirebaseOperationResult()
+        data class Error(val exception: Exception): FirebaseOperationResult()
     }
 
     companion object {

@@ -34,8 +34,10 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
         val bundle = intent.extras
         if(bundle != null) {
             val event = bundle[AppContract.MY_EVENT_BUNDLE] as Event
+            val tickets = bundle[AppContract.TICKETS] as ArrayList<Ticket>
             createEvent.arguments = Bundle().apply {
                 putParcelable(AppContract.MY_EVENT_BUNDLE, event)
+                putParcelableArrayList(AppContract.TICKETS, tickets)
             }
         }
         fragManager.beginTransaction().replace(R.id.fragment_frame, createEvent, AppContract.CREATE_EVENT_TAG)
@@ -46,7 +48,7 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
         finish()
     }
 
-    override fun getTicketList(): ArrayList<Ticket> = viewModel.event.tickets
+    override fun getTicketList(): ArrayList<Ticket> = viewModel.tickets
 
     override fun createTicket() {
         fragManager.saveFragmentInstanceState(createEvent)
@@ -56,7 +58,7 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
 
     override fun ticketComplete(ticket: Ticket?) {
         Util.hideKeyboard(this)
-        Log.d(TAG, "${viewModel.event.tickets}")
+        Log.d(TAG, "${viewModel.tickets}")
         fragManager.beginTransaction().replace(R.id.fragment_frame, ViewTicketsFragment()).commit()
     }
 

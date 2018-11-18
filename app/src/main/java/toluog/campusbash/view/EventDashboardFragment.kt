@@ -46,12 +46,13 @@ class EventDashboardFragment : Fragment() {
     private val colors = arrayListOf<Int>()
 
     private var event: Event? = null
+    private val tickets = ArrayList<Ticket>()
     private val userTickets = arrayListOf<UserTicket>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            eventId = it.getString(AppContract.EVENT_ID)
+            eventId = it.getString(AppContract.EVENT_ID) ?: ""
         }
     }
 
@@ -74,6 +75,10 @@ class EventDashboardFragment : Fragment() {
             updateView()
         })
 
+        viewModel.getEventTickets(eventId)?.observe(this, Observer {
+
+        })
+
         viewModel.getUsersWithTickets(eventId)?.observe(this, Observer {
             userTickets.clear()
             if(it != null) {
@@ -84,16 +89,13 @@ class EventDashboardFragment : Fragment() {
     }
 
     private fun updateView() {
-        val e = event
         var totalMade = 0.0
         var ticketQuantity = 0L
         var ticketsSold = 0L
 
-        if(e != null && e.tickets.size > 0) {
-            e.tickets.forEach {
-                ticketsSold += it.ticketsSold
-                ticketQuantity += it.quantity
-            }
+        tickets.forEach {
+            ticketsSold += it.ticketsSold
+            ticketQuantity += it.quantity
         }
         userTickets.forEach {
             totalMade += it.totalPrice
@@ -168,13 +170,11 @@ class EventDashboardFragment : Fragment() {
             return ViewHolder(v)
         }
 
-        override fun getItemCount() = event?.tickets?.size ?: 0
+        override fun getItemCount() = tickets.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val ticket = event?.tickets?.get(position)
-            if(ticket != null) {
-                holder.bind(ticket)
-            }
+            val ticket = tickets.get(position)
+            holder.bind(ticket)
         }
 
         inner class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),

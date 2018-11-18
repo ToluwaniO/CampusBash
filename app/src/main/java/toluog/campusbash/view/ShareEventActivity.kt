@@ -40,6 +40,7 @@ class ShareEventActivity : AppCompatActivity() {
     private val threadJob = Dispatchers.Default
     private val threadScope = CoroutineScope(threadJob)
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share_event)
@@ -71,6 +72,7 @@ class ShareEventActivity : AppCompatActivity() {
         when(id) {
             android.R.id.home -> onBackPressed()
         }
+
         return true
     }
 

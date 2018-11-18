@@ -48,7 +48,7 @@ class ViewTicketsFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!).get(CreateEventViewModel::class.java)
 
-        tickets = viewModel.event.tickets
+        tickets = viewModel.tickets
         adapter = TicketsAdapter()
         val layoutManager = LinearLayoutManager(rootView.context)
         tickets_recycler.layoutManager = layoutManager

@@ -19,4 +19,5 @@ data class Ticket(var name: String = "", var description: String = "", var type:
                   var salesEndTime: Long = Calendar.getInstance().timeInMillis,
                   var timeZone: String = Calendar.getInstance().timeZone.displayName,
                   var minAllowedPerOrder: Int = 1, var maxAllowedPerOrder: Int = 10,
-                  var ticketsSold: Long = 0, var isVisible: Boolean = true) : Parcelable
+                  var ticketsSold: Long = 0, var isVisible: Boolean = true,
+                  var ticketId: String = "", var eventId: String = "") : Parcelable

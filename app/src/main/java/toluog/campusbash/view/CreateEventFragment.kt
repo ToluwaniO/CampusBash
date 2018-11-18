@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.create_event_layout.*
-import org.jetbrains.anko.support.v4.act
 import toluog.campusbash.R
 import java.lang.ClassCastException
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException
@@ -29,9 +28,7 @@ import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
-import org.jetbrains.anko.support.v4.indeterminateProgressDialog
-import org.jetbrains.anko.support.v4.selector
-import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.support.v4.*
 import toluog.campusbash.model.*
 import toluog.campusbash.utils.*
 import toluog.campusbash.view.viewmodel.CreateEventViewModel
@@ -42,7 +39,7 @@ import kotlin.collections.ArrayList
 /**
  * Created by oguns on 12/13/2017.
  */
-class CreateEventFragment : Fragment(){
+class CreateEventFragment : BaseFragment() {
 
     private val TAG = CreateEventFragment::class.java.simpleName
     private lateinit var rootView: View
@@ -115,7 +112,9 @@ class CreateEventFragment : Fragment(){
         if(isSaved) updateUi()
         else if(bundle != null) {
             val event = bundle[AppContract.MY_EVENT_BUNDLE] as Event
+            val tickets = bundle[AppContract.TICKETS] as ArrayList<Ticket>
             viewModel.event = event
+            viewModel.tickets = tickets
             updateUi()
         }
         Util.hideKeyboard(act)
@@ -141,6 +140,16 @@ class CreateEventFragment : Fragment(){
 
                 }
             }
+        } else if (requestCode == UNIVERSITY_REQUEST_CODE) {
+            viewModel.event.universities.clear()
+            when (resultCode) {
+                RESULT_OK -> {
+                    val unis = data?.extras?.get(AppContract.UNIVERSITIES) as Array<String>? ?: emptyArray()
+                    viewModel.event.universities.addAll(unis)
+                    updateUniversities(viewModel.event.universities)
+                    Log.d(TAG, "${viewModel.event.universities}")
+                }
+            }
         }
     }
 
@@ -152,9 +161,7 @@ class CreateEventFragment : Fragment(){
     private fun updateUi(context: Context){
         val place = viewModel.place
 
-        if(viewModel.event.university.isNotBlank()) {
-            event_university.updateTextSelector(viewModel.event.university, android.R.color.black)
-        }
+        updateUniversities(viewModel.event.universities)
 
         if(viewModel.event.eventType.isNotBlank()) {
             event_type.updateTextSelector(viewModel.event.eventType, android.R.color.black)
@@ -164,11 +171,11 @@ class CreateEventFragment : Fragment(){
             event_address.updateTextSelector(place.address, android.R.color.black)
         }
 
-        if(viewModel.event.tickets.size == 1) {
+        if(viewModel.tickets.size == 1) {
             event_tickets.updateTextSelector(getString(R.string.ticket_quantity_one), android.R.color.black)
-        } else if(viewModel.event.tickets.size > 1) {
+        } else if(viewModel.tickets.size > 1) {
             event_tickets.updateTextSelector(getString(R.string.ticket_quantity_with_params,
-                    viewModel.event.tickets.size), android.R.color.black)
+                    viewModel.tickets.size), android.R.color.black)
         }
         
         imagePicker = ImagePicker(activity, this@CreateEventFragment) { imageUri ->
@@ -216,10 +223,9 @@ class CreateEventFragment : Fragment(){
         }
 
         event_university.setOnClickListener {
-            selector(getString(R.string.select_university), universities) { _, i ->
-                viewModel.event.university = universities[i]
-                event_university.updateTextSelector(viewModel.event.university, android.R.color.black)
-            }
+            startActivityForResult(intentFor<SelectUniversityActivity>().apply {
+                putExtra(AppContract.UNIVERSITIES, viewModel.event.universities)
+            }, UNIVERSITY_REQUEST_CODE)
         }
 
         event_type.setOnClickListener {
@@ -293,6 +299,21 @@ class CreateEventFragment : Fragment(){
         viewModel.event.placeId = place.id
     }
 
+    private fun updateUniversities(unis: List<String>) {
+        when {
+            unis.isEmpty() -> {
+                event_university.updateTextSelector(getString(R.string.select_university), R.color.really_light_gray)
+            }
+            unis.size == 1 -> {
+                event_university.updateTextSelector(getString(R.string.one_university_selected), android.R.color.black)
+            }
+            else -> {
+                event_university.updateTextSelector(getString(R.string.x_universities_selected,
+                        unis.size), android.R.color.black)
+            }
+        }
+    }
+
     private fun save() {
         convertViewToEvent()
         val event = viewModel.event
@@ -320,7 +341,7 @@ class CreateEventFragment : Fragment(){
                 if(task.isSuccessful) {
                     val placeholder = Media(task.result.toString(), pair.first?.path ?: "", MEDIA_TYPE_IMAGE)
                     event.placeholderImage = placeholder
-                    completeSave(dialog, event)
+                    this.launch { completeSave(dialog, event) }
                 } else {
                     Log.d(TAG, task.exception?.message)
                 }
@@ -329,24 +350,36 @@ class CreateEventFragment : Fragment(){
         }
         else{
             Log.d(TAG, "uri is null")
-            completeSave(dialog, event)
+            this.launch { completeSave(dialog, event) }
         }
     }
 
-    private fun completeSave(dialog: ProgressDialog, event: Event) {
-        fbasemanager.addEvent(event)
-                ?.addOnSuccessListener {
+    private suspend fun completeSave(dialog: ProgressDialog, event: Event) {
+        val eventResult = fbasemanager.addEvent(event)
+        when (eventResult) {
+            is FirebaseManager.FirebaseOperationResult.Success -> {
+                saveTickets()
+                withContext(Dispatchers.Main) {
                     toast(R.string.event_saved)
                     viewModel.savePlace()
                     mCallback?.eventSaved(event)
                     dialog.dismiss()
                 }
-                ?.addOnFailureListener {
+            }
+            is FirebaseManager.FirebaseOperationResult.Error -> {
+                withContext(Dispatchers.Main) {
                     toast(R.string.event_save_failed)
                     Log.d(TAG, "$event")
                     Log.d(TAG, "Failed to save event")
-                    Log.d(TAG, it.message)
+                    Log.d(TAG, eventResult.exception.message)
                 }
+            }
+        }
+    }
+
+    private suspend fun saveTickets() {
+        if (viewModel.tickets.isEmpty()) return
+        fbasemanager.addTickets(viewModel.tickets, viewModel.event.eventId)
     }
 
     override fun onAttach(context: Context?) {
@@ -373,6 +406,7 @@ class CreateEventFragment : Fragment(){
         event_end_date.text = Util.formatDate(endCalendar)
         event_end_time.text = Util.formatTime(endCalendar)
         event_description.setText(event.description)
+        updateUniversities(viewModel.event.universities)
 
         if(event.eventType.isNotBlank()) {
             event_type.updateTextSelector(event.eventType, android.R.color.black)
@@ -395,12 +429,13 @@ class CreateEventFragment : Fragment(){
 
         updateAddress(event.placeId)
 
-        if(event.tickets.size == 1) {
+        if(viewModel.tickets.size == 1) {
             event_tickets.updateTextSelector(getString(R.string.ticket_quantity_one), android.R.color.black)
-        } else if(event.tickets.size > 1) {
+        } else if(viewModel.tickets.size > 1) {
             event_tickets.updateTextSelector(getString(R.string.ticket_quantity_with_params,
-                    viewModel.event.tickets.size), android.R.color.black)
+                    viewModel.tickets.size), android.R.color.black)
         }
+
     }
 
     private fun convertViewToEvent() {
@@ -409,7 +444,7 @@ class CreateEventFragment : Fragment(){
         val eventType = event_type.text.toString()
         val startTime = startCalendar.timeInMillis
         val endTime = endCalendar.timeInMillis
-        val tickets = mCallback?.getTicketList() ?: ArrayList<Ticket>()
+        val tickets = mCallback?.getTicketList() ?: ArrayList()
 
         Log.d(TAG, "$tickets")
         val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
@@ -424,12 +459,11 @@ class CreateEventFragment : Fragment(){
             this.startTime = startTime
             this.endTime = endTime
             this.creator = AppContract.CREATOR
-            this.tickets = tickets
             this.timeZone = Calendar.getInstance().timeZone.displayName
             this.university = university
         }
 
-        Log.d(TAG, "${event.tickets}")
+        Log.d(TAG, "${viewModel.tickets}")
     }
 
     private fun validate(event: Event): Boolean {
@@ -521,5 +555,6 @@ class CreateEventFragment : Fragment(){
 
     companion object {
         private const val MEDIA_TYPE_IMAGE = "image"
+        const val UNIVERSITY_REQUEST_CODE = 3438
     }
 }

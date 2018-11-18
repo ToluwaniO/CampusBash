@@ -26,4 +26,17 @@ class EventConverter{
         val gson = Gson()
         return gson.fromJson(tickets, listType)
     }
+
+    @TypeConverter
+    fun getUniversitiesString(universities: ArrayList<String>): String{
+        val gson = Gson()
+        return gson.toJson(universities)
+    }
+
+    @TypeConverter
+    fun getUniversitiesList(universities: String):ArrayList<String>{
+        val listType = object : TypeToken<ArrayList<String>>() {}.type
+        val gson = Gson()
+        return gson.fromJson(universities, listType)
+    }
 }

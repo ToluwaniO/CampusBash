@@ -13,6 +13,7 @@ import toluog.campusbash.model.Ticket
 class CreateEventViewModel(app: Application) : GeneralViewModel(app){
 
     var event = Event()
+    var tickets = ArrayList<Ticket>()
     var imageUri: Uri? = null
     var place: Place? = null
     var ticket: Ticket? = null
@@ -30,16 +31,16 @@ class CreateEventViewModel(app: Application) : GeneralViewModel(app){
     }
 
     fun deleteTicket(index: Int) {
-        event.tickets.removeAt(index)
+        tickets.removeAt(index)
     }
 
     fun addTicket(ticket: Ticket) {
-        event.tickets.add(ticket)
+        tickets.add(ticket)
     }
 
     fun getCurrencies() = generalRepository.getCurrencies()
 
-    fun getUniversities(country: String) = generalRepository.getUniversities(country)
+    fun getUniversities(country: String) = generalRepository.getUnis(country)
 
     fun getUser(uid: String) = GeneralDataSource.getUser(uid)
 

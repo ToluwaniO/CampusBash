@@ -133,7 +133,8 @@
         <activity android:name=".view.NoNetworkActivity" />
         <activity android:name=".view.ImageViewerActivity" />
         <activity android:name=".view.AddCardActivity" />
-        <activity android:name=".view.ShareEventActivity"></activity>
+        <activity android:name=".view.ShareEventActivity" />
+        <activity android:name=".view.SelectUniversityActivity"></activity>
     </application>
 
 </manifest>

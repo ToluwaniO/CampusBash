@@ -11,6 +11,8 @@ import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.*
 import toluog.campusbash.data.*
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.Ticket
+import toluog.campusbash.utils.AppContract
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
@@ -19,14 +21,15 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
     private val firestore = FirebaseFirestore.getInstance()
     private val db = AppDatabase.getDbInstance(context)
     private var eventListener: ListenerRegistration? = null
+    private var ticketListener: ListenerRegistration? = null
     private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val froshGroup = MutableLiveData<Set<String>>()
 
-    fun listenForEvents(path: String, queries: Set<FirestoreQuery>) {
+    fun listenForEvents(path: String, queries: Set<FirestoreQuery>, university: String? = null) {
         eventListener?.remove()
         val ref = firestore.collection(path)
-        constructQuery(ref, queries)
-        eventListener = ref.addSnapshotListener { querySnapshot, e ->
+        val query = FirestoreUtils.buildQuery(ref, queries)
+        eventListener = query.addSnapshotListener { querySnapshot, e ->
             if (e != null) {
                 Log.d(TAG, e.message)
                 return@addSnapshotListener
@@ -35,6 +38,10 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
                 querySnapshot?.documentChanges?.forEach {
                     if(it.document.exists()) {
                         val event = it.document.toObject(Event::class.java)
+                        if (event.university.isNotBlank() && event.universities.isEmpty()) {
+                            event.universities.add(event.university)
+                        }
+                        event.university = university ?: ""
                         handleEventAction(event, it.type)
                     }
                 }
@@ -60,6 +67,30 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
             }
         }
         PlaceUtil.savePlace(event.placeId, this@EventsDataSource.context)
+    }
+
+    fun getTicketData(eventId: String): LiveData<List<Ticket>> {
+        val tickets = MutableLiveData<List<Ticket>>()
+        ticketListener?.remove()
+        val ref = firestore.collection(AppContract.FIREBASE_EVENTS)
+                .document(eventId).collection(AppContract.FIREBASE_EVENT_TICKETS)
+        ticketListener = ref.addSnapshotListener { querySnapshot, err ->
+            if (err != null) {
+                Log.d(TAG, err.message)
+                return@addSnapshotListener
+            }
+            this.launch {
+                val tks = arrayListOf<Ticket>()
+                for (doc in querySnapshot?.documents ?: emptyList()) {
+                    val tk = doc.toObject(Ticket::class.java)
+                    if (tk != null) {
+                        tks.add(tk)
+                    }
+                }
+                tickets.postValue(tks)
+            }
+        }
+        return tickets
     }
 
     fun downloadEvent(eventId: String) {
@@ -111,8 +142,16 @@ class EventsDataSource(val context: Context, override val coroutineContext: Coro
         }
     }
 
+    private fun getUniversity(queries: Set<FirestoreQuery>): String? {
+        for (query in queries) {
+            if (query.key == "university") return query.value as String?
+        }
+        return null
+    }
+
     override fun clear() {
         eventListener?.remove()
+        ticketListener?.remove()
         eventListener = null
         threadJob.cancel()
     }

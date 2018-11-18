@@ -42,7 +42,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private var tokenId: String? = null
     private var user: LiveData<Map<String, Any>>? = null
     private lateinit var pleaseWait: ProgressDialog
-    private var currency = "$"
+    private var currency: String? = null
     private var breakdown = TicketPriceBreakdown()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,19 +64,23 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         val bundle = intent.extras
         eventId = bundle?.getString(AppContract.MY_EVENT_BUNDLE) ?: ""
         val viewModel: ViewEventViewModel = ViewModelProviders.of(this).get(ViewEventViewModel::class.java)
-        viewModel.getEvent(eventId)?.observe(this, Observer { event ->
-            if(event != null) {
-                for (t in event.tickets) {
+        viewModel.getTickets(eventId).observe(this, Observer { tickets ->
+            if (tickets != null) {
+                for (t in tickets) {
                     if (t.currency.isNotBlank()) {
                         currency = t.currency
                         break
                     }
                 }
+                this.tickets.clear()
+                tickets.filter { it.isVisible }.forEach { this.tickets.add(it) }
+                adapter.notifyDataSetChanged()
+            }
+        })
+        viewModel.getEvent(eventId)?.observe(this, Observer { event ->
+            if(event != null) {
                 this.event = event
                 Log.d(TAG, "$event")
-                tickets.clear()
-                event.tickets.filter { it.isVisible }.forEach { tickets.add(it) }
-                adapter.notifyDataSetChanged()
             }
         })
         user = viewModel.getUser()
@@ -169,30 +173,14 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             val quantity = map[key] as Int
             totalQuantity += quantity
         }
-        val currency = getCurrency()
         if(currency != null) {
-            purchaseMap[AppContract.CURRENCY] = currency
+            purchaseMap[AppContract.CURRENCY] = currency ?: ""
         }
         purchaseMap[AppContract.TICKETS] = map
         purchaseMap[AppContract.QUANTITY] = totalQuantity
         purchaseMap[AppContract.TOTAL] = breakdown.totalFee
         purchaseMap[AppContract.BREAKDOWN] = breakdown.toMap()
         return purchaseMap
-    }
-
-    private fun saveData(map: Map<String, Any>){
-        val task = fbaseManager.buyTicket(event, map)
-        Log.d(TAG, "$map")
-        task?.addOnSuccessListener {
-            event?.let { ev -> Analytics.logTicketBought(ev) }
-            longToast(R.string.ticket_purchased)
-            finish()
-        }?.addOnFailureListener {
-            event?.let { ev -> Analytics.logTicketBoughtFailed(ev) }
-            longToast(R.string.could_not_purchase_ticket)
-            Log.e(TAG, "Error saving data\nerror -> ${it.message}")
-            finish()
-        }
     }
 
     private fun buyTickets(tokenId: String?, newCard: Boolean) {
@@ -232,35 +220,19 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
         }
     }
 
-    private fun getPriceFromName(name: String): Double {
-        var price = 0.0
-        for (t in tickets) {
-            if(t.name == name) {
-                price = t.price
-            }
+    private fun saveData(map: Map<String, Any>){
+        val task = fbaseManager.buyTicket(event, map)
+        Log.d(TAG, "$map")
+        task?.addOnSuccessListener {
+            event?.let { ev -> Analytics.logTicketBought(ev) }
+            longToast(R.string.ticket_purchased)
+            finish()
+        }?.addOnFailureListener {
+            event?.let { ev -> Analytics.logTicketBoughtFailed(ev) }
+            longToast(R.string.could_not_purchase_ticket)
+            Log.e(TAG, "Error saving data\nerror -> ${it.message}")
+            finish()
         }
-        return price
-    }
-
-    private fun getCurrency(): String? {
-        val tickets = event?.tickets
-        if(tickets != null) {
-            for (i in tickets) {
-                if(i.type == AppContract.TYPE_PAID) return i.currency
-            }
-        }
-        return null
-    }
-
-    private fun convertBigDecimalToDoubleMap(map: HashMap<String, BigDecimal>): HashMap<String, Double> {
-        val temp = HashMap<String, Double>()
-        for (key in map.keys) {
-            val bd = map[key]
-            if(bd != null) {
-                temp[key] = bd.toDouble()
-            }
-        }
-        return temp
     }
 
 }

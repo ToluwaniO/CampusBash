@@ -21,7 +21,7 @@ class TicketsDataSource(override val coroutineContext: CoroutineContext) : DataS
 
     fun initListener(uid: String){
         Log.d(TAG, "initListener")
-
+        listener?.remove()
         val query = firestore.collection(AppContract.FIREBASE_USER_TICKETS)
         listener = query.whereEqualTo(AppContract.BUYER_ID, uid)
             .addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
@@ -54,7 +54,6 @@ class TicketsDataSource(override val coroutineContext: CoroutineContext) : DataS
         if(doc["eventId"] == null) return false
         if(doc["eventName"] == null) return false
         if(doc["eventTime"] == null) return false
-        if(doc["placeholderImage"] == null) return false
         if(doc["currency"] == null) return false
         if(doc["quantity"] == null) return false
         if(doc["ticketCodes"] == null) return false

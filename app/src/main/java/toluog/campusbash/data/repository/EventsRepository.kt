@@ -8,6 +8,7 @@ import toluog.campusbash.data.FirestoreQuery
 import toluog.campusbash.data.FirestoreQueryType
 import toluog.campusbash.data.datasource.EventsDataSource
 import toluog.campusbash.model.Event
+import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.FirebaseManager
 import kotlin.coroutines.CoroutineContext
 
@@ -21,10 +22,10 @@ class EventsRepository(val context: Context, override val coroutineContext: Coro
 
     fun getEvents(university: String): LiveData<List<Event>>? {
         val now = System.currentTimeMillis()
-        val query = hashSetOf(FirestoreQuery(FirestorePaths.UNIVERSITY, university,
-                FirestoreQueryType.EQUAL_TO), FirestoreQuery(FirestorePaths.END_TIME, now,
+        val query = hashSetOf(FirestoreQuery(FirestorePaths.UNIVERSITIES, university,
+                FirestoreQueryType.ARRAY_CONTAINS), FirestoreQuery(FirestorePaths.END_TIME, now,
                 FirestoreQueryType.GREATER_THAN_EQUAL_TO))
-        dataSource.listenForEvents(FirestorePaths.EVENTS_PATH, query)
+        dataSource.listenForEvents(FirestorePaths.EVENTS_PATH, query, university)
         return db?.eventDao()?.getEvents(university, now)
     }
 
@@ -34,6 +35,8 @@ class EventsRepository(val context: Context, override val coroutineContext: Coro
         myDataSource.listenForEvents(FirestorePaths.EVENTS_PATH, query)
         return db?.eventDao()?.getMyEvents(uid)
     }
+
+    fun getEventTickets(eventId: String) = dataSource.getTicketData(eventId)
 
     fun getEventsWithQueryAndType(name: String, type: String, time: Long) =
             db?.eventDao()?.getEventsWithQueryAndType(name, type, time)

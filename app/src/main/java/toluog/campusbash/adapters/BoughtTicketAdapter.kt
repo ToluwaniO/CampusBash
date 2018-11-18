@@ -36,7 +36,7 @@ class BoughtTicketAdapter(var tickets: List<BoughtTicket>, var context: Context?
     class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView), LayoutContainer {
         fun bind(ticket: BoughtTicket, listener: TicketListener, context: Context?) {
             if(ticket.ticketCodes.isNotEmpty()) {
-                event_ticket.loadImage(ticket.placeholderImage.url)
+                event_ticket.loadImage(ticket.placeholderImage?.url ?: containerView.context.getDrawable(R.drawable.default_event_background))
             }
             event_name.text = ticket.eventName
             tickets_number.text = if(ticket.ticketCodes.size > 1) {

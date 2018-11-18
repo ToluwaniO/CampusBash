@@ -23,11 +23,13 @@ class GeneralRepository(val context: Context, override val coroutineContext: Cor
     private val db = AppDatabase.getDbInstance(context)
     private val ticketsDataSource = TicketsDataSource(coroutineContext)
 
-    fun listenForUniversities() {
+    private fun listenForUniversities() {
         UniversityDataSource(context, coroutineContext).listenToUniversities()
     }
 
     fun getUniversities(country: String) = db?.universityDao()?.getUniversities(country)
+
+    fun getUniversities() = db?.universityDao()?.getUniversities()
 
     fun getCurrencies() = db?.currencyDao()?.getCurrencies()
 
@@ -48,7 +50,7 @@ class GeneralRepository(val context: Context, override val coroutineContext: Cor
 
     fun getUnis(country: String): LiveData<List<University>>? {
         Log.d(TAG, "get unis called")
-        UniversityDataSource(context, coroutineContext).listenToUniversities()
+        listenForUniversities()
         return db?.universityDao()?.getUniversities(country)
     }
 
