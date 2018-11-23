@@ -378,7 +378,16 @@ class CreateEventFragment : BaseFragment() {
     }
 
     private suspend fun saveTickets() {
-        if (viewModel.tickets.isEmpty()) return
+        if (viewModel.tickets.isEmpty()) {
+            viewModel.tickets.add(
+                    Ticket().apply {
+                        this.name = "FREE"
+                        this.quantity = Long.MAX_VALUE
+                        this.description = "Free ticket"
+                        this.type = "free"
+                    }
+            )
+        }
         fbasemanager.addTickets(viewModel.tickets, viewModel.event.eventId)
     }
 
