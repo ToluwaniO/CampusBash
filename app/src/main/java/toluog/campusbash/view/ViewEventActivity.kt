@@ -258,9 +258,4 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onDestroy()
     }
 
-    companion object {
-        private const val DEBUG_DYNAMIC_LINK = "m88p6.app.goo.gl"
-        private const val PROD_DYNAMIC_URL = "hx87a.app.goo.gl"
-        private const val CAMPUSBASH_LINK = "campusbash-e0ca8.firebaseapp.com"
-    }
 }
