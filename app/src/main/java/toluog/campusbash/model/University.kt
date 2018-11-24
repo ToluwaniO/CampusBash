@@ -1,8 +1,8 @@
 package toluog.campusbash.model
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
-import android.support.annotation.Keep
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.annotation.Keep
 import toluog.campusbash.utils.AppContract
 
 /**

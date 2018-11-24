@@ -1,8 +1,8 @@
 package toluog.campusbash.view.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import android.util.Log
 import com.google.android.gms.ads.formats.NativeAd
 import kotlinx.coroutines.launch

@@ -1,7 +1,7 @@
 package toluog.campusbash.model
 
 import android.os.Parcelable
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import com.google.firebase.firestore.PropertyName
 import kotlinx.android.parcel.Parcelize
 

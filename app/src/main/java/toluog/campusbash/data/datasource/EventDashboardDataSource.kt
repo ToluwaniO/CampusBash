@@ -1,7 +1,7 @@
 package toluog.campusbash.data.datasource
 
-import android.arch.lifecycle.MutableLiveData
-import android.support.v4.util.ArrayMap
+import androidx.lifecycle.MutableLiveData
+import androidx.collection.ArrayMap
 import android.util.Log
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.*

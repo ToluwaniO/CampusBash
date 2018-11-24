@@ -2,7 +2,7 @@ package toluog.campusbash.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import com.stripe.android.model.Card
 import com.stripe.android.model.CustomerSource
 import toluog.campusbash.utils.Util

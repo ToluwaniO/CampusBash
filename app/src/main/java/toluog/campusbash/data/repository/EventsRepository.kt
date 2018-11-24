@@ -1,6 +1,6 @@
 package toluog.campusbash.data.repository
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.content.Context
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.data.FirestorePaths

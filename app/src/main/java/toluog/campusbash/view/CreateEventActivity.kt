@@ -1,11 +1,12 @@
 package toluog.campusbash.view
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import org.jetbrains.anko.alert
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
@@ -13,6 +14,7 @@ import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
+import toluog.campusbash.utils.alertDialog
 import toluog.campusbash.view.viewmodel.CreateEventViewModel
 import java.math.BigDecimal
 
@@ -105,9 +107,12 @@ class CreateEventActivity : AppCompatActivity(), CreateEventFragment.CreateEvent
     }
 
     private fun closeEventCreator() {
-        val dialog = alert(getString(R.string.sure_you_want_to_leave)) {
-            positiveButton(getString(R.string.yes)) { finish() }
-            negativeButton(getString(R.string.no)) { it.dismiss() }
+        val dialog = alertDialog(getString(R.string.sure_you_want_to_leave))
+        dialog.positiveButton(getString(R.string.yes)) {
+            finish()
+        }
+        dialog.negativeButton(getString(R.string.no)) {
+            it.dismiss()
         }
         dialog.show()
     }

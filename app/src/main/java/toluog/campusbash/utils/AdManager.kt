@@ -1,6 +1,6 @@
 package toluog.campusbash.utils
 
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.content.Context
 import android.util.Log
 import com.bumptech.glide.Glide.init
