@@ -1,6 +1,6 @@
 package toluog.campusbash.data.network
 
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import toluog.campusbash.BuildConfig
 
 @Keep

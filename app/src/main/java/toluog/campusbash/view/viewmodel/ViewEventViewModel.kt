@@ -1,7 +1,7 @@
 package toluog.campusbash.view.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import toluog.campusbash.data.repository.EventsRepository
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.view.viewmodel.GeneralViewModel

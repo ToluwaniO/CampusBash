@@ -1,7 +1,7 @@
 package toluog.campusbash.view.viewmodel
 
 import android.app.Application
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import com.google.android.gms.tasks.Task
 import toluog.campusbash.data.datasource.EventsDataSource
 import toluog.campusbash.data.repository.EventDashboardRepository

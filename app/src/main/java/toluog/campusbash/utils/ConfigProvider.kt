@@ -1,7 +1,7 @@
 package toluog.campusbash.utils
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import android.support.annotation.NonNull
+import androidx.annotation.NonNull
 import android.util.Log
 import com.bumptech.glide.Glide.init
 import com.google.android.gms.tasks.OnCompleteListener

@@ -1,6 +1,6 @@
 package toluog.campusbash.data.repository
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.content.Context
 import android.util.Log
 import org.jetbrains.anko.doAsync

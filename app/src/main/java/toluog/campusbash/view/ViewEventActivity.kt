@@ -1,10 +1,10 @@
 package toluog.campusbash.view
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.ViewModelProviders
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu

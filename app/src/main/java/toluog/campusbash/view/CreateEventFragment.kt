@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.View
 import com.myhexaville.smartimagepicker.ImagePicker
 import android.app.Activity.RESULT_OK
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -21,7 +21,7 @@ import toluog.campusbash.utils.AppContract.Companion.PLACE_AUTOCOMPLETE_REQUEST_
 import com.google.android.gms.location.places.Place
 import android.app.Activity.RESULT_CANCELED
 import android.app.ProgressDialog
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import android.net.Uri
 import android.widget.ImageView
 import com.crashlytics.android.Crashlytics
