@@ -36,7 +36,7 @@ class SetupProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setup_profile)
-        dialog = indeterminateProgressDialog(message = R.string.please_wait)
+        dialog = indeterminateProgressDialog(message = "")
         dialog.dismiss()
         viewModel = ViewModelProviders.of(this).get(GeneralViewModel::class.java)
         val user = FirebaseManager.getUser()

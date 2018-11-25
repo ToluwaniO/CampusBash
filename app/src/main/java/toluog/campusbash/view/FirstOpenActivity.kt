@@ -22,7 +22,7 @@ import toluog.campusbash.view.viewmodel.GeneralViewModel
 
 
 class FirstOpenActivity : AppCompatActivity(), PickUniversityFragment.PickUniversityListener,
-PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInteractionListener{
+        NoNetworkFragment.OnFragmentInteractionListener{
 
     private val fragManager = supportFragmentManager
     private lateinit var viewModel: GeneralViewModel
@@ -34,7 +34,6 @@ PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInterac
     private var country: String? = null
     private var university: String? = null
     private var prefs: List<String>? = null
-    private val uOttawa = "University of Ottawa"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,29 +45,12 @@ PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInterac
     }
 
     override fun universitySelectionDone(country: String, name: String) {
-        if (name == uOttawa) {
-            viewModel.getFroshGroup()
-        }
         Util.setPrefString(act, AppContract.PREF_UNIVERSITY_KEY, name)
         Util.setPrefString(act, AppContract.PREF_COUNTRY_KEY, country)
         user?.let {
             fbManager.updateProfileField(AppContract.FIREBASE_USER_UNIVERSITY, name, it)
             fbManager.updateProfileField(AppContract.FIREBASE_USER_COUNTRY, country, it)
         }
-        if(prefs == null) {
-            count++
-            fragManager.beginTransaction().replace(R.id.fragment_frame, PickEventTypeFragment(), null).commit()
-        } else {
-            Util.setPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY, 1)
-            startActivity(intentFor<SetupProfileActivity>())
-            finish()
-        }
-    }
-
-    override fun eventsPickDone(selected: Set<String>) {
-        Util.setPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY, selected)
-        user?.let { fbManager.updateProfileField(AppContract.FIREBASE_USER_PREFERENCES, selected.toList(), it) }
-        Log.d(TAG, "EventSet $selected")
         Util.setPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY, 1)
         startActivity(intentFor<SetupProfileActivity>())
         finish()
