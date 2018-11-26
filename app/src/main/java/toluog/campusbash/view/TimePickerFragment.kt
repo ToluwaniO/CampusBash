@@ -2,18 +2,11 @@ package toluog.campusbash.view
 
 import android.app.Dialog
 import android.app.TimePickerDialog
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import android.text.format.DateFormat
 import android.widget.TimePicker
-import android.text.format.DateFormat.is24HourFormat
-import android.util.Log
 import java.util.*
-import toluog.campusbash.view.TimePickerFragment.TimeSetListener
-
-
-
 
 /**
  * Created by oguns on 12/13/2017.

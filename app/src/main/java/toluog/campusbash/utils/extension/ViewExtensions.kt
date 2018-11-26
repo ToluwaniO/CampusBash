@@ -1,21 +1,29 @@
-package toluog.campusbash.utils
+package toluog.campusbash.utils.extension
 
+import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.KeyEvent
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import org.jetbrains.anko.textColor
-import toluog.campusbash.R
+import com.google.android.material.snackbar.Snackbar
+
+inline val Fragment.act: Activity
+    get() = this.requireActivity()
 
 fun ImageView.loadImage(url: Any?) {
     Glide.with(context).load(url).into(this)
@@ -39,33 +47,76 @@ fun ImageView.lazyLoadImage(act: AppCompatActivity, url: Any?) {
 
 fun TextView.updateTextSelector(message: String, color: Int) {
     text = message
-    textColor = context.resources.getColor(color)
+    this.setTextColor(ContextCompat.getColor(context, color))
 }
 
-fun Context.alertDialog(msg: String, title: String? = null): AndroidAlertBuilder {
+fun Context.alertDialog(msg: String? = null, title: String? = null): AndroidAlertBuilder {
     return AndroidAlertBuilder(this).apply {
         if (title != null) {
             this.title = title
         }
-        this.message = msg
+        if (msg != null) {
+            this.message = msg
+        }
     }
 }
 
+fun View.longSnackbar(message: Int) = Snackbar
+        .make(this, this.context.getString(message), Snackbar.LENGTH_LONG).show()
+
+fun View.snackbar(message: Int) = Snackbar
+        .make(this, this.context.getString(message), Snackbar.LENGTH_SHORT).show()
+
+fun View.indefiniteSnackbar(message: Int) = Snackbar
+        .make(this, this.context.getString(message), Snackbar.LENGTH_INDEFINITE).show()
+
+
+fun Context.toast(resource: Int) = Toast.makeText(this, this.getString(resource), Toast.LENGTH_SHORT)
+
+fun Context.longToast(resource: Int) = Toast.makeText(this, this.getString(resource), Toast.LENGTH_LONG)
+
+fun Context.progressDialog(
+        message: CharSequence? = null,
+        title: CharSequence? = null,
+        init: (ProgressDialog.() -> Unit)? = null
+) = progressDialog(false, message, title, init)
+
+fun Context.indeterminateProgressDialog(
+        message: Int? = null,
+        title: Int? = null,
+        init: (ProgressDialog.() -> Unit)? = null
+) = progressDialog(true, message?.let { getString(it) }, title?.let { getString(it) }, init)
+
+private fun Context.progressDialog(
+        indeterminate: Boolean,
+        message: CharSequence? = null,
+        title: CharSequence? = null,
+        init: (ProgressDialog.() -> Unit)? = null
+) = ProgressDialog(this, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT).apply {
+    isIndeterminate = indeterminate
+    if (!indeterminate) setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+    if (message != null) setMessage(message)
+    if (title != null) setTitle(title)
+    if (init != null) init()
+    show()
+}
+
+
 class AndroidAlertBuilder(ctx: Context) {
-    val builder = AlertDialog.Builder(ctx, R.style.AlertDialogTheme)
+    val builder = AlertDialog.Builder(ctx)
     var icon: Drawable? = null
         set(value) {
             field = value
             builder.setIcon(field)
         }
 
-    var message: CharSequence = ""
+    var message: CharSequence? = null
         set(value) {
             field = value
             builder.setMessage(field)
         }
 
-    var title: CharSequence = ""
+    var title: CharSequence? = null
         set(value) {
             field = value
             builder.setTitle(field)
@@ -105,6 +156,9 @@ class AndroidAlertBuilder(ctx: Context) {
         builder.setPositiveButton(buttonText) { dialog, _ -> onClicked(dialog) }
     }
 
-    fun show() = builder.show()
+    fun show(): AlertDialog {
+        build()
+        return builder.show()
+    }
 
 }

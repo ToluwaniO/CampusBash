@@ -1,7 +1,6 @@
 package toluog.campusbash.view
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.ProgressDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -14,32 +13,25 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.crashlytics.android.Crashlytics
 import com.stripe.android.Stripe
 import com.stripe.android.TokenCallback
 import com.stripe.android.model.Card
 import com.stripe.android.model.Token
 import kotlinx.android.synthetic.main.activity_card_payment.*
-import org.jetbrains.anko.design.snackbar
-import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import java.lang.Exception
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
-import com.stripe.android.CustomerSession
-import com.stripe.android.PaymentSession
-import com.stripe.android.model.Customer
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.add_new_card_button.*
 import kotlinx.android.synthetic.main.credit_card_view.*
 import kotlinx.coroutines.*
-import org.jetbrains.anko.*
 import toluog.campusbash.model.BashCard
 import toluog.campusbash.model.TicketPriceBreakdown
 import toluog.campusbash.utils.CampusBash
-import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
+import toluog.campusbash.utils.extension.*
 import toluog.campusbash.view.viewmodel.GeneralViewModel
 import java.util.*
 import kotlin.collections.ArrayList
@@ -50,7 +42,7 @@ class CardPaymentActivity : AppCompatActivity() {
     private val TAG = CardPaymentActivity::class.java.simpleName
     private val LOAD_PAYMENT_DATA_REQUEST_CODE = 3731
     private lateinit var paymentsClient: PaymentsClient
-    private lateinit var googlePayAlert: AlertBuilder<AlertDialog>
+    private lateinit var googlePayAlert: AndroidAlertBuilder
     private lateinit var currency: String
     private val cards = ArrayList<BashCard>()
     private val adapter = CardAdapter()
@@ -90,17 +82,16 @@ class CardPaymentActivity : AppCompatActivity() {
 
         pleaseWait = indeterminateProgressDialog(R.string.please_wait)
         pleaseWait?.dismiss()
-        googlePayAlert = alert(getString(R.string.use_google_pay)) {
-            positiveButton(getString(R.string.yes)) {
-                Log.d(TAG, "Yes clicked for Google Pay")
-                val request = createPaymentDataRequest()
-                AutoResolveHelper.resolveTask(paymentsClient.loadPaymentData(request),
-                        this@CardPaymentActivity, LOAD_PAYMENT_DATA_REQUEST_CODE)
-            }
-            negativeButton(getString(R.string.no)) {
-                Log.d(TAG, "User returned no for google pay request")
-                updateView()
-            }
+        googlePayAlert = alertDialog(getString(R.string.use_google_pay))
+        googlePayAlert.positiveButton(getString(R.string.yes)) {
+            Log.d(TAG, "Yes clicked for Google Pay")
+            val request = createPaymentDataRequest()
+            AutoResolveHelper.resolveTask(paymentsClient.loadPaymentData(request),
+                    this@CardPaymentActivity, LOAD_PAYMENT_DATA_REQUEST_CODE)
+        }
+        googlePayAlert.negativeButton(getString(R.string.no)) {
+            Log.d(TAG, "User returned no for google pay request")
+            updateView()
         }
 
         val environment = if(Util.devFlavor()) {
@@ -228,7 +219,7 @@ class CardPaymentActivity : AppCompatActivity() {
                 }
             } catch (exception: ApiException) {
                 Log.d(TAG, "Google pay error occurred\ne -> ${exception.message}")
-                snackbar(root_view, R.string.error_occurred_g_pay)
+                root_view.snackbar(R.string.error_occurred_g_pay)
             }
         }
     }
@@ -339,9 +330,9 @@ class CardPaymentActivity : AppCompatActivity() {
                 val logo = Card.BRAND_RESOURCE_MAP[card?.brand]
                 val unknown = Card.BRAND_RESOURCE_MAP[Card.UNKNOWN]
                 if(logo != null) {
-                    logo_view.imageResource = logo
+                    logo_view.setImageResource(logo)
                 } else if(unknown != null) {
-                    logo_view.imageResource = unknown
+                    logo_view.setImageResource(unknown)
                 }
                 containerView.setOnClickListener {
                     getToken(bCard)

@@ -7,8 +7,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import org.jetbrains.anko.act
-import org.jetbrains.anko.intentFor
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
@@ -16,8 +14,9 @@ import toluog.campusbash.utils.Util
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_first_open.*
-import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
+import toluog.campusbash.utils.extension.intentFor
+import toluog.campusbash.utils.extension.snackbar
 import toluog.campusbash.view.viewmodel.GeneralViewModel
 
 
@@ -49,8 +48,8 @@ PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInterac
         if (name == uOttawa) {
             viewModel.getFroshGroup()
         }
-        Util.setPrefString(act, AppContract.PREF_UNIVERSITY_KEY, name)
-        Util.setPrefString(act, AppContract.PREF_COUNTRY_KEY, country)
+        Util.setPrefString(this, AppContract.PREF_UNIVERSITY_KEY, name)
+        Util.setPrefString(this, AppContract.PREF_COUNTRY_KEY, country)
         user?.let {
             fbManager.updateProfileField(AppContract.FIREBASE_USER_UNIVERSITY, name, it)
             fbManager.updateProfileField(AppContract.FIREBASE_USER_COUNTRY, country, it)
@@ -59,17 +58,17 @@ PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInterac
             count++
             fragManager.beginTransaction().replace(R.id.fragment_frame, PickEventTypeFragment(), null).commit()
         } else {
-            Util.setPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY, 1)
+            Util.setPrefInt(this, AppContract.PREF_FIRST_OPEN_KEY, 1)
             startActivity(intentFor<SetupProfileActivity>())
             finish()
         }
     }
 
     override fun eventsPickDone(selected: Set<String>) {
-        Util.setPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY, selected)
+        Util.setPrefStringSet(this, AppContract.PREF_EVENT_TYPES_KEY, selected)
         user?.let { fbManager.updateProfileField(AppContract.FIREBASE_USER_PREFERENCES, selected.toList(), it) }
         Log.d(TAG, "EventSet $selected")
-        Util.setPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY, 1)
+        Util.setPrefInt(this, AppContract.PREF_FIRST_OPEN_KEY, 1)
         startActivity(intentFor<SetupProfileActivity>())
         finish()
     }
@@ -81,7 +80,7 @@ PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInterac
             user = FirebaseManager.getUser()
             observeUser()
         } else{
-            Util.startSignInActivity(act)
+            Util.startSignInActivity(this)
         }
         if(!Util.isConnected(this)) {
             fragManager.beginTransaction().replace(R.id.fragment_frame, NoNetworkFragment(),
@@ -138,7 +137,7 @@ PickEventTypeFragment.PickEventTypeListener, NoNetworkFragment.OnFragmentInterac
             startActivity(intentFor<FirstOpenActivity>())
             finish()
         } else {
-            snackbar(container, R.string.no_internet)
+            container.snackbar(R.string.no_internet)
         }
     }
 }

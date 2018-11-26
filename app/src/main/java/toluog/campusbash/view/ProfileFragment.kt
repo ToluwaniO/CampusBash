@@ -10,14 +10,14 @@ import androidx.core.view.ViewCompat
 import android.util.Log
 import android.view.*
 import kotlinx.android.synthetic.main.profile_fragment_layout.*
-import org.jetbrains.anko.support.v4.act
-import org.jetbrains.anko.support.v4.intentFor
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
-import toluog.campusbash.utils.loadImage
+import toluog.campusbash.utils.extension.act
+import toluog.campusbash.utils.extension.intentFor
+import toluog.campusbash.utils.extension.loadImage
 import toluog.campusbash.view.viewmodel.ProfileViewModel
 
 /**

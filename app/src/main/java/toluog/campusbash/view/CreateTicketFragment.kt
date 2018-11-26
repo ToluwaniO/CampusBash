@@ -15,9 +15,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import toluog.campusbash.R
 import kotlinx.android.synthetic.main.create_ticket_layout.*
-import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.intentFor
-import org.jetbrains.anko.support.v4.selector
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
@@ -26,7 +23,10 @@ import java.lang.ClassCastException
 import java.math.BigDecimal
 import android.text.Spanned
 import android.text.InputFilter
-import toluog.campusbash.utils.isValidLong
+import toluog.campusbash.utils.extension.act
+import toluog.campusbash.utils.extension.alertDialog
+import toluog.campusbash.utils.extension.intentFor
+import toluog.campusbash.utils.extension.isValidLong
 import toluog.campusbash.view.viewmodel.CreateEventViewModel
 
 
@@ -107,14 +107,15 @@ class CreateTicketFragment: Fragment(){
         }
 
         ticket_currency.setOnClickListener {
-            selector(getString(R.string.select_currency), currencies) { _, i ->
+            val dialog = act.alertDialog(null, getString(R.string.select_currency))
+            dialog.items(currencies) { _, i ->
                 currency = currencySymbols[i]
                 ticket_currency.text = currencies[i]
                 ticket_currency.error = null
             }
         }
 
-        typeAdapter = ArrayAdapter(activity, R.layout.text_view_layout, ticketTypes)
+        typeAdapter = ArrayAdapter(act, R.layout.text_view_layout, ticketTypes)
         type_spinner.adapter = typeAdapter
         type_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
@@ -239,13 +240,12 @@ class CreateTicketFragment: Fragment(){
     }
 
     private fun setupStripe() {
-        val dialog = alert(R.string.account_not_setup_payments) {
-            positiveButton(getString(R.string.yes)) {
-                startActivity(intentFor<StripeSetupActivity>())
-            }
-            negativeButton(getString(R.string.no)) {
-                it.dismiss()
-            }
+        val dialog = act.alertDialog(getString(R.string.account_not_setup_payments))
+        dialog.positiveButton(getString(R.string.yes)) {
+            startActivity(intentFor<StripeSetupActivity>())
+        }
+        dialog.negativeButton(getString(R.string.no)) {
+            it.dismiss()
         }
         dialog.show()
     }

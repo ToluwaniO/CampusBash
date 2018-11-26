@@ -2,12 +2,10 @@ package toluog.campusbash.view
 
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
-import android.util.Log
 import android.widget.DatePicker
-import java.lang.ClassCastException
+import toluog.campusbash.utils.extension.act
 import java.util.*
 
 /**
@@ -30,7 +28,7 @@ class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener{
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         // Create a new instance of DatePickerDialog and return it
-        return DatePickerDialog(activity, this, year, month, day)
+        return DatePickerDialog(act,this, year, month, day)
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {

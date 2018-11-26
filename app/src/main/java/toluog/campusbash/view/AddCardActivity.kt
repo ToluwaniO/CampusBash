@@ -8,11 +8,10 @@ import android.view.Menu
 import android.view.MenuItem
 import com.stripe.android.model.Card
 import kotlinx.android.synthetic.main.activity_add_card.*
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.design.snackbar
-import org.jetbrains.anko.yesButton
 import toluog.campusbash.R
 import toluog.campusbash.model.BashCard
+import toluog.campusbash.utils.extension.alertDialog
+import toluog.campusbash.utils.extension.snackbar
 import toluog.campusbash.view.CardPaymentActivity.Companion.ADD_CARD
 
 class AddCardActivity : AppCompatActivity() {
@@ -35,14 +34,14 @@ class AddCardActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        alert(R.string.exit_without_saving_card) {
-            positiveButton(R.string.yes) {
-                super.onBackPressed()
-            }
-            negativeButton(R.string.no) {
-                it.dismiss()
-            }
-        }.show()
+        val dialog = alertDialog(getString(R.string.exit_without_saving_card))
+        dialog.positiveButton(getString(R.string.yes)) {
+            super.onBackPressed()
+        }
+        dialog.negativeButton(getString(R.string.no)) {
+            it.dismiss()
+        }
+        dialog.show()
     }
 
     private fun addCard() {
@@ -53,13 +52,13 @@ class AddCardActivity : AppCompatActivity() {
             })
             finish()
         } else if(card == null) {
-            snackbar(root_view, R.string.could_not_validate_card)
+            root_view.snackbar(R.string.could_not_validate_card)
         }
     }
 
     private fun validateCard(cardToSave: Card): Boolean {
         if(!cardToSave.validateCard()) {
-            snackbar(root_view, R.string.could_not_validate_card)
+            root_view.snackbar(R.string.could_not_validate_card)
             return false
         }
         return true

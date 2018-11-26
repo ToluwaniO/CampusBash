@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.bought_ticket_layout.*
 import toluog.campusbash.R
 import toluog.campusbash.model.BoughtTicket
 import toluog.campusbash.utils.Util
-import toluog.campusbash.utils.loadImage
+import toluog.campusbash.utils.extension.loadImage
 import java.util.*
 
 class BoughtTicketAdapter(var tickets: List<BoughtTicket>, var context: Context?): RecyclerView.Adapter<BoughtTicketAdapter.ViewHolder>() {

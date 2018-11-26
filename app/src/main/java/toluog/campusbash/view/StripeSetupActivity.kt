@@ -15,12 +15,14 @@ import android.text.style.ClickableSpan
 import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.activity_stripe_setup.*
-import org.jetbrains.anko.*
-import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.R
 import toluog.campusbash.data.network.ServerResponse
 import toluog.campusbash.utils.Util
+import toluog.campusbash.utils.extension.alertDialog
+import toluog.campusbash.utils.extension.indeterminateProgressDialog
+import toluog.campusbash.utils.extension.snackbar
+import toluog.campusbash.utils.extension.toast
 import toluog.campusbash.view.viewmodel.StripeSetupViewModel
 
 class StripeSetupActivity : AppCompatActivity() {
@@ -45,7 +47,7 @@ class StripeSetupActivity : AppCompatActivity() {
             if(Util.isConnected(this@StripeSetupActivity)) {
                 setupStripe()
             } else {
-                snackbar(root, R.string.no_internet)
+                root.snackbar(R.string.no_internet)
             }
         }
 
@@ -93,17 +95,17 @@ class StripeSetupActivity : AppCompatActivity() {
     }
 
     private fun accountExistsDialog() {
-        alert(R.string.stripe_account_exists_connect) {
-            positiveButton(R.string.yes) {
-                startActivity(Intent(Intent.ACTION_VIEW).apply {
-                    data = Uri.parse(STRIPE_CONNECT_ACCOUNT_URL)
-                })
-                finish()
-            }
-            negativeButton(R.string.no) {
-                finish()
-            }
-        }.show()
+        val dialog = alertDialog(getString(R.string.stripe_account_exists_connect))
+        dialog.positiveButton(getString(R.string.yes)) {
+            startActivity(Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(STRIPE_CONNECT_ACCOUNT_URL)
+            })
+            finish()
+        }
+        dialog.negativeButton(getString(R.string.no)) {
+            finish()
+        }
+        dialog.show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

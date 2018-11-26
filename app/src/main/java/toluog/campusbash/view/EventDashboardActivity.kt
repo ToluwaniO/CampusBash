@@ -9,8 +9,8 @@ import android.view.MenuItem
 
 import toluog.campusbash.R
 import kotlinx.android.synthetic.main.activity_event_dashboard.*
-import org.jetbrains.anko.intentFor
 import toluog.campusbash.utils.AppContract
+import toluog.campusbash.utils.extension.intentFor
 import toluog.campusbash.view.viewmodel.EventDashboardViewModel
 
 class EventDashboardActivity : AppCompatActivity() {

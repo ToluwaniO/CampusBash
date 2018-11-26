@@ -6,15 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import androidx.appcompat.app.AlertDialog
-import org.jetbrains.anko.alert
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
-import toluog.campusbash.utils.alertDialog
+import toluog.campusbash.utils.extension.alertDialog
 import toluog.campusbash.view.viewmodel.CreateEventViewModel
 import java.math.BigDecimal
 

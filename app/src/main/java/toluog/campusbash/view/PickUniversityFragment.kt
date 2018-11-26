@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.pick_university_fragment_layout.*
-import org.jetbrains.anko.sdk27.coroutines.onItemSelectedListener
 import toluog.campusbash.R
 import toluog.campusbash.view.viewmodel.FirstOpenViewModel
 import java.lang.ClassCastException
