@@ -45,7 +45,6 @@ class EventDashboardFragment : Fragment() {
     private lateinit var viewModel: EventDashboardViewModel
     private val colors = arrayListOf<Int>()
 
-    private var event: Event? = null
     private val tickets = ArrayList<Ticket>()
     private val userTickets = arrayListOf<UserTicket>()
 
@@ -70,13 +69,10 @@ class EventDashboardFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(activity!!).get(EventDashboardViewModel::class.java)
 
-        viewModel.getEvent(eventId)?.observe(this, Observer {
-            this.event = it
-            updateView()
-        })
-
         viewModel.getEventTickets(eventId)?.observe(this, Observer {
-
+            this.tickets.clear()
+            this.tickets.addAll(it)
+            updateView()
         })
 
         viewModel.getUsersWithTickets(eventId)?.observe(this, Observer {

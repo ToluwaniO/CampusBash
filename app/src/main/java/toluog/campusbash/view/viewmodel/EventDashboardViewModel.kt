@@ -25,6 +25,7 @@ class EventDashboardViewModel(app: Application): GeneralViewModel(app) {
     }
 
     fun getEventTickets(eventId: String): LiveData<List<Ticket>>? {
+        checkRepository(eventId)
         return repository?.getTickets(eventId, app.applicationContext)
     }
 

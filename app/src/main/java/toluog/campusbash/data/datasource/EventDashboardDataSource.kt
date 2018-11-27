@@ -72,7 +72,7 @@ class EventDashboardDataSource(override val coroutineContext: CoroutineContext) 
             buyerName = doc[AppContract.BUYER_NAME] as String? ?: ""
             quantity = doc[AppContract.QUANTITY] as Long? ?: 0
             ticketPurchaseId = doc.id
-            totalPrice = total?.toString()?.toDouble() ?: 0.0
+            totalPrice = (total?.toString()?.toDouble() ?: 0.0)/100
         }
         tickets.add(userTicket)
         Log.d(TAG, "$tickets")
