@@ -4,24 +4,16 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.collection.ArrayMap
 import androidx.recyclerview.widget.RecyclerView
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.View
-import android.widget.EditText
-import android.widget.TextView
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.ticket_quantity_item_layout.*
-import org.jetbrains.anko.selector
-import org.jetbrains.anko.textColor
 import toluog.campusbash.R
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.Util
-import org.jetbrains.anko.support.v4.selector
-import toluog.campusbash.R.string.currency
+import toluog.campusbash.utils.extension.alertDialog
 
 /**
  * Created by oguns on 12/25/2017.
@@ -78,9 +70,9 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
                 ticket_quantity.visibility = View.GONE
             }
             if(quantityLeft <= 5) {
-                ticket_quantity_left.textColor = ContextCompat.getColor(context, R.color.colorPrimary)
+                ticket_quantity_left.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary))
             } else {
-                ticket_quantity_left.textColor = ContextCompat.getColor(context, android.R.color.black)
+                ticket_quantity_left.setTextColor(ContextCompat.getColor(context, android.R.color.black))
             }
 
             containerView.setOnClickListener { listener.onTicketClick(ticket) }
@@ -96,11 +88,12 @@ class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context
             }
 
             quantity_layout.setOnClickListener {
-                context.selector(context.getString(R.string.select_quantity),
-                        selectableQuantity) { _, i ->
+                val sel = context.alertDialog(title = context.getString(R.string.select_quantity))
+                sel.items(selectableQuantity) { _, i ->
                     updateMap(selectableQuantity[i].toInt(), ticket)
                     ticket_quantity.text = selectableQuantity[i]
                 }
+                sel.show()
             }
         }
 

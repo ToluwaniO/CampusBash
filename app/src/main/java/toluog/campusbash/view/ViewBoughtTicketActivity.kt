@@ -8,15 +8,16 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.activity_view_bought_ticket.*
 import kotlinx.android.synthetic.main.ticket_card_layout.*
-import org.jetbrains.anko.intentFor
 import toluog.campusbash.R
 import toluog.campusbash.model.BoughtTicket
 import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.utils.AppContract
-import toluog.campusbash.utils.loadImage
+import toluog.campusbash.utils.extension.intentFor
+import toluog.campusbash.utils.extension.loadImage
 
 class ViewBoughtTicketActivity : AppCompatActivity() {
     private val tickets = arrayListOf<TicketMetaData>()
@@ -58,10 +59,11 @@ class ViewBoughtTicketActivity : AppCompatActivity() {
                 qr_image.loadImage(ticketMetaData.qrUrl)
                 bought_quantity.text = ticketMetaData.ticketName
                 containerView.setOnClickListener {
-                    startActivity(intentFor<ImageViewerActivity>().apply {
-                        putExtra(AppContract.IMAGE_NAME, ticketMetaData.ticketName)
-                        putExtra(AppContract.IMAGE_SRC, ticketMetaData.qrUrl)
-                    })
+                    val bundle = bundleOf(
+                            AppContract.IMAGE_NAME to ticketMetaData.ticketName,
+                            AppContract.IMAGE_SRC to ticketMetaData.qrUrl
+                    )
+                    startActivity(intentFor<ImageViewerActivity>(bundle))
                 }
             }
         }

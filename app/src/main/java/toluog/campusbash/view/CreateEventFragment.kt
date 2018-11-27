@@ -7,7 +7,6 @@ import android.app.Activity.RESULT_OK
 import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
-import androidx.fragment.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -24,16 +23,14 @@ import android.app.ProgressDialog
 import androidx.lifecycle.Observer
 import android.net.Uri
 import android.widget.ImageView
+import androidx.core.os.bundleOf
 import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.*
-import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.design.snackbar
-import org.jetbrains.anko.support.v4.*
 import toluog.campusbash.model.*
 import toluog.campusbash.utils.*
+import toluog.campusbash.utils.extension.*
 import toluog.campusbash.view.viewmodel.CreateEventViewModel
 import java.util.Calendar
-import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 
 /**
@@ -133,7 +130,7 @@ class CreateEventFragment : BaseFragment() {
                 }
                 PlaceAutocomplete.RESULT_ERROR -> {
                     val status = PlaceAutocomplete.getStatus(activity?.applicationContext, data)
-                    toast(R.string.could_not_get_location)
+                    act.toast(R.string.could_not_get_location)
                     Log.i(TAG, status.statusMessage)
                 }
                 RESULT_CANCELED -> {
@@ -223,16 +220,19 @@ class CreateEventFragment : BaseFragment() {
         }
 
         event_university.setOnClickListener {
+            bundleOf()
             startActivityForResult(intentFor<SelectUniversityActivity>().apply {
                 putExtra(AppContract.UNIVERSITIES, viewModel.event.universities)
             }, UNIVERSITY_REQUEST_CODE)
         }
 
         event_type.setOnClickListener {
-            selector(getString(R.string.select_type), eventTypes) { _, i ->
+            val sel = act.alertDialog(title = getString(R.string.select_type))
+            sel.items(eventTypes) { _, i ->
                 event_type.updateTextSelector(eventTypes[i], android.R.color.black)
                 viewModel.event.eventType = eventTypes[i]
             }
+            sel.show()
         }
     }
 
@@ -325,7 +325,7 @@ class CreateEventFragment : BaseFragment() {
             Log.d(TAG, "Invalid event")
             return
         }
-        val dialog = indeterminateProgressDialog(message = "", title = getString(R.string.uploading_event))
+        val dialog = act.indeterminateProgressDialog(title = R.string.uploading_event)
         dialog.show()
         if (uri != null) {
             Log.d(TAG, "uri is not null")
@@ -360,7 +360,7 @@ class CreateEventFragment : BaseFragment() {
             is FirebaseManager.FirebaseOperationResult.Success -> {
                 saveTickets()
                 withContext(Dispatchers.Main) {
-                    toast(R.string.event_saved)
+                    act.toast(R.string.event_saved)
                     viewModel.savePlace()
                     mCallback?.eventSaved(event)
                     dialog.dismiss()
@@ -368,7 +368,7 @@ class CreateEventFragment : BaseFragment() {
             }
             is FirebaseManager.FirebaseOperationResult.Error -> {
                 withContext(Dispatchers.Main) {
-                    toast(R.string.event_save_failed)
+                    act.toast(R.string.event_save_failed)
                     Log.d(TAG, "$event")
                     Log.d(TAG, "Failed to save event")
                     Log.d(TAG, eventResult.exception.message)
@@ -494,17 +494,17 @@ class CreateEventFragment : BaseFragment() {
             return isValid
         }
         if(event.startTime >= event.endTime) {
-            longSnackbar(rootView, R.string.end_date_greater_start_date).show()
+            rootView.longSnackbar(R.string.end_date_greater_start_date)
             isValid = false
             return isValid
         }
         if(event.endTime <= System.currentTimeMillis()) {
-            longSnackbar(rootView, R.string.event_ended).show()
+            rootView.longSnackbar(R.string.event_ended)
             isValid = false
             return isValid
         }
         if(event.university.isEmpty()) {
-            longSnackbar(rootView, R.string.university_must_be_set).show()
+            rootView.longSnackbar(R.string.university_must_be_set)
             isValid = false
             return isValid
         }
@@ -531,7 +531,8 @@ class CreateEventFragment : BaseFragment() {
         val options = listOf("Add new image", "Remove image")
         val link = viewModel.event.placeholderImage?.url
         if ((link != null && link.isNotBlank()) || viewModel.imageUri != null) {
-            selector(null, options) { _, i ->
+            val sel = act.alertDialog()
+            sel.items(options) { _, i ->
                 if (i == 0) {
                     imagePicker?.choosePicture(true)
                 } else {
@@ -541,6 +542,8 @@ class CreateEventFragment : BaseFragment() {
                     viewModel.imageUri = null
                 }
             }
+            sel.show()
+
         } else {
             imagePicker?.choosePicture(true)
         }
@@ -556,7 +559,7 @@ class CreateEventFragment : BaseFragment() {
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                    snackbar(root_view, R.string.max_image_size)
+                    root_view.snackbar(R.string.max_image_size)
                 }
             }
         }

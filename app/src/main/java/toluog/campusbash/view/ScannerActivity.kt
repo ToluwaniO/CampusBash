@@ -16,14 +16,13 @@ import android.view.MenuItem
 import android.view.View
 import com.google.zxing.Result
 import kotlinx.android.synthetic.main.activity_scanner.*
+import kotlinx.coroutines.*
 import me.dm7.barcodescanner.zxing.ZXingScannerView
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 import toluog.campusbash.R
 import toluog.campusbash.model.TicketMetaData
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.extension.alertDialog
 import toluog.campusbash.view.viewmodel.EventDashboardViewModel
 
 class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
@@ -35,6 +34,9 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     private lateinit var eventId: String
     private val ticketMap = ArrayMap<String, TicketMetaData>()
     private val fbManager = FirebaseManager()
+
+    private val threadJob = Dispatchers.Default
+    private val threadScope = CoroutineScope(threadJob)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +68,11 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     override fun onPause() {
         super.onPause()
         resetCamera(false)
+    }
+
+    override fun onDestroy() {
+        threadJob.cancel()
+        super.onDestroy()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -109,9 +116,9 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
         } else {
             updateTicketStatusView(TicketState.INVALID)
         }
-        doAsync {
-            Thread.sleep(1000)
-            uiThread {
+        threadScope.launch {
+            delay(1000)
+            withContext(Dispatchers.Main) {
                 resumePreview()
             }
         }
@@ -120,10 +127,10 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     private fun resumePreview() = scanner_view.resumeCameraPreview(this)
 
     private fun resetCamera(start: Boolean = true) {
-        doAsync {
+        threadScope.launch {
             if(start) {
                 scanner_view.startCamera()
-                uiThread {
+                withContext(Dispatchers.Main) {
                     scanner_view.setResultHandler(this@ScannerActivity)
                     scanner_view.visibility = View.VISIBLE
                 }
@@ -153,7 +160,7 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
     private fun updateTicket(code: String) {
         Log.d(TAG, "updating ticket")
         val ticketMetaData = ticketMap[code] ?: TicketMetaData()
-        doAsync {
+        threadScope.launch {
             val result = viewModel.updateTicket(fbManager, eventId, ticketMetaData.ticketPurchaseId,
                     "ticketCodes", true, code)
             Log.d(TAG, "sent request")
@@ -202,14 +209,14 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     private fun showExplanation() {
         permissionExplained = true
-        alert(R.string.camera_vibrate_permission) {
-            positiveButton(R.string.yes) {
-                checkPermissions()
-            }
-            negativeButton(R.string.no) {
-                finish()
-            }
-        }.show()
+        val dialog = alertDialog(getString(R.string.camera_vibrate_permission))
+        dialog.positiveButton(getString(R.string.yes)) {
+            checkPermissions()
+        }
+        dialog.negativeButton(getString(R.string.no)) {
+            finish()
+        }
+        dialog.show()
     }
 
     enum class TicketState {

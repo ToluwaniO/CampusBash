@@ -2,10 +2,9 @@ package toluog.campusbash.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
 import kotlinx.android.synthetic.main.activity_no_network.*
-import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.R
+import toluog.campusbash.utils.extension.snackbar
 
 class NoNetworkActivity : AppCompatActivity(), NoNetworkFragment.OnFragmentInteractionListener {
 
@@ -18,7 +17,7 @@ class NoNetworkActivity : AppCompatActivity(), NoNetworkFragment.OnFragmentInter
         if(connected) {
             finish()
         } else {
-            snackbar(container, R.string.no_internet)
+            container.snackbar(R.string.no_internet)
         }
     }
 }

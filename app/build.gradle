@@ -68,6 +68,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.emoji:emoji:1.0.0'
     implementation 'androidx.emoji:emoji-appcompat:1.0.0'
+    implementation 'androidx.fragment:fragment-ktx:1.0.0'
 
     //Firebase
     implementation "com.google.firebase:firebase-core:16.0.5"
@@ -98,9 +99,6 @@ dependencies {
     //Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
-    implementation "org.jetbrains.anko:anko:$anko_version"
-    implementation "org.jetbrains.anko:anko-commons:$anko_version"
-    implementation "org.jetbrains.anko:anko-design:$anko_version" // For SnackBars
 
     implementation "com.google.code.gson:gson:2.8.5"
 

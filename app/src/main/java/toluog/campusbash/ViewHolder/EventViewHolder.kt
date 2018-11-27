@@ -7,15 +7,13 @@ import android.view.View
 import com.bumptech.glide.Glide
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.event_card_layout.*
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.yesButton
 import toluog.campusbash.R
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
+import toluog.campusbash.utils.extension.alertDialog
 
 class EventViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView),
         LayoutContainer {
@@ -56,15 +54,15 @@ class EventViewHolder(override val containerView: View): RecyclerView.ViewHolder
     }
 
     private fun deleteEvent(context: Context?, eventId: String) {
-        context?.alert ("Do you want to delete this event?") {
-            yesButton {
-                val fbaseManager = FirebaseManager()
-                fbaseManager.deleteEvent(context, eventId)
-            }
-            noButton {
-                it.dismiss()
-            }
-        }?.show()
+        val dialog = context?.alertDialog(context.getString(R.string.do_you_want_to_delete_this_event))
+        dialog?.positiveButton(context.getString(R.string.yes)) {
+            val fbaseManager = FirebaseManager()
+            fbaseManager.deleteEvent(context, eventId)
+        }
+        dialog?.negativeButton(context.getString(R.string.no)) {
+            it.dismiss()
+        }
+        dialog?.show()
     }
 
     private fun findPlace(id: String, places: List<Place>): Place? {

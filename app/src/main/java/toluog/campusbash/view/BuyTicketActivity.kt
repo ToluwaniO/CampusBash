@@ -9,20 +9,13 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.collection.ArrayMap
-import androidx.appcompat.widget.*
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_buy_ticket.*
-import org.jetbrains.anko.*
-import org.jetbrains.anko.design.snackbar
-import org.jetbrains.anko.indeterminateProgressDialog
-import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.longToast
 import toluog.campusbash.R
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
@@ -30,8 +23,8 @@ import toluog.campusbash.model.Ticket
 import toluog.campusbash.model.TicketPriceBreakdown
 import toluog.campusbash.model.toMap
 import toluog.campusbash.utils.*
+import toluog.campusbash.utils.extension.*
 import toluog.campusbash.view.viewmodel.ViewEventViewModel
-import java.math.BigDecimal
 
 
 class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListener {
@@ -146,7 +139,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     }
 
     override fun onTicketClick(ticket: Ticket) {
-        alert(ticket.description, ticket.name).show()
+        alertDialog(ticket.description, ticket.name).show()
     }
 
     override fun onTicketQuantityChanged(queryMap: ArrayMap<String, Any>) {
@@ -190,7 +183,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     private fun buyTickets(tokenId: String?, newCard: Boolean) {
         val overallMap = getData()
         if(overallMap[AppContract.QUANTITY] == 0){
-            snackbar(container, R.string.no_ticket_purchased)
+            container.snackbar(R.string.no_ticket_purchased)
             return
         }
         pleaseWait.show()
@@ -220,7 +213,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             saveData(overallMap)
         } else {
             pleaseWait.dismiss()
-            snackbar(container, R.string.not_signed_in)
+            container.snackbar(R.string.not_signed_in)
         }
     }
 

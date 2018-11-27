@@ -15,7 +15,7 @@ import toluog.campusbash.model.Event
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.Util
-import toluog.campusbash.utils.loadImage
+import toluog.campusbash.utils.extension.loadImage
 import toluog.campusbash.view.viewmodel.ViewEventViewModel
 import android.content.pm.ResolveInfo
 import androidx.recyclerview.widget.LinearLayoutManager
