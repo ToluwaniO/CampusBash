@@ -1,7 +1,9 @@
 package toluog.campusbash.view
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
+import android.content.res.Resources
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import android.text.format.DateFormat
