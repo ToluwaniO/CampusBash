@@ -16,8 +16,8 @@ import com.igalata.bubblepicker.adapter.BubblePickerAdapter
 import com.igalata.bubblepicker.model.BubbleGradient
 import com.igalata.bubblepicker.model.PickerItem
 import kotlinx.android.synthetic.main.pick_event_type_fragment_layout.*
-import org.jetbrains.anko.design.snackbar
 import toluog.campusbash.R
+import toluog.campusbash.utils.extension.snackbar
 import java.lang.ClassCastException
 
 /**
@@ -60,7 +60,7 @@ class PickEventTypeFragment: Fragment() {
 
         next_button.setOnClickListener {
             if(selectedTypes.size < 2){
-                view.context?.getString(R.string.items_at_least_two)?.let { x -> snackbar(container, x) }
+                container.snackbar(R.string.items_at_least_two)
             }
             else callback?.eventsPickDone(selectedTypes)
         }

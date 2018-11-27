@@ -6,7 +6,7 @@ import androidx.annotation.Keep
 import com.stripe.android.model.Card
 import com.stripe.android.model.CustomerSource
 import toluog.campusbash.utils.Util
-import toluog.campusbash.utils.convertToJson
+import toluog.campusbash.utils.extension.convertToJson
 
 @Keep
 data class BashCard(var customerSource: CustomerSource?, var card: Card? = null, var newCard: Boolean = false) : Parcelable {

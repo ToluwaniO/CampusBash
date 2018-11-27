@@ -10,7 +10,6 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.*
-import org.jetbrains.anko.doAsync
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.data.FirestorePaths
 import kotlin.coroutines.CoroutineContext
@@ -67,7 +66,7 @@ class GeneralDataSource(override val coroutineContext: CoroutineContext) : DataS
                         this.latLng.lon = myPlace.latLng.longitude
                         this.name = myPlace.name.toString()
                     }
-                    doAsync {
+                    threadScope.launch {
                         db?.placeDao()?.insertPlace(place)
                         val events = db?.eventDao()?.getStaticEventsByPlace(id)
                         events?.forEach {event ->

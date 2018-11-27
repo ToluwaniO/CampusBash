@@ -9,8 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.stripe.android.model.Card
 import kotlinx.android.synthetic.main.debit_card_dialog_layout.*
-import org.jetbrains.anko.support.v4.toast
 import toluog.campusbash.R
+import toluog.campusbash.utils.extension.act
+import toluog.campusbash.utils.extension.toast
 import java.lang.ClassCastException
 
 class CardInputDialogFragment: DialogFragment() {
@@ -50,7 +51,7 @@ class CardInputDialogFragment: DialogFragment() {
             callback?.cardReady(card)
             dismiss()
         } else {
-            toast("Invalid card")
+            act.toast(R.string.invalid_card)
         }
     }
 }

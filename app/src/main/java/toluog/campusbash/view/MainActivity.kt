@@ -11,7 +11,6 @@ import toluog.campusbash.R
 import android.content.Intent
 import android.util.Log
 import android.widget.ArrayAdapter
-import org.jetbrains.anko.intentFor
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
 import androidx.lifecycle.ViewModelProviders
@@ -20,7 +19,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import android.view.View
 import android.widget.AdapterView
 import android.widget.TextView
-import org.jetbrains.anko.act
 import toluog.campusbash.ViewBehavior.FabScrollBehavior
 import toluog.campusbash.model.University
 import toluog.campusbash.utils.AppContract.Companion.RC_SIGN_IN
@@ -28,13 +26,15 @@ import kotlin.collections.ArrayList
 import com.google.android.material.appbar.AppBarLayout
 import androidx.core.content.ContextCompat
 import android.view.View.GONE
-import org.jetbrains.anko.doAsync
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
-import org.jetbrains.anko.backgroundColor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import toluog.campusbash.adapters.BoughtTicketAdapter
 import toluog.campusbash.model.BoughtTicket
+import toluog.campusbash.utils.extension.intentFor
 import toluog.campusbash.view.viewmodel.MainActivityViewModel
 
 
@@ -53,6 +53,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private var title = ""
     private var appbarState = Pair<Boolean?, Boolean>(true, false)
     private var firstDropSelect = false
+
+    private val threadJob = Dispatchers.Default
+    private val threadScope = CoroutineScope(threadJob)
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
@@ -127,8 +130,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
         Log.d(TAG, "Viewmodel init")
-        country = Util.getPrefString(act, AppContract.PREF_COUNTRY_KEY)
-        university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
+        country = Util.getPrefString(this, AppContract.PREF_COUNTRY_KEY)
+        university = Util.getPrefString(this, AppContract.PREF_UNIVERSITY_KEY)
         Log.d(TAG, "Pref string gotten")
 
         updateUi()
@@ -145,9 +148,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         if(FirebaseManager.isSignedIn()){
             Log.d(TAG, "user is signed in")
             CampusBash.init(applicationContext)
-            doAsync { firebaseManager.value.updateFcmToken(applicationContext) }
+            threadScope.launch { firebaseManager.value.updateFcmToken(applicationContext) }
         } else{
-            Util.startSignInActivity(act)
+            Util.startSignInActivity(this)
         }
     }
 
@@ -221,16 +224,16 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     }
 
     private fun firstOpen(){
-        val fOpen = Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)
-        Log.d(TAG, "FOPEN KEY: ${Util.getPrefInt(act, AppContract.PREF_FIRST_OPEN_KEY)}")
+        val fOpen = Util.getPrefInt(this, AppContract.PREF_FIRST_OPEN_KEY)
+        Log.d(TAG, "FOPEN KEY: ${Util.getPrefInt(this, AppContract.PREF_FIRST_OPEN_KEY)}")
         if(fOpen == 0){
             Log.d(TAG, "First Open")
             startActivity(intentFor<OnBoardingActivity>())
             finish()
         } else{
             Log.d(TAG, "Not first open")
-            val interestSet = Util.getPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY)
-            val university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
+            val interestSet = Util.getPrefStringSet(this, AppContract.PREF_EVENT_TYPES_KEY)
+            val university = Util.getPrefString(this, AppContract.PREF_UNIVERSITY_KEY)
             Log.d(TAG, "INTERESTS $interestSet")
             Log.d(TAG, "UNIVERSITY $university")
         }
@@ -271,9 +274,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         }
 
         if(isProfile) {
-            toolbar.backgroundColor = ContextCompat.getColor(this, R.color.background_material_light)
+            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.background_material_light))
         } else {
-            toolbar.backgroundColor = ContextCompat.getColor(this, R.color.colorPrimary)
+            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
         }
         fragment_frame.requestLayout()
         toolbar.title = title

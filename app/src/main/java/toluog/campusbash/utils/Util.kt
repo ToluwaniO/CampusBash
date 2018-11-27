@@ -20,12 +20,12 @@ import com.firebase.jobdispatcher.Trigger
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.stripe.android.model.Card
 import org.json.JSONObject
 import toluog.campusbash.BuildConfig
 import toluog.campusbash.data.datasource.CurrencyDataSource
+import toluog.campusbash.utils.extension.CARD_NUMBER
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.collections.HashMap

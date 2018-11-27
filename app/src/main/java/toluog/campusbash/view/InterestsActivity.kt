@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_interests.*
-import org.jetbrains.anko.act
 import toluog.campusbash.R
 import toluog.campusbash.adapters.InterestAdapter
 import toluog.campusbash.utils.AppContract
@@ -23,7 +22,7 @@ class InterestsActivity : AppCompatActivity(), InterestAdapter.OnCheckedChangeLi
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interests)
 
-        interests = Util.getPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY)
+        interests = Util.getPrefStringSet(this, AppContract.PREF_EVENT_TYPES_KEY)
         Log.d(TAG, "$interests")
 
         intsList.addAll(interests)
@@ -41,12 +40,12 @@ class InterestsActivity : AppCompatActivity(), InterestAdapter.OnCheckedChangeLi
 
     override fun onPause() {
         super.onPause()
-        Util.setPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY, interests)
+        Util.setPrefStringSet(this, AppContract.PREF_EVENT_TYPES_KEY, interests)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Util.setPrefStringSet(act, AppContract.PREF_EVENT_TYPES_KEY, interests)
+        Util.setPrefStringSet(this, AppContract.PREF_EVENT_TYPES_KEY, interests)
     }
 
     override fun checkBoxClicked(interest: String, isChecked: Boolean) {

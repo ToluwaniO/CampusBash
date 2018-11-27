@@ -13,22 +13,20 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.activity_view_event.*
-import org.jetbrains.anko.intentFor
 import toluog.campusbash.R
 import toluog.campusbash.model.Event
-import com.google.firebase.dynamiclinks.DynamicLink
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
-import android.content.Intent
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import com.crashlytics.android.Crashlytics
-import org.jetbrains.anko.toast
-import toluog.campusbash.BuildConfig
 import com.google.android.gms.maps.model.CameraPosition
 import kotlinx.coroutines.*
 import toluog.campusbash.model.Place
 import toluog.campusbash.model.Ticket
 import toluog.campusbash.utils.*
+import toluog.campusbash.utils.extension.intentFor
+import toluog.campusbash.utils.extension.lazyLoadImage
+import toluog.campusbash.utils.extension.toast
 import toluog.campusbash.view.viewmodel.ViewEventViewModel
 
 class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -109,9 +107,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             android.R.id.home -> onBackPressed()
             R.id.action_share -> {
                 startActivity(intentFor<ShareEventActivity>().apply {
-                    putExtras(Bundle().apply {
-                        putParcelable(AppContract.MY_EVENT_BUNDLE, event)
-                    })
+                    putExtras(bundleOf(AppContract.MY_EVENT_BUNDLE to event))
                 })
             }
             R.id.action_edit -> {

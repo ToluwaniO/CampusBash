@@ -1,7 +1,6 @@
 package toluog.campusbash.view
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
@@ -10,7 +9,7 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_image_viewer.*
 import toluog.campusbash.R
 import toluog.campusbash.utils.AppContract
-import toluog.campusbash.utils.loadImage
+import toluog.campusbash.utils.extension.loadImage
 
 class ImageViewerActivity : AppCompatActivity() {
     private var imageSource: Any? = null

@@ -1,4 +1,4 @@
-package toluog.campusbash.utils
+package toluog.campusbash.utils.extension
 
 import com.stripe.android.model.Card
 import org.json.JSONObject

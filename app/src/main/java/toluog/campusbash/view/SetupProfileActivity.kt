@@ -11,18 +11,15 @@ import android.os.Bundle
 import android.util.Log
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_setup_profile.*
-import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.design.snackbar
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.indeterminateProgressDialog
-import org.jetbrains.anko.intentFor
-import org.json.JSONObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import toluog.campusbash.R
 import toluog.campusbash.data.network.ServerResponseState
 import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.FirebaseManager
 import toluog.campusbash.utils.Util
-import toluog.campusbash.utils.loadImage
+import toluog.campusbash.utils.extension.*
 import toluog.campusbash.view.viewmodel.GeneralViewModel
 
 class SetupProfileActivity : AppCompatActivity() {
@@ -33,10 +30,13 @@ class SetupProfileActivity : AppCompatActivity() {
     private lateinit var dialog: ProgressDialog
     private val TAG = SetupProfileActivity::class.java.simpleName
 
+    private val threadJob = Dispatchers.Default
+    private val threadScope = CoroutineScope(threadJob)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setup_profile)
-        dialog = indeterminateProgressDialog(message = "")
+        dialog = indeterminateProgressDialog(R.string.please_wait)
         dialog.dismiss()
         viewModel = ViewModelProviders.of(this).get(GeneralViewModel::class.java)
         val user = FirebaseManager.getUser()
@@ -45,7 +45,7 @@ class SetupProfileActivity : AppCompatActivity() {
                 profileImage.loadImage(it)
                 updatePhoto(it)
             } else {
-                snackbar(container, R.string.max_image_size)
+                container.snackbar( R.string.max_image_size)
             }
         }
 
@@ -66,7 +66,7 @@ class SetupProfileActivity : AppCompatActivity() {
     }
 
     private fun updatePhoto(imageUri: Uri) {
-        doAsync { fbManager.uploadProfilePhoto(imageUri) }
+        threadScope.launch { fbManager.uploadProfilePhoto(imageUri) }
     }
 
     private fun setupView(user: FirebaseUser) {
@@ -140,7 +140,7 @@ class SetupProfileActivity : AppCompatActivity() {
                 }
                 is ServerResponseState.Error -> {
                     dialog.dismiss()
-                    longSnackbar(container, R.string.could_not_verify_student_id)
+                    container.longSnackbar(R.string.could_not_verify_student_id)
                 }
                 else -> {}
             }

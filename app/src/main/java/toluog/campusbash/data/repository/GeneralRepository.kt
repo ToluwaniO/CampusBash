@@ -3,7 +3,9 @@ package toluog.campusbash.data.repository
 import androidx.lifecycle.LiveData
 import android.content.Context
 import android.util.Log
-import org.jetbrains.anko.doAsync
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import toluog.campusbash.data.AppDatabase
 import toluog.campusbash.data.datasource.GeneralDataSource
 import toluog.campusbash.data.datasource.EventsDataSource
@@ -38,7 +40,7 @@ class GeneralRepository(val context: Context, override val coroutineContext: Cor
     fun getPlaces() = db?.placeDao()?.getPlaces()
 
     fun savePlace(place: Place) {
-        doAsync { db?.placeDao()?.insertPlace(place) }
+        this.launch { db?.placeDao()?.insertPlace(place) }
     }
 
     fun getUser(uid: String) = GeneralDataSource.getUser(uid)

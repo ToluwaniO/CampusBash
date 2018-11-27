@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import kotlinx.coroutines.*
-import org.jetbrains.anko.doAsync
 
 /**
  * Created by oguns on 2/22/2018.
@@ -25,4 +24,6 @@ class MyBootReceiver: BroadcastReceiver() {
             }
         }
     }
+
+
 }

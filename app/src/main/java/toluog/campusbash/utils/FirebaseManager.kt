@@ -23,10 +23,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import org.jetbrains.anko.toast
 import org.json.JSONObject
+import toluog.campusbash.R
 import toluog.campusbash.model.Creator
 import toluog.campusbash.model.Ticket
+import toluog.campusbash.utils.extension.toast
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -142,9 +143,9 @@ class FirebaseManager {
     fun deleteEvent(context: Context?, eventId: String) {
         db?.collection(AppContract.FIREBASE_EVENTS)?.document(eventId)?.delete()
                 ?.addOnSuccessListener {
-                    context?.toast("Event deleted")
+                    context?.toast(R.string.event_deleted)
                 }?.addOnFailureListener {
-                    context?.toast("Event could not be deleted")
+                    context?.toast(R.string.event_could_not_be_deleted)
                     Log.d(TAG, "An error occurred\n${it.message}")
                 }
     }
