@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+
         <item name="android:fontFamily">@font/roboto_light</item>
         <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
         <item name="android:alertDialogStyle">@style/Theme.MaterialComponents.Dialog.Alert</item>
@@ -78,6 +81,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button.TextButton</item>
     </style>
 
 </resources>
