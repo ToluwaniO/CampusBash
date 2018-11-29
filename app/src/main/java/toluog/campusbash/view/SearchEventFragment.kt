@@ -3,27 +3,25 @@ package toluog.campusbash.view
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
 import androidx.collection.ArrayMap
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.chip_layout.*
+import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.no_events_layout.*
 import kotlinx.android.synthetic.main.search_event_layout.*
 import toluog.campusbash.R
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
 import toluog.campusbash.utils.Util
+import toluog.campusbash.utils.extension.act
 import toluog.campusbash.view.viewmodel.EventsViewModel
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -37,7 +35,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
     private val TAG = SearchEventFragment::class.java.simpleName
     private lateinit var rootView: View
     private lateinit var viewModel: EventsViewModel
-    private val days = listOf<ChipData>(ChipData("Today", false),
+    private val days = listOf(ChipData("Today", false),
             ChipData("Tomorrow", false), ChipData("The weekend", false),
             ChipData("Pick a date", false))
     private val eventTypes = ArrayList<ChipData>()
@@ -75,19 +73,75 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
         resources.getStringArray(R.array.party_types).asList().forEach { eventTypes.add(ChipData(it, false)) }
 
-        date_chip_recycler.apply {
-            adapter = ChipAdapter(days, 0)
-            layoutManager = LinearLayoutManager(rootView.context, LinearLayoutManager.HORIZONTAL, false)
+        for (day in days) {
+            val chip = createChip(day.title)
+            date_chip_group.addView(chip)
         }
-        type_chip_recycler.apply {
-            adapter = ChipAdapter(eventTypes, 1)
-            layoutManager = LinearLayoutManager(rootView.context, LinearLayoutManager.HORIZONTAL, false)
+        for (type in eventTypes) {
+            val chip = createChip(type.title)
+            type_chip_group.addView(chip)
         }
         eventAdapter = EventAdapter(events, emptyList(), rootView.context)
         event_recycler.adapter = eventAdapter
         event_recycler.layoutManager = LinearLayoutManager(rootView.context)
 
         search_bar.addTextChangedListener(searchWatcher)
+        setDateGroupListener()
+        setEventTypeGroupListener()
+    }
+
+    private fun setDateGroupListener() {
+        date_chip_group.setOnCheckedChangeListener { chipGroup, i ->
+            val cal = Calendar.getInstance()
+            val chip = chipGroup.findViewById<Chip>(i)
+
+            if (chip == null) {
+                queryMap.remove("time")
+                return@setOnCheckedChangeListener
+            }
+
+            when(chip.text) {
+                "Today" -> date = System.currentTimeMillis()
+                "Tomorrow" -> {
+                    cal[Calendar.DAY_OF_YEAR] = cal[Calendar.DAY_OF_YEAR] + 1
+                    cal[Calendar.HOUR_OF_DAY] = 0
+                    cal[Calendar.MINUTE] = 0
+                    cal[Calendar.SECOND] = 0
+                    date = cal.timeInMillis
+                }
+                "The weekend" -> {
+                    val delta = 7 - cal[Calendar.DAY_OF_YEAR]
+                    cal[Calendar.DAY_OF_YEAR] = cal[Calendar.DAY_OF_YEAR] + delta
+                    cal[Calendar.HOUR_OF_DAY] = 0
+                    cal[Calendar.MINUTE] = 0
+                    cal[Calendar.SECOND] = 0
+                    date = cal.timeInMillis
+                }
+                "Pick a date" -> {
+                    pickDate = true
+                    val dialog = DatePickerFragment()
+                    dialog.setOnDateSetListener(object : DatePickerFragment.DateSetListener {
+                        override fun dateChanged(year: Int, month: Int, dayOfMonth: Int) {
+                            this@SearchEventFragment.dateChanged(year, month, dayOfMonth)
+                        }
+                    })
+                    dialog.show(activity?.supportFragmentManager, null)
+                }
+            }
+            queryMap["time"] = date
+        }
+    }
+
+    private fun setEventTypeGroupListener() {
+        type_chip_group.setOnCheckedChangeListener { chipGroup, i ->
+            val chip = chipGroup.findViewById<Chip>(i)
+
+            if (chip == null) {
+                queryMap.remove("type")
+                return@setOnCheckedChangeListener
+            }
+            queryMap["type"] = chip.text
+        }
     }
 
     override fun dateChanged(year: Int, month: Int, dayOfMonth: Int) {
@@ -153,60 +207,6 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
         })
     }
 
-    private fun resetChips(title: String, type: Int, chipData: List<ChipData>) {
-        val recycler: RecyclerView = if(type == 0) {
-            date_chip_recycler
-        } else {
-            type_chip_recycler
-        }
-        for (i in chipData) {
-            if(i.title != title && i.selected) {
-                i.selected = false
-            }
-        }
-        if(type == 0) {
-            getDateFromString(title)
-            queryMap["time"] = date
-        } else {
-            queryMap["type"] = title
-        }
-        recycler.adapter?.notifyDataSetChanged()
-    }
-
-    private fun getDateFromString(selected: String) {
-        val cal = Calendar.getInstance()
-
-        when(selected) {
-            "Today" -> date = System.currentTimeMillis()
-            "Tomorrow" -> {
-                cal[Calendar.DAY_OF_YEAR] = cal[Calendar.DAY_OF_YEAR] + 1
-                cal[Calendar.HOUR_OF_DAY] = 0
-                cal[Calendar.MINUTE] = 0
-                cal[Calendar.SECOND] = 0
-                date = cal.timeInMillis
-            }
-            "The weekend" -> {
-                val delta = 7 - cal[Calendar.DAY_OF_YEAR]
-                cal[Calendar.DAY_OF_YEAR] = cal[Calendar.DAY_OF_YEAR] + delta
-                cal[Calendar.HOUR_OF_DAY] = 0
-                cal[Calendar.MINUTE] = 0
-                cal[Calendar.SECOND] = 0
-                date = cal.timeInMillis
-            }
-            "Pick a date" -> {
-                pickDate = true
-                val dialog = DatePickerFragment()
-                dialog.setOnDateSetListener(object : DatePickerFragment.DateSetListener{
-                    override fun dateChanged(year: Int, month: Int, dayOfMonth: Int) {
-                        this@SearchEventFragment.dateChanged(year, month, dayOfMonth)
-                    }
-                })
-                dialog.show(activity?.supportFragmentManager, null)
-            }
-        }
-        Log.d(TAG, "Date is ${Util.formatDateTime(cal)}")
-    }
-
     private fun updateRecyclers() {
         if(events.size > 0) {
             no_events.visibility = View.GONE
@@ -217,51 +217,16 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
         }
     }
 
+    private fun createChip(title: String) = Chip(type_chip_group.context).apply {
+        text = title
+        setTextColor(ContextCompat.getColor(this@SearchEventFragment.act, android.R.color.white))
+        isClickable = true
+        isCheckable = true
+        isFocusable = true
+        checkedIcon = null
+        setChipBackgroundColorResource(R.color.search_chip_list)
+    }
+
     data class ChipData(var title: String, var selected: Boolean)
 
-    inner class ChipAdapter(private val chipData: List<ChipData>, val type: Int): RecyclerView.Adapter<ChipAdapter.ViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val v = LayoutInflater.from(parent.context).inflate(R.layout.chip_layout, parent, false)
-            return ViewHolder(v)
-        }
-
-        override fun getItemCount()= chipData.size
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(position)
-        }
-
-        inner class ViewHolder(override val containerView: View): RecyclerView.ViewHolder(containerView), LayoutContainer {
-            fun bind(position: Int) {
-                val chipItem = chipData[position]
-                chip.text = chipItem.title
-                if(chipItem.selected) {
-                    (chip.background as GradientDrawable).setColor(ContextCompat.getColor(rootView.context, R.color.dull_red))
-                } else {
-                    (chip.background as GradientDrawable).setColor(ContextCompat.getColor(rootView.context, R.color.colorPrimaryDark))
-                }
-
-                chip.setOnClickListener {
-                    if(chipItem.selected) {
-                        chipItem.selected = false
-                        if(type == 0) {
-                            queryMap.remove("time")
-                        } else {
-                            queryMap.remove("type")
-                        }
-                        notifyDataSetChanged()
-                    } else {
-                        chipItem.selected = true
-                        pickDate = true
-                        resetChips(chipData[position].title, type, chipData)
-                    }
-                    if(pickDate)observeEvents()
-                    Log.d(TAG, "Chip clicked")
-                }
-
-            }
-
-
-        }
-    }
 }

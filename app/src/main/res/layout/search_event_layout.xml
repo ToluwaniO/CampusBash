@@ -23,23 +23,49 @@
 
         app:layout_constraintLeft_toLeftOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <HorizontalScrollView
         android:id="@+id/date_chip_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:scrollbars="none"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_bar" />
+        app:layout_constraintTop_toBottomOf="@id/search_bar">
 
-    <androidx.recyclerview.widget.RecyclerView
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/date_chip_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <!-- Chips can be declared here, or added dynamically. -->
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <HorizontalScrollView
         android:id="@+id/type_chip_recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:scrollbars="none"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/date_chip_recycler" />
+        app:layout_constraintTop_toBottomOf="@id/date_chip_recycler">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/type_chip_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <!-- Chips can be declared here, or added dynamically. -->
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/event_recycler"
