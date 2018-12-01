@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import android.util.ArrayMap
 import android.view.View
+import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.event_card_layout.*
 import toluog.campusbash.R
@@ -37,11 +40,16 @@ class EventViewHolder(override val containerView: View): RecyclerView.ViewHolder
         }
         event_day.text = Util.getDay(event.startTime)
         event_month.text = Util.getShortMonth(event.startTime)
-        if(event.placeholderImage != null){
-            Glide.with(context).load(event.placeholderImage?.url).into(event_image)
+        val source: Any? = if(event.placeholderImage != null){
+            event.placeholderImage?.url
         } else {
-            event_image.setImageResource(R.drawable.default_event_background)
+            containerView.context.getDrawable(R.drawable.default_event_background)
         }
+        val radiusInPx = containerView.context.resources.getDimensionPixelSize(R.dimen.event_card_corner_radius)
+        Glide.with(context)
+                .load(source)
+                .apply(RequestOptions().transform(RoundedCorners(radiusInPx)))
+                .into(event_image)
         Glide.with(context).load(event.creator.imageUrl).into(event_creator_image)
         itemView.setOnClickListener { listener.onItemClick(event, it) }
         if(myEvent) {
