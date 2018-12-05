@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.no_events_layout.*
 import kotlinx.android.synthetic.main.search_event_layout.*
+import kotlinx.coroutines.*
 import toluog.campusbash.R
 import toluog.campusbash.adapters.EventAdapter
 import toluog.campusbash.model.Event
@@ -24,6 +25,7 @@ import toluog.campusbash.utils.Util
 import toluog.campusbash.utils.extension.act
 import toluog.campusbash.view.viewmodel.EventsViewModel
 import java.util.*
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
@@ -45,6 +47,8 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
     private lateinit var eventAdapter: EventAdapter
     private var date: Long? = null
     private var pickDate = false
+    private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val threadScope = CoroutineScope(threadJob)
 
     private val searchWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
@@ -77,6 +81,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
             val chip = createChip(day.title)
             date_chip_group.addView(chip)
         }
+        eventTypes.sortWith(compareBy {it.title})
         for (type in eventTypes) {
             val chip = createChip(type.title)
             type_chip_group.addView(chip)
@@ -88,6 +93,11 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
         search_bar.addTextChangedListener(searchWatcher)
         setDateGroupListener()
         setEventTypeGroupListener()
+    }
+
+    override fun onDestroyView() {
+        threadJob.cancel()
+        super.onDestroyView()
     }
 
     private fun setDateGroupListener() {
@@ -138,9 +148,11 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
 
             if (chip == null) {
                 queryMap.remove("type")
+                observeEvents()
                 return@setOnCheckedChangeListener
             }
             queryMap["type"] = chip.text
+            observeEvents()
         }
     }
 
@@ -179,25 +191,29 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
             viewModel.getEvents("%$text%", time ?: System.currentTimeMillis())
         }
         liveEvents?.observe(this, Observer {
-            events.clear()
-            if(it != null) {
-                Log.d(TAG, "query size -> ${it.size}")
-                it.forEach {event ->
-                    if(time != null) {
-                        val rangeB = TimeUnit.HOURS.toMillis(24)+time
-                        if (Util.dateRangeCheck(event.startTime, time, rangeB) &&
-                                Util.dateRangeCheck(event.endTime, time, rangeB)) {
+            threadScope.launch {
+                events.clear()
+                if(it != null) {
+                    Log.d(TAG, "query size -> ${it.size}")
+                    it.forEach {event ->
+                        if(time != null) {
+                            val rangeB = TimeUnit.HOURS.toMillis(24)+time
+                            if (Util.dateRangeCheck(event.startTime, time, rangeB) &&
+                                    Util.dateRangeCheck(event.endTime, time, rangeB)) {
+                                events.add(event)
+                            }
+                        }
+                        else {
                             events.add(event)
                         }
                     }
-                    else {
-                        events.add(event)
+                }
+                withContext(Dispatchers.Main) {
+                    updateRecyclers()
+                    if (events.size > 0) {
+                        eventAdapter.notifyDataSetChanged()
                     }
                 }
-            }
-            updateRecyclers()
-            if (events.size > 0) {
-                eventAdapter.notifyDataSetChanged()
             }
         })
         viewModel.getPlaces()?.observe(this, Observer {
