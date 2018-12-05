@@ -4,6 +4,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.*
 import androidx.room.migration.Migration
 import android.content.Context
+import com.crashlytics.android.Crashlytics
 import toluog.campusbash.model.Currency
 import toluog.campusbash.model.Event
 import toluog.campusbash.model.Place
@@ -30,9 +31,16 @@ abstract class AppDatabase(): RoomDatabase() {
             if(dbInstance == null){
                 synchronized(this) {
                     if (dbInstance == null) {
-                        dbInstance = Room.databaseBuilder(context, AppDatabase::class.java, dbName)
+                        dbInstance = try {
+                            Room.databaseBuilder(context, AppDatabase::class.java, dbName)
                                 .addMigrations(MIGRATION_1_2)
                                 .build()
+                        } catch (e: IllegalStateException) {
+                            Crashlytics.logException(e)
+                            Room.databaseBuilder(context, AppDatabase::class.java, dbName)
+                                    .fallbackToDestructiveMigration()
+                                    .build()
+                        }
                     }
                 }
             }
