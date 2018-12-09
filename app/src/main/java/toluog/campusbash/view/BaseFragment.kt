@@ -11,8 +11,8 @@ open class BaseFragment: Fragment(), CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Default
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
         job.cancel()
-        super.onDestroy()
+        super.onDestroyView()
     }
 }

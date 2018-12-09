@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/navigation_events">
+
+    <fragment
+        android:id="@+id/navigation_events"
+        android:name="toluog.campusbash.view.EventsFragment"
+        android:label="EventsFragment" >
+        <action
+            android:id="@+id/action_navigation_events_to_navigation_search"
+            app:destination="@id/navigation_search" />
+        <action
+            android:id="@+id/action_navigation_events_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_events_to_navigation_host"
+            app:destination="@id/navigation_host" />
+        <action
+            android:id="@+id/action_navigation_events_to_navigation_tickets"
+            app:destination="@id/navigation_tickets" />
+        <argument
+            android:name="myEvents"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <argument
+            android:name="university"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="toluog.campusbash.view.SearchEventFragment"
+        android:label="SearchEventFragment" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="toluog.campusbash.view.ProfileFragment"
+        android:label="ProfileFragment" />
+    <fragment
+        android:id="@+id/navigation_tickets"
+        android:name="toluog.campusbash.view.TicketsFragment"
+        android:label="tickets_fragment"
+        tools:layout="@layout/tickets_fragment" />
+    <fragment
+        android:id="@+id/navigation_host"
+        android:name="toluog.campusbash.view.EventsFragment"
+        android:label="EventsFragment" />
+</navigation>

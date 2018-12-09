@@ -26,11 +26,18 @@ import kotlin.collections.ArrayList
 import com.google.android.material.appbar.AppBarLayout
 import androidx.core.content.ContextCompat
 import android.view.View.GONE
+import androidx.core.os.bundleOf
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import toluog.campusbash.adapters.BoughtTicketAdapter
 import toluog.campusbash.model.BoughtTicket
@@ -42,7 +49,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                                                             BoughtTicketAdapter.TicketListener {
 
     private val TAG = MainActivity::class.java.simpleName
-    private val fragManager = supportFragmentManager
     private lateinit var uniAdapter: ArrayAdapter<CharSequence>
     private lateinit var viewModel: MainActivityViewModel
     private val uniChar = ArrayList<CharSequence>()
@@ -50,67 +56,25 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private val firebaseManager = lazy { FirebaseManager() }
     private lateinit var country: String
     private var university: String = ""
-    private var title = ""
-    private var appbarState = Pair<Boolean?, Boolean>(true, false)
     private var firstDropSelect = false
+    private lateinit var navController: NavController
 
     private val threadJob = Dispatchers.Default
     private val threadScope = CoroutineScope(threadJob)
 
-    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        when (item.itemId) {
-            R.id.navigation_events -> {
-                title = ""
-                (fab as View).visibility = VISIBLE
-                fragManager.popBackStack()
-                fragManager.beginTransaction().replace(R.id.fragment_frame,
-                        EventsFragment.newInstance(university, false), null)
-                        .commit()
-                setAppBarState(true)
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_search -> {
-                title = ""
-                (fab as View).visibility = GONE
-                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
-                        .commit()
-                setAppBarState(null)
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_tickets -> {
-                title = getString(R.string.tickets)
-                (fab as View).visibility = GONE
-                fragManager.popBackStack()
-                fragManager.beginTransaction().replace(R.id.fragment_frame, TicketsFragment.newInstance(), null)
-                        .commit()
-                setAppBarState(false)
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_host -> {
-                title = getString(R.string.my_events)
-                (fab as View).visibility = VISIBLE
-                fragManager.popBackStack()
-                fragManager.beginTransaction().replace(R.id.fragment_frame,
-                        EventsFragment.newInstance(university, true), null)
-                        .commit()
-                setAppBarState(false)
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_profile -> {
-                title = ""
-                (fab as View).visibility = GONE
-                fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
-                        .commit()
-                setAppBarState(false, true)
-                return@OnNavigationItemSelectedListener true
-            }
-        }
-        false
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val host: NavHostFragment = supportFragmentManager
+                .findFragmentById(R.id.main_nav_host) as NavHostFragment? ?: return
+
+        navController = host.navController
+        navigation.setupWithNavController(navController)
+        
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            setAppBarState(destination.id)
+        }
 
         Analytics.init(applicationContext)
         Fabric.with(this, Crashlytics())
@@ -120,10 +84,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
         setSupportActionBar(toolbar)
 
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-
         (fab.layoutParams as CoordinatorLayout.LayoutParams).behavior = FabScrollBehavior()
-        //(navigation.layoutParams as CoordinatorLayout.LayoutParams).behavior = BottomNavigationBehavior()
         fab.setOnClickListener {
             startActivity(intentFor<CreateEventActivity>())
         }
@@ -135,12 +96,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         Log.d(TAG, "Pref string gotten")
 
         updateUi()
-        Log.d(TAG, "UI Drawn")
-        if(savedInstanceState == null) {
-            fragManager.beginTransaction().replace(R.id.fragment_frame,
-                    EventsFragment.newInstance(university, false), null).commit()
-        }
-        Log.d(TAG, "fragment started")
     }
 
     override fun onStart() {
@@ -152,6 +107,11 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         } else{
             Util.startSignInActivity(this)
         }
+    }
+
+    override fun onDestroy() {
+        threadJob.cancel()
+        super.onDestroy()
     }
 
     private fun updateUi() {
@@ -216,8 +176,10 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         (view as TextView?)?.setTextColor(Color.WHITE)
         if(!firstDropSelect) {
             university = uniList[position].name
-            fragManager.beginTransaction().replace(R.id.fragment_frame,
-                    EventsFragment.newInstance(university, false), null).commit()
+            navController.navigate(R.id.navigation_events, bundleOf(
+                    "university" to university,
+                    "myEvents" to 0)
+            )
         } else {
             firstDropSelect = false
         }
@@ -251,35 +213,39 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         main_uni_spinner.setSelection(uniPosition)
     }
 
-    private  fun setAppBarState(enabled: Boolean?, isProfile: Boolean = false) {
-        val params = fragment_frame.layoutParams as CoordinatorLayout.LayoutParams
-        when {
-            enabled == null -> {
-                appbar.setExpanded(false, false)
-                appbar.visibility = View.GONE
-                params.behavior = null
-            }
-            enabled -> {
-                appbar.setExpanded(true, true)
-                appbar.visibility = View.VISIBLE
-                toolbar.visibility = View.VISIBLE
-                params.behavior = AppBarLayout.ScrollingViewBehavior()
-            }
-            else -> {
+    private  fun setAppBarState(id: Int) {
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        when(id) {
+            R.id.navigation_search -> {
                 appbar.setExpanded(false, true)
-                appbar.visibility = View.VISIBLE
-                toolbar.visibility = View.VISIBLE
-                params.behavior = AppBarLayout.ScrollingViewBehavior()
+                toolbar.title = getString(R.string.find_events)
+                (fab as View).visibility = GONE
+            }
+            R.id.navigation_events -> {
+                appbar.setExpanded(true, true)
+                if (navigation.selectedItemId == R.id.navigation_host) {
+                    toolbar.title = getString(R.string.my_events)
+                    (fab as View).visibility = VISIBLE
+                } else {
+                    toolbar.title = ""
+                }
+            }
+            R.id.navigation_host -> {
+                appbar.setExpanded(false, true)
+                toolbar.title = getString(R.string.host)
+                (fab as View).visibility = VISIBLE
+            }
+            R.id.navigation_tickets -> {
+                appbar.setExpanded(false, true)
+                toolbar.title = getString(R.string.tickets)
+                (fab as View).visibility = GONE
+            }
+            R.id.navigation_profile -> {
+                appbar.setExpanded(false, true)
+                toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.background_material_light))
+                toolbar.title = ""
+                (fab as View).visibility = VISIBLE
             }
         }
-
-        if(isProfile) {
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.background_material_light))
-        } else {
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
-        }
-        fragment_frame.requestLayout()
-        toolbar.title = title
-        appbarState = Pair(enabled, isProfile)
     }
 }

@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
+apply plugin: "androidx.navigation.safeargs"
 
 if (!project.hasProperty("disable-performance-plugin")) {
     apply plugin: 'com.google.firebase.firebase-perf'
@@ -55,7 +56,7 @@ android {
 }
 
 dependencies {
-    def sLib = '28.0.0'
+    def nav_version = "1.0.0-alpha08"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.0.1'
@@ -69,6 +70,8 @@ dependencies {
     implementation 'androidx.emoji:emoji:1.0.0'
     implementation 'androidx.emoji:emoji-appcompat:1.0.0'
     implementation 'androidx.fragment:fragment-ktx:1.0.0'
+    implementation "android.arch.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "android.arch.navigation:navigation-ui-ktx:$nav_version"
 
     //Firebase
     implementation "com.google.firebase:firebase-core:16.0.5"
@@ -130,6 +133,7 @@ dependencies {
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0-RC1"
     androidTestImplementation "androidx.test:runner:1.1.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.1.0"
+    androidTestImplementation "android.arch.navigation:navigation-testing:$nav_version"
 }
 
 apply plugin: 'com.google.gms.google-services'

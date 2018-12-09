@@ -193,4 +193,5 @@
     <string name="event_could_not_be_deleted">Event could not be deleted</string>
     <string name="invalid_card">Invalid card</string>
     <string name="do_you_want_to_delete_this_event">Do you want to delete this event?</string>
+    <string name="find_events">Find Events</string>
 </resources>

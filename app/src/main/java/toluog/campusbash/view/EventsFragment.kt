@@ -25,13 +25,15 @@ import toluog.campusbash.model.Featured
 import toluog.campusbash.model.Place
 import toluog.campusbash.utils.ConfigProvider
 import toluog.campusbash.utils.FirebaseManager
+import toluog.campusbash.utils.Util
+import toluog.campusbash.utils.extension.act
 import toluog.campusbash.view.viewmodel.EventsViewModel
 import java.util.concurrent.Executors
 
 /**
  * Created by oguns on 12/13/2017.
  */
-class EventsFragment : Fragment(){
+class EventsFragment : BaseFragment(){
 
     private lateinit var rootView: View
     private var myEvents = false
@@ -49,17 +51,17 @@ class EventsFragment : Fragment(){
     private val froshGroup = HashSet<String>()
     private var studentId = ""
     private val threadJob = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
-    private val threadScope = CoroutineScope(threadJob)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.events_layout, container, false)
         featuredTypes = configProvider.featuredEventTypes()
         featured = Featured(title = getString(R.string.featured_emoji, AppContract.FIRE_EMOJI))
+
         arguments?.let {
             myEvents = it.getBoolean(MY_EVENTS_PARAM)
-            university = it.getString(UNIVERSITY_PARAM) ?: ""
+            university = it.getString(UNIVERSITY_PARAM) ?: Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
             Log.d(TAG, "university=$university")
-        }
+        } ?: setDefaultParams()
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
         places = viewModel.getPlaces()
 
@@ -90,6 +92,11 @@ class EventsFragment : Fragment(){
             event_recycler.visibility = View.VISIBLE
             no_events.visibility = View.GONE
         }
+    }
+
+    private fun setDefaultParams() {
+        myEvents = false
+        university = Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
     }
 
     private fun copyAds(eventSize: Int) {
@@ -130,7 +137,7 @@ class EventsFragment : Fragment(){
 
     private fun observeEvents() {
         viewModel.getEvents(university, myEvents)?.observe(this, Observer { eventsList ->
-            threadScope.launch {
+            this.launch(threadJob) {
                 Log.d(TAG, "Events size is ${eventsList?.size}")
                 val user = FirebaseManager.getUser()
                 events.clear()

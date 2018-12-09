@@ -70,16 +70,35 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/fragment_frame"
+    <!--<FrameLayout-->
+        <!--android:id="@+id/fragment_frame"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_above="@+id/navigation"-->
+        <!--android:layout_marginBottom="@dimen/mtrl_bottomappbar_height"-->
+        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+
+        <!--&lt;!&ndash;<fragment&ndash;&gt;-->
+            <!--&lt;!&ndash;android:id="@+id/nav_host_fragment"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:name="androidx.navigation.fragment.NavHostFragment"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;app:defaultNavHost="true"&ndash;&gt;-->
+            <!--&lt;!&ndash;app:navGraph="@navigation/main_nav_graph">&ndash;&gt;-->
+
+        <!--&lt;!&ndash;</fragment>&ndash;&gt;-->
+        <!---->
+    <!--</FrameLayout>-->
+
+    <fragment
+        android:id="@+id/main_nav_host"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/navigation"
         android:layout_marginBottom="@dimen/mtrl_bottomappbar_height"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-
-    </FrameLayout>
+        app:defaultNavHost="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:navGraph="@navigation/main_nav_graph" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
