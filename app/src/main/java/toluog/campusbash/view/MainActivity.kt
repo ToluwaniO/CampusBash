@@ -30,6 +30,7 @@ import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import toluog.campusbash.utils.*
@@ -158,9 +159,15 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     override fun onItemClick(event: Event, view: View) {
         Analytics.logEventSelected(event)
-        val bundle = Bundle()
-        bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
-            startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
+        val options = navOptions {
+            anim {
+                enter = R.anim.slide_in_right
+                exit = R.anim.slide_out_left
+                popEnter = R.anim.slide_in_right
+                popExit = R.anim.slide_out_left
+            }
+        }
+        navController.navigate(R.id.navigation_view_event, bundleOf(AppContract.EVENT_ID to event.eventId), options)
     }
 
     override fun onTicketClicked(ticket: BoughtTicket) {

@@ -25,6 +25,9 @@ import com.google.android.material.snackbar.Snackbar
 inline val Fragment.act: Activity
     get() = this.requireActivity()
 
+inline val Fragment.actCompat: AppCompatActivity
+    get() = this.requireActivity() as AppCompatActivity
+
 fun ImageView.loadImage(url: Any?) {
     Glide.with(context).load(url).into(this)
 }

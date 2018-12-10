@@ -27,7 +27,13 @@
             app:argType="integer" />
         <argument
             android:name="university"
+            android:defaultValue=" "
             app:argType="string" />
+        <action
+            android:id="@+id/action_navigation_events_to_viewEventActivity"
+            app:destination="@id/navigation_view_event"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_in_left" />
     </fragment>
     <fragment
         android:id="@+id/navigation_search"
@@ -46,4 +52,13 @@
         android:id="@+id/navigation_host"
         android:name="toluog.campusbash.view.EventsFragment"
         android:label="EventsFragment" />
+    <activity
+        android:id="@+id/navigation_view_event"
+        android:name="toluog.campusbash.view.ViewEventActivity"
+        android:label="activity_view_event"
+        tools:layout="@layout/activity_view_event" >
+        <argument
+            android:name="eventId"
+            app:argType="string" />
+    </activity>
 </navigation>
