@@ -8,6 +8,8 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -27,16 +29,6 @@ import toluog.campusbash.utils.Util
 import toluog.campusbash.utils.extension.*
 import toluog.campusbash.view.viewmodel.ViewEventViewModel
 
-
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [ViewEventFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [ViewEventFragment.newInstance] factory method to
- * create an instance of this fragment.
- *
- */
 class ViewEventFragment : BaseFragment(), OnMapReadyCallback {
     private var eventId: String = ""
     private var event: Event? = null
@@ -63,7 +55,7 @@ class ViewEventFragment : BaseFragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         parseArgs()
-        viewModel = ViewModelProviders.of(this).get(ViewEventViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity!!).get(ViewEventViewModel::class.java)
         liveEvent = viewModel.getEvent(eventId)
         observeEvent()
         observeTickets()
@@ -135,9 +127,8 @@ class ViewEventFragment : BaseFragment(), OnMapReadyCallback {
         event_get_ticket.setOnClickListener {
             if (FirebaseManager.isSignedIn()) {
                 Analytics.logBuyTicketClicked(event)
-                val bundle = Bundle()
-                bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
-                startActivity(intentFor<BuyTicketActivity>().putExtras(bundle))
+                val dir = ViewEventFragmentDirections.actionViewEventDestinationToBuyTicketDestination(event.eventId)
+                findNavController().navigate(dir)
             } else {
                 startActivity(intentFor<MainActivity>())
             }

@@ -27,7 +27,7 @@ import toluog.campusbash.utils.extension.*
 import toluog.campusbash.view.viewmodel.ViewEventViewModel
 
 
-class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListener {
+class BuyTicketActivity : AppCompatActivity() {
 
     private lateinit var eventId: String
     private val tickets: ArrayList<Ticket> = ArrayList()
@@ -65,7 +65,7 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             if (tickets != null) {
                 for (t in tickets) {
                     if (t.currency.isNotBlank()) {
-                        currency = t.currency
+                        viewModel.currency = t.currency
                         break
                     }
                 }
@@ -92,29 +92,29 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
     }
 
     private fun updateUi(){
-        adapter = TicketAdapter(tickets, this)
-        val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(this)
-        val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
-        tickets_recycler.layoutManager = layoutManager
-        tickets_recycler.itemAnimator = DefaultItemAnimator()
-        tickets_recycler.adapter = adapter
-        tickets_recycler.addItemDecoration(dividerItemDecoration)
-
-        tickets_buy_button.setOnClickListener {
-            val purchase = getData()
-            val price = adapter.total
-            val currency = purchase[AppContract.CURRENCY] as String?
-            if(price > 0 && currency != null) {
-                val cardPaymentIntent = Intent(this, CardPaymentActivity::class.java)
-                cardPaymentIntent.putExtras(Bundle().apply {
-                    putString(AppContract.CURRENCY, currency)
-                    putInt(AppContract.BUNDLE_PRICE, (price*100).toInt())
-                })
-                startActivityForResult(cardPaymentIntent, TOKEN_REQUEST)
-            } else {
-                buyTickets(tokenId, false)
-            }
-        }
+//        adapter = TicketAdapter(tickets, this)
+//        val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(this)
+//        val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
+//        tickets_recycler.layoutManager = layoutManager
+//        tickets_recycler.itemAnimator = DefaultItemAnimator()
+//        tickets_recycler.adapter = adapter
+//        tickets_recycler.addItemDecoration(dividerItemDecoration)
+//
+//        tickets_buy_button.setOnClickListener {
+//            val purchase = getData()
+//            val price = adapter.total
+//            val currency = purchase[AppContract.CURRENCY] as String?
+//            if(price > 0 && currency != null) {
+//                val cardPaymentIntent = Intent(this, CardPaymentActivity::class.java)
+//                cardPaymentIntent.putExtras(Bundle().apply {
+//                    putString(AppContract.CURRENCY, currency)
+//                    putInt(AppContract.BUNDLE_PRICE, (price*100).toInt())
+//                })
+//                startActivityForResult(cardPaymentIntent, TOKEN_REQUEST)
+//            } else {
+//                buyTickets(tokenId, false)
+//            }
+//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -136,30 +136,6 @@ class BuyTicketActivity : AppCompatActivity(), TicketAdapter.OnTicketClickListen
             android.R.id.home -> onBackPressed()
         }
         return true
-    }
-
-    override fun onTicketClick(ticket: Ticket) {
-        alertDialog(ticket.description, ticket.name).show()
-    }
-
-    override fun onTicketQuantityChanged(queryMap: ArrayMap<String, Any>) {
-//        Log.d(TAG, "Ticket quantity changed")
-//        val breakdown = getData()["breakdown"] as HashMap<String, Double>
-//        Log.d(TAG, "Breakdown -> $breakdown")
-//        val total = breakdown[AppContract.TOTAL_FEE]
-//        if(total != null && total > 0) {
-//            price_breakdown_layout.visibility = View.VISIBLE
-//            ticket_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.TICKET_FEE])
-//            payment_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.PAYMENT_FEE])
-//            service_fee_text.text = getString(R.string.price_value, "$", breakdown[AppContract.SERVICE_FEE])
-//            total_fee_text.text = getString(R.string.price_value, "$", total)
-//        } else {
-//            price_breakdown_layout.visibility = View.GONE
-//        }
-    }
-
-    override fun onTotalChanged(total: Double) {
-        ticket_fee_text.text = getString(R.string.price_value, currency, total)
     }
 
     private fun getData(): HashMap<String, Any> {

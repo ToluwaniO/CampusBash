@@ -18,17 +18,12 @@ import toluog.campusbash.utils.extension.alertDialog
 /**
  * Created by oguns on 12/25/2017.
  */
-class TicketAdapter(private val tickets: ArrayList<Ticket>, val context: Context): RecyclerView.Adapter<TicketAdapter.ViewHolder>() {
+class TicketAdapter(private val tickets: ArrayList<Ticket>, val listener: OnTicketClickListener): RecyclerView.Adapter<TicketAdapter.ViewHolder>() {
 
-    private val listener: OnTicketClickListener
     private val queryMap = ArrayMap<String, Any>()
     private val priceMap = ArrayMap<String, Double>()
     var total = 0.0
     private set
-
-    init {
-        listener = context as OnTicketClickListener
-    }
 
     interface OnTicketClickListener {
         fun onTicketClick(ticket: Ticket)

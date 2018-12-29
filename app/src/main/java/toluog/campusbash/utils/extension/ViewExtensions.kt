@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.*
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -15,12 +16,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavOptions
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
+import toluog.campusbash.R
 
 inline val Fragment.act: Activity
     get() = this.requireActivity()
@@ -28,7 +31,30 @@ inline val Fragment.act: Activity
 inline val Fragment.actCompat: AppCompatActivity
     get() = this.requireActivity() as AppCompatActivity
 
+inline val Fragment.transitionOptions: NavOptions
+get() = navOptions {
+    anim {
+        enter = R.anim.slide_in_right
+        exit = R.anim.slide_out_left
+        popEnter = R.anim.slide_in_left
+        popExit = R.anim.slide_out_right
+    }
+}
+
+fun Fragment.transitionWithCustomTop(destination: Int): NavOptions {
+    val builder = NavOptions.Builder()
+    builder.setPopUpTo(destination, true)
+    builder.apply {
+        setPopEnterAnim(R.anim.slide_in_right)
+        setExitAnim(R.anim.slide_out_left)
+        setPopEnterAnim(R.anim.slide_in_left)
+        setPopExitAnim(R.anim.slide_out_right)
+    }
+    return builder.build()
+}
+
 fun ImageView.loadImage(url: Any?) {
+
     Glide.with(context).load(url).into(this)
 }
 
@@ -70,9 +96,29 @@ fun View.longSnackbar(message: Int) = Snackbar
 fun View.snackbar(message: Int) = Snackbar
         .make(this, this.context.getString(message), Snackbar.LENGTH_SHORT).show()
 
+fun View.snackbar(message: Int, actionMessage: Int, action: () -> Unit) {
+    val snackbar = Snackbar.make(this, this.context.getString(message), Snackbar.LENGTH_SHORT)
+    val listener = View.OnClickListener { action() }
+    snackbar.setAction(actionMessage, listener)
+    snackbar.show()
+}
+
+fun View.longSnackbar(message: Int, actionMessage: Int, action: () -> Unit) {
+    val snackbar = Snackbar.make(this, this.context.getString(message), Snackbar.LENGTH_LONG)
+    val listener = View.OnClickListener { action() }
+    snackbar.setAction(actionMessage, listener)
+    snackbar.show()
+}
+
+fun View.indefiniteSnackbar(message: Int, actionMessage: Int, action: () -> Unit) {
+    val snackbar = Snackbar.make(this, this.context.getString(message), Snackbar.LENGTH_INDEFINITE)
+    val listener = View.OnClickListener { action() }
+    snackbar.setAction(actionMessage, listener)
+    snackbar.show()
+}
+
 fun View.indefiniteSnackbar(message: Int) = Snackbar
         .make(this, this.context.getString(message), Snackbar.LENGTH_INDEFINITE).show()
-
 
 fun Context.toast(resource: Int) = Toast.makeText(this, this.getString(resource), Toast.LENGTH_SHORT)
 

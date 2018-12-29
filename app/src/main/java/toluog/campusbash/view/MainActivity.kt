@@ -159,15 +159,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     override fun onItemClick(event: Event, view: View) {
         Analytics.logEventSelected(event)
-        val options = navOptions {
-            anim {
-                enter = R.anim.slide_in_right
-                exit = R.anim.slide_out_left
-                popEnter = R.anim.slide_in_right
-                popExit = R.anim.slide_out_left
-            }
-        }
-        navController.navigate(R.id.navigation_view_event, bundleOf(AppContract.EVENT_ID to event.eventId), options)
+        navController.navigate(EventsFragmentDirections.actionNavigationEventsToViewEventActivity(event.eventId))
     }
 
     override fun onTicketClicked(ticket: BoughtTicket) {

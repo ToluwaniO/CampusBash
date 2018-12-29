@@ -20,6 +20,7 @@ import kotlin.coroutines.CoroutineContext
 
 open class GeneralViewModel(val app: Application): AndroidViewModel(app), CoroutineScope {
     private val job = Job()
+    val uiScope = CoroutineScope(Dispatchers.Main + job)
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Default
     val generalRepository = GeneralRepository(app.applicationContext, coroutineContext)

@@ -33,7 +33,11 @@
             android:id="@+id/action_navigation_events_to_viewEventActivity"
             app:destination="@id/navigation_view_event"
             app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_in_left" />
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@+id/main_nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/navigation_search"
