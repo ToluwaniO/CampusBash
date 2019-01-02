@@ -26,6 +26,7 @@ import kotlin.collections.ArrayList
 import com.google.android.material.appbar.AppBarLayout
 import androidx.core.content.ContextCompat
 import android.view.View.GONE
+import androidx.fragment.app.Fragment
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
@@ -50,8 +51,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private val firebaseManager = lazy { FirebaseManager() }
     private lateinit var country: String
     private var university: String = ""
-    private var title = ""
-    private var appbarState = Pair<Boolean?, Boolean>(true, false)
     private var firstDropSelect = false
 
     private val threadJob = Dispatchers.Default
@@ -60,48 +59,43 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_events -> {
-                title = ""
                 (fab as View).visibility = VISIBLE
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame,
                         EventsFragment.newInstance(university, false), null)
                         .commit()
-                setAppBarState(true)
+                setAppBarState(FragmentPage.HOME)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_search -> {
-                title = ""
                 (fab as View).visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
                         .commit()
-                setAppBarState(null)
+                setAppBarState(FragmentPage.SEARCH)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_tickets -> {
-                title = getString(R.string.tickets)
                 (fab as View).visibility = GONE
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame, TicketsFragment.newInstance(), null)
                         .commit()
-                setAppBarState(false)
+                setAppBarState(FragmentPage.TICKETS)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_host -> {
-                title = getString(R.string.my_events)
                 (fab as View).visibility = VISIBLE
                 fragManager.popBackStack()
                 fragManager.beginTransaction().replace(R.id.fragment_frame,
                         EventsFragment.newInstance(university, true), null)
                         .commit()
-                setAppBarState(false)
+                setAppBarState(FragmentPage.MY_EVENTS)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_profile -> {
-                title = ""
                 (fab as View).visibility = GONE
                 fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
                         .commit()
-                setAppBarState(false, true)
+                setAppBarState(FragmentPage.PROFILE)
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -199,7 +193,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     override fun onItemClick(event: Event, view: View) {
         Analytics.logEventSelected(event)
         val bundle = Bundle()
-        bundle.putString(AppContract.MY_EVENT_BUNDLE, event.eventId)
+        bundle.putString(AppContract.EVENT_ID, event.eventId)
             startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
     }
 
@@ -251,35 +245,39 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         main_uni_spinner.setSelection(uniPosition)
     }
 
-    private  fun setAppBarState(enabled: Boolean?, isProfile: Boolean = false) {
-        val params = fragment_frame.layoutParams as CoordinatorLayout.LayoutParams
-        when {
-            enabled == null -> {
-                appbar.setExpanded(false, false)
-                appbar.visibility = View.GONE
-                params.behavior = null
-            }
-            enabled -> {
+    private  fun setAppBarState(page: FragmentPage) {
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        when (page) {
+            FragmentPage.HOME -> {
                 appbar.setExpanded(true, true)
-                appbar.visibility = View.VISIBLE
-                toolbar.visibility = View.VISIBLE
-                params.behavior = AppBarLayout.ScrollingViewBehavior()
+                toolbar.title = ""
+                (fab as View).visibility = View.VISIBLE
             }
-            else -> {
+            FragmentPage.PROFILE -> {
                 appbar.setExpanded(false, true)
-                appbar.visibility = View.VISIBLE
-                toolbar.visibility = View.VISIBLE
-                params.behavior = AppBarLayout.ScrollingViewBehavior()
+                toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.background_material_light))
+                toolbar.title = ""
+                (fab as View).visibility = View.GONE
+            }
+            FragmentPage.MY_EVENTS -> {
+                appbar.setExpanded(false, true)
+                toolbar.title = getString(R.string.my_events)
+                (fab as View).visibility = View.VISIBLE
+            }
+            FragmentPage.TICKETS -> {
+                appbar.setExpanded(false, true)
+                toolbar.title = getString(R.string.tickets)
+                (fab as View).visibility = View.GONE
+            }
+            FragmentPage.SEARCH -> {
+                appbar.setExpanded(false, true)
+                toolbar.title = getString(R.string.find_events)
+                (fab as View).visibility = View.GONE
             }
         }
+    }
 
-        if(isProfile) {
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.background_material_light))
-        } else {
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
-        }
-        fragment_frame.requestLayout()
-        toolbar.title = title
-        appbarState = Pair(enabled, isProfile)
+    enum class FragmentPage {
+        HOME, SEARCH, PROFILE, TICKETS, MY_EVENTS
     }
 }

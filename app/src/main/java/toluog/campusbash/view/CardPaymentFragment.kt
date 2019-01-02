@@ -1,45 +1,49 @@
 package toluog.campusbash.view
 
+
 import android.app.Activity
 import android.app.ProgressDialog
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.wallet.*
 import com.stripe.android.Stripe
 import com.stripe.android.TokenCallback
 import com.stripe.android.model.Card
 import com.stripe.android.model.Token
-import kotlinx.android.synthetic.main.activity_card_payment.*
-import toluog.campusbash.R
-import toluog.campusbash.utils.AppContract
-import java.lang.Exception
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.wallet.*
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.add_new_card_button.*
 import kotlinx.android.synthetic.main.credit_card_view.*
+import kotlinx.android.synthetic.main.fragment_card_payment.*
 import kotlinx.coroutines.*
+import toluog.campusbash.R
 import toluog.campusbash.model.BashCard
 import toluog.campusbash.model.TicketPriceBreakdown
+import toluog.campusbash.utils.AppContract
 import toluog.campusbash.utils.CampusBash
 import toluog.campusbash.utils.Util
 import toluog.campusbash.utils.extension.*
-import toluog.campusbash.view.viewmodel.GeneralViewModel
+import toluog.campusbash.view.viewmodel.ViewEventViewModel
+import java.lang.Exception
 import java.util.*
-import kotlin.collections.ArrayList
 
+/**
+ * A simple [Fragment] subclass.
+ *
+ */
+class CardPaymentFragment : BaseFragment() {
 
-class CardPaymentActivity : AppCompatActivity() {
-
-    private val TAG = CardPaymentActivity::class.java.simpleName
+    private val TAG = CardPaymentFragment::class.java.simpleName
     private val LOAD_PAYMENT_DATA_REQUEST_CODE = 3731
     private lateinit var paymentsClient: PaymentsClient
     private lateinit var googlePayAlert: AndroidAlertBuilder
@@ -47,20 +51,33 @@ class CardPaymentActivity : AppCompatActivity() {
     private val cards = ArrayList<BashCard>()
     private val adapter = CardAdapter()
     private var pleaseWait: ProgressDialog? = null
-    private lateinit var viewModel: GeneralViewModel
-    private val threadJob = Dispatchers.Default
-    private val threadScope = CoroutineScope(threadJob)
+    private lateinit var viewModel: ViewEventViewModel
+    private var mCallback: CardPaymentFragmentListener? = null
 
     private var breakdown: TicketPriceBreakdown? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_card_payment)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_card_payment, container, false)
+    }
 
-        viewModel = ViewModelProviders.of(this).get(GeneralViewModel::class.java)
-        val price = intent.extras?.getInt(AppContract.BUNDLE_PRICE) ?: 0
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        threadScope.launch {
+        viewModel = ViewModelProviders.of(activity!!).get(ViewEventViewModel::class.java)
+        val price = arguments?.getInt(AppContract.BUNDLE_PRICE)
+        if (price == null) {
+            act.toast(R.string.error_occurred)
+            act.finish()
+            return
+        }
+        loadBreakdown(price)
+
+    }
+
+    private fun loadBreakdown(price: Int) {
+        this.launch {
             val bd = viewModel.getTicketBreakdown(price)
             withContext(Dispatchers.Main) {
                 if (bd != null) {
@@ -68,8 +85,11 @@ class CardPaymentActivity : AppCompatActivity() {
                     progress_bar.visibility = View.GONE
                     main_layout.visibility = View.VISIBLE
                 } else {
-                    toast(R.string.error_occurred)
-                    finish()
+                    container.indefiniteSnackbar(R.string.error_occurred, R.string.retry) {
+                        main_layout.visibility = View.GONE
+                        progress_bar.visibility = View.VISIBLE
+                        this@CardPaymentFragment.launch { loadBreakdown(price) }
+                    }
                 }
             }
         }
@@ -77,17 +97,17 @@ class CardPaymentActivity : AppCompatActivity() {
 
     private fun initCardAndPricing(breakdown: TicketPriceBreakdown) {
         this.breakdown = breakdown
-        currency = intent.extras?.getString(AppContract.CURRENCY) ?: "CB$"
+        currency = viewModel.currency ?: "CB$"
         manageCards()
 
-        pleaseWait = indeterminateProgressDialog(R.string.please_wait)
+        pleaseWait = act.indeterminateProgressDialog(R.string.please_wait)
         pleaseWait?.dismiss()
-        googlePayAlert = alertDialog(getString(R.string.use_google_pay))
+        googlePayAlert = act.alertDialog(getString(R.string.use_google_pay))
         googlePayAlert.positiveButton(getString(R.string.yes)) {
             Log.d(TAG, "Yes clicked for Google Pay")
-            val request = createPaymentDataRequest()
-            AutoResolveHelper.resolveTask(paymentsClient.loadPaymentData(request),
-                    this@CardPaymentActivity, LOAD_PAYMENT_DATA_REQUEST_CODE)
+            val request = viewModel.createPaymentDataRequest()
+            AutoResolveHelper.resolveTask(paymentsClient.loadPaymentData(request), act,
+                    LOAD_PAYMENT_DATA_REQUEST_CODE)
         }
         googlePayAlert.negativeButton(getString(R.string.no)) {
             Log.d(TAG, "User returned no for google pay request")
@@ -99,12 +119,12 @@ class CardPaymentActivity : AppCompatActivity() {
         } else {
             WalletConstants.ENVIRONMENT_PRODUCTION
         }
-        paymentsClient = Wallet.getPaymentsClient(this,
+        paymentsClient = Wallet.getPaymentsClient(act,
                 Wallet.WalletOptions.Builder().setEnvironment(environment)
                         .build())
 
         card_recycler.adapter = adapter
-        val layoutManager = LinearLayoutManager(this)
+        val layoutManager = LinearLayoutManager(act)
         card_recycler.layoutManager = layoutManager
 
         main_currency.text = currency
@@ -129,7 +149,7 @@ class CardPaymentActivity : AppCompatActivity() {
                             if (stripeToken != null) {
                                 // This chargeToken function is a call to your own server, which should then connect
                                 // to Stripe's API to finish the charge.
-                                sendActivityResult(stripeToken.id)
+                                buyTicket(stripeToken.id, true)
                             }
                         }
                     }
@@ -156,101 +176,60 @@ class CardPaymentActivity : AppCompatActivity() {
         val source = bashCard.customerSource
         val card = bashCard.card
         when {
-            source != null -> sendActivityResult(source.id)
+            source != null -> buyTicket(source.id, false)
             card != null -> {
-                val stripe = Stripe(this, AppContract.STRIPE_PUBLISHABLE_KEY)
+                val stripe = Stripe(act, AppContract.STRIPE_PUBLISHABLE_KEY)
                 stripe.createToken(card, object : TokenCallback {
                     override fun onSuccess(token: Token?) {
                         val id: String? = token?.id
-                        sendActivityResult(id, bashCard.newCard)
+                        buyTicket(id, bashCard.newCard)
                     }
 
                     override fun onError(error: Exception?) {
                         Log.d(TAG, "Token error\ne -> ${error?.message}")
-                        sendActivityResult(null)
+                        buyTicket(null, false)
                     }
                 })
             }
             else -> {
                 Log.d(TAG, "Card is null")
-                sendActivityResult(null)
+                buyTicket(null, false)
             }
         }
     }
 
-    private fun sendActivityResult(tokenId: String?, newCard: Boolean = false) {
-        val intent = Intent()
-        if(tokenId != null) {
-            intent.putExtras(Bundle().apply {
-                putString(AppContract.TOKEN_ID, tokenId)
-                putBoolean(AppContract.NEW_CARD, newCard)
-                putParcelable(AppContract.BREAKDOWN, breakdown)
-            })
-            setResult(Activity.RESULT_OK, intent)
-        } else {
-            longToast(R.string.could_not_validate_card)
-            setResult(Activity.RESULT_CANCELED, intent)
+    private fun buyTicket(tokenId: String?, newCard: Boolean) {
+        pleaseWait?.show()
+        this.launch {
+            val state = viewModel.buyTickets(tokenId, newCard)
+            handlePurchaseState(state)
         }
-        finish()
+    }
+
+    private suspend fun handlePurchaseState(state: ViewEventViewModel.BuyTicketState) = withContext(Dispatchers.Main) {
+        pleaseWait?.dismiss()
+        when (state) {
+            is ViewEventViewModel.BuyTicketState.Success -> {
+               mCallback?.cardPaymentCompleted()
+            }
+            is ViewEventViewModel.BuyTicketState.NotSignedIn -> {
+                Util.startSignInActivity(act)
+            }
+            is ViewEventViewModel.BuyTicketState.QuantityIsZero -> {
+                container.snackbar(R.string.no_ticket_purchased)
+            }
+            is ViewEventViewModel.BuyTicketState.Error -> {
+                container.snackbar(R.string.error_occurred)
+            }
+            else -> {
+
+            }
+        }
     }
 
     override fun onDestroy() {
         pleaseWait?.dismiss()
-        threadJob.cancel()
         super.onDestroy()
-    }
-
-    private fun isReadyToPay() {
-        val request = IsReadyToPayRequest.newBuilder()
-                .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
-                .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
-                .build()
-        val task = paymentsClient.isReadyToPay(request)
-        task.addOnCompleteListener { task ->
-            try {
-                val result = task.getResult(ApiException::class.java)
-                if (result == true) {
-                    //show Google as payment option
-                    Log.d(TAG, "Showing Google Pay option")
-                    googlePayAlert.show()
-                } else {
-                    //hide Google as payment option
-                    Log.d(TAG, "Can't show Google Pay option")
-                }
-            } catch (exception: ApiException) {
-                Log.d(TAG, "Google pay error occurred\ne -> ${exception.message}")
-                root_view.snackbar(R.string.error_occurred_g_pay)
-            }
-        }
-    }
-
-    private fun createTokenizationParameters(): PaymentMethodTokenizationParameters {
-        return PaymentMethodTokenizationParameters.newBuilder()
-                .setPaymentMethodTokenizationType(WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY)
-                .addParameter("gateway", "stripe")
-                .addParameter("stripe:publishableKey", AppContract.STRIPE_PUBLISHABLE_KEY)
-                .addParameter("stripe:version", "7.0.1")
-                .build()
-    }
-
-    private fun createPaymentDataRequest(): PaymentDataRequest {
-        val request = PaymentDataRequest.newBuilder()
-                .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
-                .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
-                .setTransactionInfo(TransactionInfo.newBuilder()
-                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_NOT_CURRENTLY_KNOWN)
-                        .setCurrencyCode(currency).build())
-                .setCardRequirements(
-                        CardRequirements.newBuilder()
-                                .addAllowedCardNetworks(Arrays.asList(
-                                        WalletConstants.CARD_NETWORK_AMEX,
-                                        WalletConstants.CARD_NETWORK_DISCOVER,
-                                        WalletConstants.CARD_NETWORK_VISA,
-                                        WalletConstants.CARD_NETWORK_MASTERCARD))
-                                .build())
-
-        request.setPaymentMethodTokenizationParameters(createTokenizationParameters())
-        return request.build()
     }
 
     private fun updateView() {
@@ -274,17 +253,30 @@ class CardPaymentActivity : AppCompatActivity() {
         })
     }
 
-    private fun isNewCard(card: Card?): Boolean {
-        if (card == null) return false
-        cards.forEach {
-            val c = it.card
-            if(card == c) return false
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is CardPaymentFragmentListener) {
+            mCallback = context
+        } else {
+            throw RuntimeException(context.toString() + " must implement BuyTicketFragmentListener")
         }
-        return true
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mCallback = null
+    }
+
+    interface CardPaymentFragmentListener {
+        fun cardPaymentCompleted()
     }
 
     companion object {
         const val ADD_CARD = 3628
+
+        fun newInstance(price: Int) = CardPaymentFragment().apply {
+            arguments = bundleOf(AppContract.BUNDLE_PRICE to price)
+        }
     }
 
     inner class CardAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -294,11 +286,11 @@ class CardPaymentActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return if (viewType == CARD_VIEW_TYPE) {
-                val view = LayoutInflater.from(this@CardPaymentActivity)
+                val view = LayoutInflater.from(act)
                         .inflate(R.layout.credit_card_view, parent, false)
                 BashCardViewHolder(view)
             } else {
-                val view = LayoutInflater.from(this@CardPaymentActivity)
+                val view = LayoutInflater.from(act)
                         .inflate(R.layout.add_new_card_button, parent, false)
                 AddCardViewHolder(view)
             }
@@ -351,4 +343,5 @@ class CardPaymentActivity : AppCompatActivity() {
         }
 
     }
+
 }

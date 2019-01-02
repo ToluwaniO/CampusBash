@@ -21,11 +21,16 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
+import toluog.campusbash.R
 
 inline val Fragment.act: Activity
     get() = this.requireActivity()
 
+inline val Fragment.actCompat: AppCompatActivity
+    get() = this.requireActivity() as AppCompatActivity
+
 fun ImageView.loadImage(url: Any?) {
+
     Glide.with(context).load(url).into(this)
 }
 
@@ -67,9 +72,29 @@ fun View.longSnackbar(message: Int) = Snackbar
 fun View.snackbar(message: Int) = Snackbar
         .make(this, this.context.getString(message), Snackbar.LENGTH_SHORT).show()
 
+fun View.snackbar(message: Int, actionMessage: Int, action: () -> Unit) {
+    val snackbar = Snackbar.make(this, this.context.getString(message), Snackbar.LENGTH_SHORT)
+    val listener = View.OnClickListener { action() }
+    snackbar.setAction(actionMessage, listener)
+    snackbar.show()
+}
+
+fun View.longSnackbar(message: Int, actionMessage: Int, action: () -> Unit) {
+    val snackbar = Snackbar.make(this, this.context.getString(message), Snackbar.LENGTH_LONG)
+    val listener = View.OnClickListener { action() }
+    snackbar.setAction(actionMessage, listener)
+    snackbar.show()
+}
+
+fun View.indefiniteSnackbar(message: Int, actionMessage: Int, action: () -> Unit) {
+    val snackbar = Snackbar.make(this, this.context.getString(message), Snackbar.LENGTH_INDEFINITE)
+    val listener = View.OnClickListener { action() }
+    snackbar.setAction(actionMessage, listener)
+    snackbar.show()
+}
+
 fun View.indefiniteSnackbar(message: Int) = Snackbar
         .make(this, this.context.getString(message), Snackbar.LENGTH_INDEFINITE).show()
-
 
 fun Context.toast(resource: Int) = Toast.makeText(this, this.getString(resource), Toast.LENGTH_SHORT)
 

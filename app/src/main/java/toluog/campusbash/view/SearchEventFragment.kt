@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.no_events_layout.*
 import kotlinx.android.synthetic.main.search_event_layout.*
@@ -74,6 +75,7 @@ class SearchEventFragment: Fragment(), DatePickerFragment.DateSetListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ViewCompat.setNestedScrollingEnabled(event_recycler, false)
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)
         resources.getStringArray(R.array.party_types).asList().forEach { eventTypes.add(ChipData(it, false)) }
 

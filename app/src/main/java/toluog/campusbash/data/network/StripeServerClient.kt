@@ -12,6 +12,8 @@ import retrofit2.*
 import retrofit2.http.*
 import toluog.campusbash.model.TicketPriceBreakdown
 import toluog.campusbash.utils.Util
+import java.net.SocketTimeoutException
+import java.util.concurrent.TimeUnit
 
 class StripeServerClient {
 
@@ -29,7 +31,11 @@ class StripeServerClient {
                 .create()
         val logging = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { message -> Log.d(TAG, message) })
         logging.level = HttpLoggingInterceptor.Level.BODY
-        val client = OkHttpClient.Builder()
+        val client = OkHttpClient.Builder().apply {
+            connectTimeout(2, TimeUnit.MINUTES)
+            readTimeout(2, TimeUnit.MINUTES)
+            writeTimeout(2, TimeUnit.MINUTES)
+        }
         if(Util.debugMode()) {
             client.addInterceptor(logging)
         }
@@ -60,7 +66,9 @@ class StripeServerClient {
             return sResponse
         } catch (e: HttpException) {
             Log.d(TAG, e.message())
-        } catch (e: Throwable) {
+        } catch (e: SocketTimeoutException) {
+            Log.d(TAG, e.message)
+        } catch (e: Exception) {
             Log.d(TAG, e.message)
         }
         return ServerResponse(400, "An error occurred")
