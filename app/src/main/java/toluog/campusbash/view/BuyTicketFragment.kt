@@ -1,22 +1,25 @@
 package toluog.campusbash.view
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.collection.ArrayMap
+import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_buy_ticket.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import toluog.campusbash.R
 import toluog.campusbash.adapters.TicketAdapter
 import toluog.campusbash.model.Event
@@ -32,11 +35,12 @@ class BuyTicketFragment: BaseFragment() {
     private val tickets: ArrayList<Ticket> = ArrayList()
     private lateinit var adapter: TicketAdapter
     private var event: Event? = null
-    private val TAG = BuyTicketActivity::class.java.simpleName
+    private val TAG = BuyTicketFragment::class.java.simpleName
     private var tokenId: String? = null
     private var user: LiveData<Map<String, Any>>? = null
     private lateinit var pleaseWait: ProgressDialog
     private lateinit var viewModel: ViewEventViewModel
+    private var mCallback: BuyTicketFragmentListener? = null
 
     private val listener = object : TicketAdapter.OnTicketClickListener {
         override fun onTicketClick(ticket: Ticket) {
@@ -122,9 +126,7 @@ class BuyTicketFragment: BaseFragment() {
             val price = adapter.total
             val currency = purchase[AppContract.CURRENCY] as String?
             if(price > 0 && currency != null) {
-                val direction = BuyTicketFragmentDirections.actionBuyTicketDestinationToCardPaymentDestination()
-                direction.setPrice((price*100).toInt())
-                findNavController().navigate(direction)
+                mCallback?.getTicketClicked((price*100).toInt())
             } else {
                 buyTickets(tokenId, false)
             }
@@ -135,25 +137,55 @@ class BuyTicketFragment: BaseFragment() {
         pleaseWait.show()
         this.launch {
             val state = viewModel.buyTickets(tokenId, newCard)
-            pleaseWait.dismiss()
-            when (state) {
-                is ViewEventViewModel.BuyTicketState.Success -> {
-                    adapter.getPurchaseMap().clear()
-                    findNavController().navigate(BuyTicketFragmentDirections.actionBuyTicketDestinationToTicketPurchaseSuccessFragment())
-                }
-                is ViewEventViewModel.BuyTicketState.NotSignedIn -> {
-                    Util.startSignInActivity(act)
-                }
-                is ViewEventViewModel.BuyTicketState.QuantityIsZero -> {
-                    container.snackbar(R.string.no_ticket_purchased)
-                }
-                is ViewEventViewModel.BuyTicketState.Error -> {
-                    container.snackbar(R.string.error_occurred)
-                }
-                else -> {
+            handlePurchaseState(state)
+        }
+    }
 
-                }
+    private suspend fun handlePurchaseState(state: ViewEventViewModel.BuyTicketState) = withContext(Dispatchers.Main) {
+        pleaseWait.dismiss()
+        when (state) {
+            is ViewEventViewModel.BuyTicketState.Success -> {
+                adapter.getPurchaseMap().clear()
+                mCallback?.freeTicketsPurchased()
             }
+            is ViewEventViewModel.BuyTicketState.NotSignedIn -> {
+                Util.startSignInActivity(act)
+            }
+            is ViewEventViewModel.BuyTicketState.QuantityIsZero -> {
+                container.snackbar(R.string.no_ticket_purchased)
+            }
+            is ViewEventViewModel.BuyTicketState.Error -> {
+                container.snackbar(R.string.error_occurred)
+            }
+            else -> {
+
+            }
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BuyTicketFragmentListener) {
+            mCallback = context
+        } else {
+            throw RuntimeException(context.toString() + " must implement BuyTicketFragmentListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mCallback = null
+    }
+
+    interface BuyTicketFragmentListener {
+        fun getTicketClicked(price: Int)
+
+        fun freeTicketsPurchased()
+    }
+
+    companion object {
+        fun newInstance(eventId: String) = BuyTicketFragment().apply {
+            arguments = bundleOf(AppContract.EVENT_ID to eventId)
         }
     }
 

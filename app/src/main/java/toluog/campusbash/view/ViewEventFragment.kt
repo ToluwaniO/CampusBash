@@ -1,5 +1,6 @@
 package toluog.campusbash.view
 
+import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -8,8 +9,6 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -38,6 +37,7 @@ class ViewEventFragment : BaseFragment(), OnMapReadyCallback {
     private val TAG = ViewEventActivity::class.java.simpleName
     private var liveEvent: LiveData<Event>? = null
     private lateinit var viewModel: ViewEventViewModel
+    private var listener: ViewEventFragmentListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,8 +68,7 @@ class ViewEventFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun parseArgs() {
-        val fragmentArgs = ViewEventFragmentArgs.fromBundle(arguments ?: act.intent.extras)
-        eventId = fragmentArgs.eventId
+        eventId = arguments?.getString(AppContract.EVENT_ID) ?: ""
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
@@ -127,8 +126,7 @@ class ViewEventFragment : BaseFragment(), OnMapReadyCallback {
         event_get_ticket.setOnClickListener {
             if (FirebaseManager.isSignedIn()) {
                 Analytics.logBuyTicketClicked(event)
-                val dir = ViewEventFragmentDirections.actionViewEventDestinationToBuyTicketDestination(event.eventId)
-                findNavController().navigate(dir)
+                listener?.getTicketClicked()
             } else {
                 startActivity(intentFor<MainActivity>())
             }
@@ -225,5 +223,29 @@ class ViewEventFragment : BaseFragment(), OnMapReadyCallback {
                 updateLocation(it)
             }
         })
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is ViewEventFragmentListener) {
+            listener = context
+        } else {
+            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
+    interface ViewEventFragmentListener {
+        fun getTicketClicked()
+    }
+
+    companion object {
+        fun newInstance(eventId: String) = ViewEventFragment().apply {
+            arguments = bundleOf(AppContract.EVENT_ID to eventId)
+        }
     }
 }

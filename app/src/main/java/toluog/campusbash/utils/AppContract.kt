@@ -36,6 +36,7 @@ class AppContract{
         const val IMAGE_SRC = "imageSrc"
         const val IMAGE_NAME = "imageName"
         const val BUNDLE_PRICE = "price"
+        const val BUNDLE_UNIVERSITY = "university"
 
         //ROOM KEYS
         const val EVENT_TABLE = "Events"

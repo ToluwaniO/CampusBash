@@ -57,9 +57,14 @@ class EventsFragment : BaseFragment(){
         featuredTypes = configProvider.featuredEventTypes()
         featured = Featured(title = getString(R.string.featured_emoji, AppContract.FIRE_EMOJI))
         arguments?.let {
-            val args = EventsFragmentArgs.fromBundle(it)
-            myEvents = args.myEvents == 1
-            university = if (args.university.isNotBlank()) args.university else Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
+            myEvents = it.getInt(AppContract.MY_EVENT_BUNDLE) == 1
+            val uniParam = it.getString(AppContract.BUNDLE_UNIVERSITY)
+            university = if (uniParam != null && uniParam.isNotBlank()) {
+                uniParam
+            }
+            else {
+                Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
+            }
             Log.d(TAG, "university=$university")
         } ?: setDefaultParams()
         viewModel = ViewModelProviders.of(activity!!).get(EventsViewModel::class.java)

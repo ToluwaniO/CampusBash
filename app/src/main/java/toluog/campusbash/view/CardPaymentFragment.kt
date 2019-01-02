@@ -3,16 +3,17 @@ package toluog.campusbash.view
 
 import android.app.Activity
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.wallet.*
@@ -42,7 +43,7 @@ import java.util.*
  */
 class CardPaymentFragment : BaseFragment() {
 
-    private val TAG = CardPaymentActivity::class.java.simpleName
+    private val TAG = CardPaymentFragment::class.java.simpleName
     private val LOAD_PAYMENT_DATA_REQUEST_CODE = 3731
     private lateinit var paymentsClient: PaymentsClient
     private lateinit var googlePayAlert: AndroidAlertBuilder
@@ -51,6 +52,7 @@ class CardPaymentFragment : BaseFragment() {
     private val adapter = CardAdapter()
     private var pleaseWait: ProgressDialog? = null
     private lateinit var viewModel: ViewEventViewModel
+    private var mCallback: CardPaymentFragmentListener? = null
 
     private var breakdown: TicketPriceBreakdown? = null
 
@@ -64,7 +66,12 @@ class CardPaymentFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProviders.of(activity!!).get(ViewEventViewModel::class.java)
-        val price = CardPaymentFragmentArgs.fromBundle(arguments).price
+        val price = arguments?.getInt(AppContract.BUNDLE_PRICE)
+        if (price == null) {
+            act.toast(R.string.error_occurred)
+            act.finish()
+            return
+        }
         loadBreakdown(price)
 
     }
@@ -195,24 +202,27 @@ class CardPaymentFragment : BaseFragment() {
         pleaseWait?.show()
         this.launch {
             val state = viewModel.buyTickets(tokenId, newCard)
-            pleaseWait?.dismiss()
-            when (state) {
-                is ViewEventViewModel.BuyTicketState.Success -> {
-                    findNavController().navigate(CardPaymentFragmentDirections
-                            .actionCardPaymentDestinationToTicketPurchaseSuccessFragment())
-                }
-                is ViewEventViewModel.BuyTicketState.NotSignedIn -> {
-                    Util.startSignInActivity(act)
-                }
-                is ViewEventViewModel.BuyTicketState.QuantityIsZero -> {
-                    container.snackbar(R.string.no_ticket_purchased)
-                }
-                is ViewEventViewModel.BuyTicketState.NoPaymentMethod -> {
-                    container.snackbar(R.string.could_not_validate_card)
-                }
-                is ViewEventViewModel.BuyTicketState.Error -> {
-                    container.snackbar(R.string.error_occurred)
-                }
+            handlePurchaseState(state)
+        }
+    }
+
+    private suspend fun handlePurchaseState(state: ViewEventViewModel.BuyTicketState) = withContext(Dispatchers.Main) {
+        pleaseWait?.dismiss()
+        when (state) {
+            is ViewEventViewModel.BuyTicketState.Success -> {
+               mCallback?.cardPaymentCompleted()
+            }
+            is ViewEventViewModel.BuyTicketState.NotSignedIn -> {
+                Util.startSignInActivity(act)
+            }
+            is ViewEventViewModel.BuyTicketState.QuantityIsZero -> {
+                container.snackbar(R.string.no_ticket_purchased)
+            }
+            is ViewEventViewModel.BuyTicketState.Error -> {
+                container.snackbar(R.string.error_occurred)
+            }
+            else -> {
+
             }
         }
     }
@@ -243,8 +253,30 @@ class CardPaymentFragment : BaseFragment() {
         })
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is CardPaymentFragmentListener) {
+            mCallback = context
+        } else {
+            throw RuntimeException(context.toString() + " must implement BuyTicketFragmentListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mCallback = null
+    }
+
+    interface CardPaymentFragmentListener {
+        fun cardPaymentCompleted()
+    }
+
     companion object {
         const val ADD_CARD = 3628
+
+        fun newInstance(price: Int) = CardPaymentFragment().apply {
+            arguments = bundleOf(AppContract.BUNDLE_PRICE to price)
+        }
     }
 
     inner class CardAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {

@@ -37,6 +37,16 @@
             android:name=".view.ViewEventActivity"
             android:label="@string/app_name"
             android:parentActivityName=".view.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="campusbash-e0ca8.firebaseapp.com" />
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.facebook.FacebookActivity"
@@ -54,7 +64,6 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.BuyTicketActivity" />
         <activity android:name=".view.FirstOpenActivity" />
         <activity
             android:name=".view.InterestsActivity"
@@ -108,7 +117,6 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".view.CardPaymentActivity" />
         <activity android:name=".view.StripeSetupActivity" />
         <activity android:name=".view.SeeMoreActivity" />
         <activity android:name=".view.SetupProfileActivity" />

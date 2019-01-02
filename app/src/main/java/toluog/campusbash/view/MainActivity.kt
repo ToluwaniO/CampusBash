@@ -26,19 +26,12 @@ import kotlin.collections.ArrayList
 import com.google.android.material.appbar.AppBarLayout
 import androidx.core.content.ContextCompat
 import android.view.View.GONE
-import androidx.core.os.bundleOf
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.navOptions
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.fragment.app.Fragment
 import toluog.campusbash.utils.*
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import toluog.campusbash.adapters.BoughtTicketAdapter
 import toluog.campusbash.model.BoughtTicket
@@ -50,6 +43,7 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
                                                             BoughtTicketAdapter.TicketListener {
 
     private val TAG = MainActivity::class.java.simpleName
+    private val fragManager = supportFragmentManager
     private lateinit var uniAdapter: ArrayAdapter<CharSequence>
     private lateinit var viewModel: MainActivityViewModel
     private val uniChar = ArrayList<CharSequence>()
@@ -58,24 +52,59 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
     private lateinit var country: String
     private var university: String = ""
     private var firstDropSelect = false
-    private lateinit var navController: NavController
 
     private val threadJob = Dispatchers.Default
     private val threadScope = CoroutineScope(threadJob)
 
+    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        when (item.itemId) {
+            R.id.navigation_events -> {
+                (fab as View).visibility = VISIBLE
+                fragManager.popBackStack()
+                fragManager.beginTransaction().replace(R.id.fragment_frame,
+                        EventsFragment.newInstance(university, false), null)
+                        .commit()
+                setAppBarState(FragmentPage.HOME)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_search -> {
+                (fab as View).visibility = GONE
+                fragManager.beginTransaction().replace(R.id.fragment_frame, SearchEventFragment(), null)
+                        .commit()
+                setAppBarState(FragmentPage.SEARCH)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_tickets -> {
+                (fab as View).visibility = GONE
+                fragManager.popBackStack()
+                fragManager.beginTransaction().replace(R.id.fragment_frame, TicketsFragment.newInstance(), null)
+                        .commit()
+                setAppBarState(FragmentPage.TICKETS)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_host -> {
+                (fab as View).visibility = VISIBLE
+                fragManager.popBackStack()
+                fragManager.beginTransaction().replace(R.id.fragment_frame,
+                        EventsFragment.newInstance(university, true), null)
+                        .commit()
+                setAppBarState(FragmentPage.MY_EVENTS)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_profile -> {
+                (fab as View).visibility = GONE
+                fragManager.beginTransaction().replace(R.id.fragment_frame, ProfileFragment(), null)
+                        .commit()
+                setAppBarState(FragmentPage.PROFILE)
+                return@OnNavigationItemSelectedListener true
+            }
+        }
+        false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val host: NavHostFragment = supportFragmentManager
-                .findFragmentById(R.id.main_nav_host) as NavHostFragment? ?: return
-
-        navController = host.navController
-        navigation.setupWithNavController(navController)
-        
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            setAppBarState(destination.id)
-        }
 
         Analytics.init(applicationContext)
         Fabric.with(this, Crashlytics())
@@ -85,7 +114,10 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
         setSupportActionBar(toolbar)
 
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
         (fab.layoutParams as CoordinatorLayout.LayoutParams).behavior = FabScrollBehavior()
+        //(navigation.layoutParams as CoordinatorLayout.LayoutParams).behavior = BottomNavigationBehavior()
         fab.setOnClickListener {
             startActivity(intentFor<CreateEventActivity>())
         }
@@ -97,6 +129,12 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         Log.d(TAG, "Pref string gotten")
 
         updateUi()
+        Log.d(TAG, "UI Drawn")
+        if(savedInstanceState == null) {
+            fragManager.beginTransaction().replace(R.id.fragment_frame,
+                    EventsFragment.newInstance(university, false), null).commit()
+        }
+        Log.d(TAG, "fragment started")
     }
 
     override fun onStart() {
@@ -108,11 +146,6 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         } else{
             Util.startSignInActivity(this)
         }
-    }
-
-    override fun onDestroy() {
-        threadJob.cancel()
-        super.onDestroy()
     }
 
     private fun updateUi() {
@@ -159,7 +192,9 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
 
     override fun onItemClick(event: Event, view: View) {
         Analytics.logEventSelected(event)
-        navController.navigate(EventsFragmentDirections.actionNavigationEventsToViewEventActivity(event.eventId))
+        val bundle = Bundle()
+        bundle.putString(AppContract.EVENT_ID, event.eventId)
+            startActivity(intentFor<ViewEventActivity>().putExtras(bundle))
     }
 
     override fun onTicketClicked(ticket: BoughtTicket) {
@@ -175,10 +210,8 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         (view as TextView?)?.setTextColor(Color.WHITE)
         if(!firstDropSelect) {
             university = uniList[position].name
-            navController.navigate(R.id.navigation_events, bundleOf(
-                    "university" to university,
-                    "myEvents" to 0)
-            )
+            fragManager.beginTransaction().replace(R.id.fragment_frame,
+                    EventsFragment.newInstance(university, false), null).commit()
         } else {
             firstDropSelect = false
         }
@@ -212,39 +245,39 @@ class MainActivity : AppCompatActivity(), EventAdapter.OnItemClickListener, Adap
         main_uni_spinner.setSelection(uniPosition)
     }
 
-    private  fun setAppBarState(id: Int) {
+    private  fun setAppBarState(page: FragmentPage) {
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
-        when(id) {
-            R.id.navigation_search -> {
-                appbar.setExpanded(false, true)
-                toolbar.title = getString(R.string.find_events)
-                (fab as View).visibility = GONE
-            }
-            R.id.navigation_events -> {
+        when (page) {
+            FragmentPage.HOME -> {
                 appbar.setExpanded(true, true)
-                if (navigation.selectedItemId == R.id.navigation_host) {
-                    toolbar.title = getString(R.string.my_events)
-                    (fab as View).visibility = VISIBLE
-                } else {
-                    toolbar.title = ""
-                }
+                toolbar.title = ""
+                (fab as View).visibility = View.VISIBLE
             }
-            R.id.navigation_host -> {
-                appbar.setExpanded(false, true)
-                toolbar.title = getString(R.string.host)
-                (fab as View).visibility = VISIBLE
-            }
-            R.id.navigation_tickets -> {
-                appbar.setExpanded(false, true)
-                toolbar.title = getString(R.string.tickets)
-                (fab as View).visibility = GONE
-            }
-            R.id.navigation_profile -> {
+            FragmentPage.PROFILE -> {
                 appbar.setExpanded(false, true)
                 toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.background_material_light))
                 toolbar.title = ""
-                (fab as View).visibility = VISIBLE
+                (fab as View).visibility = View.GONE
+            }
+            FragmentPage.MY_EVENTS -> {
+                appbar.setExpanded(false, true)
+                toolbar.title = getString(R.string.my_events)
+                (fab as View).visibility = View.VISIBLE
+            }
+            FragmentPage.TICKETS -> {
+                appbar.setExpanded(false, true)
+                toolbar.title = getString(R.string.tickets)
+                (fab as View).visibility = View.GONE
+            }
+            FragmentPage.SEARCH -> {
+                appbar.setExpanded(false, true)
+                toolbar.title = getString(R.string.find_events)
+                (fab as View).visibility = View.GONE
             }
         }
+    }
+
+    enum class FragmentPage {
+        HOME, SEARCH, PROFILE, TICKETS, MY_EVENTS
     }
 }

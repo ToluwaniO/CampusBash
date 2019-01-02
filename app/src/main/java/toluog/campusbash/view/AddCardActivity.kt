@@ -12,7 +12,6 @@ import toluog.campusbash.R
 import toluog.campusbash.model.BashCard
 import toluog.campusbash.utils.extension.alertDialog
 import toluog.campusbash.utils.extension.snackbar
-import toluog.campusbash.view.CardPaymentActivity.Companion.ADD_CARD
 
 class AddCardActivity : AppCompatActivity() {
 

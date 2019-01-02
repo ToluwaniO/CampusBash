@@ -238,13 +238,13 @@ class CreateEventFragment : BaseFragment() {
 
     fun dateChanged(year: Int, month: Int, dayOfMonth: Int) {
         if(type == 0){
-            startCalendar.set(Calendar.DAY_OF_YEAR, year)
+            startCalendar.set(Calendar.YEAR, year)
             startCalendar.set(Calendar.MONTH, month)
             startCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             event_start_date.text = Util.formatDate(startCalendar)
             viewModel.event.startTime = startCalendar.timeInMillis
         } else{
-            endCalendar.set(Calendar.DAY_OF_YEAR, year)
+            endCalendar.set(Calendar.YEAR, year)
             endCalendar.set(Calendar.MONTH, month)
             endCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             event_end_date.text = Util.formatDate(endCalendar)

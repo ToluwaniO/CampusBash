@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.*
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -16,7 +15,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavOptions
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -30,28 +28,6 @@ inline val Fragment.act: Activity
 
 inline val Fragment.actCompat: AppCompatActivity
     get() = this.requireActivity() as AppCompatActivity
-
-inline val Fragment.transitionOptions: NavOptions
-get() = navOptions {
-    anim {
-        enter = R.anim.slide_in_right
-        exit = R.anim.slide_out_left
-        popEnter = R.anim.slide_in_left
-        popExit = R.anim.slide_out_right
-    }
-}
-
-fun Fragment.transitionWithCustomTop(destination: Int): NavOptions {
-    val builder = NavOptions.Builder()
-    builder.setPopUpTo(destination, true)
-    builder.apply {
-        setPopEnterAnim(R.anim.slide_in_right)
-        setExitAnim(R.anim.slide_out_left)
-        setPopEnterAnim(R.anim.slide_in_left)
-        setPopExitAnim(R.anim.slide_out_right)
-    }
-    return builder.build()
-}
 
 fun ImageView.loadImage(url: Any?) {
 
