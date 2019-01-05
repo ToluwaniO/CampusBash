@@ -57,12 +57,11 @@ class EventsFragment : BaseFragment(){
         featuredTypes = configProvider.featuredEventTypes()
         featured = Featured(title = getString(R.string.featured_emoji, AppContract.FIRE_EMOJI))
         arguments?.let {
-            myEvents = it.getInt(AppContract.MY_EVENT_BUNDLE) == 1
+            myEvents = it.getBoolean(MY_EVENTS_PARAM)
             val uniParam = it.getString(AppContract.BUNDLE_UNIVERSITY)
             university = if (uniParam != null && uniParam.isNotBlank()) {
                 uniParam
-            }
-            else {
+            } else {
                 Util.getPrefString(act, AppContract.PREF_UNIVERSITY_KEY)
             }
             Log.d(TAG, "university=$university")
